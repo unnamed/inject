@@ -3,7 +3,6 @@ package me.yushust.inject.resolve;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.key.resolve.ContextualTypes;
-import me.yushust.inject.util.Annotations;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Inject;

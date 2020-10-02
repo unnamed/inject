@@ -8,6 +8,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Represents an injectable constructor, a constructor
+ * annotated with {@link javax.inject.Inject} or a
+ * constructor with no parameters.
+ *
+ * <p>The constructor can also return null if the provided
+ * {@code constructor} is null. Check {@link InjectableConstructor#DUMMY}</p>
+ */
 public class InjectableConstructor {
 
   public static final InjectableConstructor DUMMY = new InjectableConstructor(
@@ -53,4 +61,8 @@ public class InjectableConstructor {
     return null;
   }
 
+  @Override
+  public String toString() {
+    return "Constructor (" + constructor.getParameterTypes().length + " parameters)";
+  }
 }

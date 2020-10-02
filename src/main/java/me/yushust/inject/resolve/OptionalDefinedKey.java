@@ -28,7 +28,7 @@ public final class OptionalDefinedKey<T> {
 
   @Override
   public String toString() {
-    return (optional ? "(optional)" : "(required)")
+    return (optional ? "(optional) " : "(required) ")
         + key.toString();
   }
 

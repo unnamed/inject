@@ -8,7 +8,6 @@ import me.yushust.inject.key.resolve.ContextualTypes;
 import me.yushust.inject.resolve.InjectableMethod;
 import me.yushust.inject.resolve.MembersBox;
 import me.yushust.inject.resolve.QualifierFactory;
-import me.yushust.inject.util.Annotations;
 
 import javax.inject.Provider;
 import java.lang.reflect.Method;

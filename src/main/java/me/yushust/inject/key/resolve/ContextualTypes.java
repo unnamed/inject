@@ -35,31 +35,6 @@ public final class ContextualTypes {
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
-  /**
-   * Checks if the given type requires a context to be
-   * fully specified.
-   *
-   * @param type The checked type.
-   * @return True if the type requires a context to
-   * be fully specified.
-   */
-  public static boolean requiresContext(Type type) {
-
-    Validate.notNull(type, "type");
-
-    if (type instanceof Class) {
-      return false;
-    } else if (type instanceof CompositeType) {
-      return ((CompositeType) type).requiresContext();
-    } else if (type instanceof TypeVariable) {
-      return true;
-    } else {
-      Type wrapped = Types.wrap(type);
-      Validate.state(wrapped instanceof CompositeType); // wtf bro this isn't possible
-      return ((CompositeType) wrapped).requiresContext();
-    }
-  }
-
   public static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {
 
     Validate.notNull(type, "type");

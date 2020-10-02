@@ -69,4 +69,28 @@ public class InjectableField implements InjectableMember {
       errors.attach(e);
     }
   }
+
+  @Override
+  public String toString() {
+    return "Field '" + field.getName() + "' of type '" + key.getKey() + "'";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    InjectableField that = (InjectableField) o;
+    return declaringType.equals(that.declaringType) &&
+        key.equals(that.key) &&
+        field.equals(that.field);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = 1;
+    result = 31 * result + declaringType.hashCode();
+    result = 31 * result + key.hashCode();
+    result = 31 * result + field.hashCode();
+    return result;
+  }
 }
