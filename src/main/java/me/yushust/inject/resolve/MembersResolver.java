@@ -13,7 +13,7 @@ import java.util.List;
  * are resolved once and stored, then, the same
  * resolved members are returned</p>
  */
-public interface MembersBox {
+public interface MembersResolver {
 
   /**
    * @return Returns the first injectable constructor

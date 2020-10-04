@@ -2,7 +2,7 @@ package me.yushust.inject;
 
 import me.yushust.inject.key.TypeReference;
 
-public interface Injector extends MembersInjector<Object> {
+public interface Injector {
 
   /**
    * @return True if the debug mode
@@ -27,12 +27,15 @@ public interface Injector extends MembersInjector<Object> {
    */
   void injectStaticMembers(Class<?> clazz);
 
+  void injectMembers(Object object);
+
   /**
    * Lowest Level function of {@link Injector}, resolves the specified type
-   * and calls to a {@link MembersInjector} to inject fields and methods in
+   * and to injects fields and methods in
    * the specified instance, if the instance is null, the injector handles
    * it like a static injection
-   * @param type     The injected type
+   *
+   * @param type     The injected types
    * @param instance The object that will be injected,
    *                 if it's null, the injector handles
    *                 it like a static injection

@@ -3,7 +3,10 @@ package me.yushust.inject.key;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Collection of static util methods for easy
@@ -19,35 +22,46 @@ public final class Types {
 
   /**
    * Converts the given type to a resolvable type.
-   * If the type isn't a raw type, the return type
-   * is a {@link CompositeType}.
+   * If the type isn't a raw type nor a TypeVariable,
+   * the return type is a {@link CompositeType}.
    *
    * @param type The original type
-   * @return The wrapped type
    */
-  public static Type wrap(Type type) {
-
-    Validate.notNull(type, "type");
+  public static Type compose(Type type) {
 
     if (type instanceof Class) {
       Class<?> clazz = (Class<?>) type;
       if (clazz.isArray()) {
-        return new GenericArrayTypeWrapper(
-            wrap(clazz.getComponentType())
-        );
+        // If the class is an array, we convert
+        // it to a GenericArrayTypeWrapper
+        return genericArrayTypeOf(clazz.getComponentType());
       }
-      return clazz;
     } else if (type instanceof CompositeType) {
+      // It's already a wrapped type
+      // we don't need to wrap it again
       return type;
     } else if (type instanceof ParameterizedType) {
       ParameterizedType prototype = (ParameterizedType) type;
-      return new ParameterizedTypeWrapper(prototype);
+      Type rawType = prototype.getRawType();
+      // rawType is always a Class, but
+      // I check because yes.
+      Validate.state(rawType instanceof Class, "Raw type isn't a class!");
+      return parameterizedTypeOf(
+          prototype.getOwnerType(),
+          (Class<?>) rawType,
+          prototype.getActualTypeArguments()
+      );
     } else if (type instanceof GenericArrayType) {
       GenericArrayType prototype = (GenericArrayType) type;
-      return new GenericArrayTypeWrapper(prototype);
+      return genericArrayTypeOf(
+          prototype.getGenericComponentType()
+      );
     } else if (type instanceof WildcardType) {
       WildcardType prototype = (WildcardType) type;
-      return new WildcardTypeWrapper(prototype);
+      return new WildcardTypeWrapper(
+          prototype.getUpperBounds(),
+          prototype.getLowerBounds()
+      );
     }
 
     return type;
@@ -61,91 +75,40 @@ public final class Types {
    */
   public static Class<?> getRawType(Type type) {
 
-    Validate.notNull(type, "type");
-
     if (type instanceof Class) {
+      // it's already a raw type
       return (Class<?>) type;
     } else if (type instanceof ParameterizedType) {
+      // I would very happy with the
+      // enhanced instanceof operator
       ParameterizedType parameterizedType = (ParameterizedType) type;
       Type rawType = parameterizedType.getRawType();
-      if (!(rawType instanceof Class)) {
-        // wait, that's illegal
-        throw new IllegalArgumentException("Raw type isn't a Class!");
-      }
+      // The getRawType() method should never
+      // return a non-raw type, I don't know
+      // why the getRawType() method returns
+      // a Type and not a Class, all its implementations
+      // return a Class and not a Type.
+      // Why the abstraction returns Type?
+      Validate.state(rawType instanceof Class, "Raw type isn't a Class!");
       return (Class<?>) rawType;
     } else if (type instanceof GenericArrayType) {
-      Type componentType = ((GenericArrayType) type).getGenericComponentType();
-      return Array.newInstance(getRawType(componentType), 0).getClass();
+      Type componentType = ((GenericArrayType) type)
+          .getGenericComponentType();
+      // Call recursively for the component type
+      // (that can be generic)
+      Class<?> componentRawType = getRawType(componentType);
+      Object emptyArray = Array.newInstance(componentRawType, 0);
+      return emptyArray.getClass();
     } else if (type instanceof TypeVariable) {
       return Object.class;
     } else if (type instanceof WildcardType) {
-      return getRawType(((WildcardType) type).getUpperBounds()[0]);
+      Type upperBound = ((WildcardType) type).getUpperBounds()[0];
+      // Call recursively for the
+      // upper bound
+      return getRawType(upperBound);
     }
 
     throw new IllegalArgumentException();
-  }
-
-  /**
-   * Checks if the given types are equal.
-   *
-   * @param a The checked type 1
-   * @param b The checked type 2
-   * @return True if the given types are equal
-   */
-  public static boolean typeEquals(Type a, Type b) {
-
-    if (a == b) {
-      return true;
-    } else if (a instanceof Class) {
-      return a.equals(b);
-    } else if (a instanceof ParameterizedType) {
-
-      if (!(b instanceof ParameterizedType)) {
-        return false;
-      }
-
-      ParameterizedType pa = (ParameterizedType) a;
-      ParameterizedType pb = (ParameterizedType) b;
-
-      Type aOwnerType = pa.getOwnerType();
-      Type bOwnerType = pb.getOwnerType();
-
-      return aOwnerType == null ? bOwnerType == null : aOwnerType.equals(bOwnerType)
-          && pa.getRawType().equals(pb.getRawType())
-          && Arrays.equals(pa.getActualTypeArguments(), pb.getActualTypeArguments());
-
-    } else if (a instanceof GenericArrayType) {
-      if (!(b instanceof GenericArrayType)) {
-        return false;
-      }
-
-      GenericArrayType ga = (GenericArrayType) a;
-      GenericArrayType gb = (GenericArrayType) b;
-      return typeEquals(ga.getGenericComponentType(), gb.getGenericComponentType());
-    } else if (a instanceof WildcardType) {
-      if (!(b instanceof WildcardType)) {
-        return false;
-      }
-
-      WildcardType wa = (WildcardType) a;
-      WildcardType wb = (WildcardType) b;
-      return Arrays.equals(wa.getUpperBounds(), wb.getUpperBounds())
-          && Arrays.equals(wa.getLowerBounds(), wb.getLowerBounds());
-
-    } else if (a instanceof TypeVariable) {
-
-      if (!(b instanceof TypeVariable)) {
-        return false;
-      }
-
-      TypeVariable<?> va = (TypeVariable<?>) a;
-      TypeVariable<?> vb = (TypeVariable<?>) b;
-
-      return va.getGenericDeclaration() == vb.getGenericDeclaration()
-          && va.getName().equals(vb.getName());
-    }
-
-    return false;
   }
 
   /**
@@ -157,24 +120,57 @@ public final class Types {
    * @param type The type
    * @return The type converted to string
    */
-  public static String asString(Type type) {
-    return type instanceof Class ? ((Class<?>) type).getName() : type.toString();
+  public static String getTypeName(Type type) {
+    return type instanceof Class
+        ? ((Class<?>) type).getName()
+        : type.toString();
   }
 
+  /** Static factory method to create {@link GenericArrayType}s */
   public static GenericArrayType genericArrayTypeOf(Type type) {
+    type = compose(type);
     return new GenericArrayTypeWrapper(type);
   }
 
+  /** Static factory method to create {@link ParameterizedType}s */
   public static ParameterizedType parameterizedTypeOf(Type ownerType, Class<?> rawType, Type... parameterTypes) {
+    ownerType = compose(ownerType);
+    parameterTypes = parameterTypes.clone();
+    for (int i = 0; i < parameterTypes.length; i++) {
+      parameterTypes[i] = compose(parameterTypes[i]);
+    }
     return new ParameterizedTypeWrapper(rawType, parameterTypes, ownerType);
   }
 
+  /** Static factory method to create {@link WildcardType}s as supertype */
   public static WildcardType wildcardSuperTypeOf(Type type) {
+    type = compose(type);
     return new WildcardTypeWrapper(new Type[]{Object.class}, new Type[]{type});
   }
 
+  /** Static factory method to create {@link WildcardType} as subtype */
   public static WildcardType wildcardSubTypeOf(Type type) {
+    type = compose(type);
     return new WildcardTypeWrapper(new Type[]{type}, EMPTY_TYPE_ARRAY);
+  }
+
+  /**
+   * Represents a type that's compound
+   * by other types called "component types",
+   * if a component type is a {@link TypeVariable}
+   * or the component type is a CompositeType and
+   * includes a {@link TypeVariable} as component
+   * (and so on recursively), so the composite
+   * type requires context (a GenericDeclaration)
+   *
+   * <p>In other words, if the composite type
+   * includes a {@link TypeVariable} in its
+   * structure, it requires context</p>
+   */
+  interface CompositeType {
+
+    boolean requiresContext();
+
   }
 
   /**
@@ -194,6 +190,7 @@ public final class Types {
     /**
      * Calls recursively {@link CompositeType#requiresContext()}
      * in the component types.
+     *
      * @return True if the type isn't fully-specified
      */
     public boolean requiresContext() {
@@ -214,7 +211,7 @@ public final class Types {
           // a CompositeType, nor a TypeVariable,
           // it should be wrapped and the return
           // type is always a CompositeType
-          if (((CompositeType) Types.wrap(component))
+          if (((CompositeType) Types.compose(component))
               .requiresContext()) {
             return true;
           }
@@ -234,10 +231,27 @@ public final class Types {
       }
       return result;
     }
+
+    /**
+     * Checks if the given object is equal
+     * to this object. The equals implementations
+     * for {@link CompositeType} may break the
+     * symmetry contract of the equals method.
+     *
+     * <p>Why "may"? Because some implementations of
+     * {@link Type} checks if the compared object
+     * class is the same as the implementation</p>
+     *
+     * <p>This is because the types must be
+     * wrapped before invoking {@link Object#equals}
+     * in any type</p>
+     */
+    public abstract boolean equals(Object o);
+
   }
 
   /**
-   * Represents a type of an array. (Arrays, dislike primitves,
+   * Represents a type of an array. (Arrays, dislike primitives,
    * are real objects, we can get the type of a raw
    * or generic array).
    *
@@ -250,11 +264,18 @@ public final class Types {
 
     private final Type componentType;
 
-    GenericArrayTypeWrapper(Type componentType) {
-      this.componentType = Validate.notNull(componentType, "componentType");
-      super.components.add(componentType);
+    private GenericArrayTypeWrapper(Type componentType) {
+      Validate.notNull(componentType, "componentType");
+      this.componentType = componentType;
+      super.components.add(this.componentType);
     }
 
+    /**
+     * The array component type
+     *
+     * <p>For example the type: Example[], "Example" is
+     * the component type.</p>
+     */
     public Type getGenericComponentType() {
       return componentType;
     }
@@ -270,10 +291,7 @@ public final class Types {
       // identity, it's the same object
       if (this == o) return true;
       // The instanceof operator already checks nullability
-      // -> A null cannot be an instance of GenericArrayType! <-
-      // this can maybe break the symmetry contract of
-      // the equals method with this check, so to compare
-      // two wrapped types, you must first wrap both types
+      // -> A null cannot be an instance of GenericArrayType! <-s
       if (!(o instanceof GenericArrayType)) return false;
       GenericArrayType that = (GenericArrayType) o;
       return componentType.equals(that.getGenericComponentType());
@@ -281,10 +299,18 @@ public final class Types {
 
     @Override
     public String toString() {
-      return Types.asString(componentType) + "[]";
+      return Types.getTypeName(componentType) + "[]";
     }
   }
 
+  /**
+   * Represents a parameterized type, the most known
+   * generic type.
+   *
+   * <p>For example, a parameterized type can be List{@literal <}String{@literal >}
+   * or a Map{@literal <}String, Object{@literal >}, where List
+   * has 1 type arguments, and Map has 2 type arguments</p>
+   */
   static class ParameterizedTypeWrapper
       extends AbstractTypeWrapper
       implements ParameterizedType {
@@ -293,18 +319,14 @@ public final class Types {
     private final Type[] typeArguments;
     private final Type ownerType;
 
-    ParameterizedTypeWrapper(
+    private ParameterizedTypeWrapper(
         Class<?> rawType,
         Type[] typeArguments,
         Type ownerType
     ) {
       this.rawType = rawType;
-      this.ownerType = ownerType == null ? null : Types.wrap(ownerType);
-      this.typeArguments = typeArguments.clone();
-
-      for (int t = 0, length = this.typeArguments.length; t < length; t++) {
-        this.typeArguments[t] = Types.wrap(this.typeArguments[t]);
-      }
+      this.ownerType = ownerType;
+      this.typeArguments = typeArguments;
 
       Collections.addAll(super.components, typeArguments);
       if (ownerType != null) {
@@ -332,8 +354,8 @@ public final class Types {
       return rawType.equals(that.getRawType()) &&
           Arrays.equals(typeArguments, that.getActualTypeArguments()) &&
           ownerType == null
-            ? that.getOwnerType() == null
-            : ownerType.equals(that.getOwnerType());
+          ? that.getOwnerType() == null
+          : ownerType.equals(that.getOwnerType());
     }
 
     @Override
@@ -342,7 +364,7 @@ public final class Types {
       String clazz = rawType.getName();
 
       if (ownerType != null) {
-        builder.append(Types.asString(ownerType));
+        builder.append(Types.getTypeName(ownerType));
         builder.append('.');
 
         String prefix = ownerType instanceof ParameterizedType
@@ -359,7 +381,7 @@ public final class Types {
       if (typeArguments.length != 0) {
         builder.append('<');
         for (int i = 0; i < typeArguments.length; i++) {
-          builder.append(Types.asString(typeArguments[i]));
+          builder.append(Types.getTypeName(typeArguments[i]));
           if (i != typeArguments.length - 1) {
             builder.append(", ");
           }
@@ -371,6 +393,11 @@ public final class Types {
     }
   }
 
+  /**
+   * Represents a type with a wildcard type expression
+   * like "? extends Number" ("any type that extends to Number"),
+   * and "? super String" ("any type that string extends to)
+   */
   static class WildcardTypeWrapper
       extends AbstractTypeWrapper
       implements WildcardType {
@@ -378,7 +405,19 @@ public final class Types {
     private final Type[] upperBounds;
     private final Type[] lowerBounds;
 
-    WildcardTypeWrapper(Type[] upperBounds, Type[] lowerBounds) {
+    /**
+     * Constructs the wildcard type expression using
+     * upper bounds and lower bounds.
+     *
+     * <p>There only must be 1 upper bound, for an
+     * unbound wildcard, use Object as upper bound</p>
+     *
+     * <p>There only must be zero or one lower bound</p>
+     *
+     * <p>Upper bounds are specified with "extends",
+     * Lower bounds are specified with "super"</p>
+     */
+    private WildcardTypeWrapper(Type[] upperBounds, Type[] lowerBounds) {
 
       Validate.argument(upperBounds.length == 1,
           "The wildcard must have 1 upper bound. For unbound wildcards, just use Object");
@@ -386,11 +425,11 @@ public final class Types {
           "The wildcard must have at most 1 lower bound");
 
       if (lowerBounds.length == 1) {
-        this.lowerBounds = new Type[]{Types.wrap(lowerBounds[0])};
+        this.lowerBounds = new Type[]{Types.compose(lowerBounds[0])};
         this.upperBounds = new Type[]{Object.class};
       } else {
         this.lowerBounds = Types.EMPTY_TYPE_ARRAY;
-        this.upperBounds = new Type[]{Types.wrap(upperBounds[0])};
+        this.upperBounds = new Type[]{Types.compose(upperBounds[0])};
       }
 
       Collections.addAll(super.components, this.upperBounds);
@@ -417,15 +456,12 @@ public final class Types {
     @Override
     public String toString() {
       if (lowerBounds.length == 1) {
-        return "? super " + Types.asString(lowerBounds[0]);
+        return "? super " + Types.getTypeName(lowerBounds[0]);
       }
       if (upperBounds[0] == Object.class) {
         return "?";
       }
-      return "? extends " + Types.asString(upperBounds[0]);
+      return "? extends " + Types.getTypeName(upperBounds[0]);
     }
-
   }
-
-
 }

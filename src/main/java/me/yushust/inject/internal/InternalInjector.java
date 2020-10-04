@@ -60,6 +60,7 @@ abstract class InternalInjector implements Injector {
    */
   @ExternalUseOnly
   public <T> T getInstance(TypeReference<T> type) {
+    ProvisionStack stack = provisionStackThreadLocal.get();
     // The creation of a new provision stack indicates
     // the manual call of getInstance() or injectMembers(),
     // the type cannot be a key. Keys are used for injectable
@@ -67,8 +68,13 @@ abstract class InternalInjector implements Injector {
     T value = getInstance(Key.of(type), true)
         .getValue(); // The errors are ignored here
     // We need to clear the stack
-    // after a manual injection
-    removeStackFromThisThread();
+    // after a manual injection,
+    // the stack is only cleared if initially
+    // it was null, if not, it is possibly
+    // being used
+    if (stack == null) {
+      removeStackFromThisThread();
+    }
     return value;
   }
 
@@ -87,14 +93,20 @@ abstract class InternalInjector implements Injector {
    */
   @ExternalUseOnly
   public <T> void injectMembers(TypeReference<T> type, T instance) {
+    ProvisionStack stack = provisionStackThreadLocal.get();
     // The creation of a new provision stack indicates
     // the manual call of getInstance() or injectMembers(),
     // the type cannot be a key. Keys are used for injectable
     // members, not for manually call a inject method
     injectMembers(Key.of(type), instance);
     // We need to clear the stack
-    // after a manual injection
-    removeStackFromThisThread();
+    // after a manual injection,
+    // the stack is only cleared if initially
+    // it was null, if not, it is possibly
+    // being used
+    if (stack == null) {
+      removeStackFromThisThread();
+    }
   }
 
   /**

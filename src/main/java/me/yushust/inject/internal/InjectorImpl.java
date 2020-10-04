@@ -5,9 +5,11 @@ import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.error.ErrorProne;
 import me.yushust.inject.key.Key;
-import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.resolve.*;
+import me.yushust.inject.resolve.InjectableConstructor;
+import me.yushust.inject.resolve.InjectableMember;
+import me.yushust.inject.resolve.MembersResolver;
+import me.yushust.inject.resolve.OptionalDefinedKey;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Provider;
@@ -15,11 +17,11 @@ import java.util.List;
 
 public class InjectorImpl extends InternalInjector implements Injector {
 
-  private final MembersBox membersBox;
+  private final MembersResolver membersResolver;
   private final BinderImpl binder;
 
-  public InjectorImpl(MembersBox membersBox, BinderImpl binder) {
-    this.membersBox = Validate.notNull(membersBox);
+  public InjectorImpl(MembersResolver membersResolver, BinderImpl binder) {
+    this.membersResolver = Validate.notNull(membersResolver);
     this.binder = Validate.notNull(binder);
   }
 
@@ -31,9 +33,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     ErrorAttachable errors = new ErrorAttachableImpl();
     ProvisionStack stack = stackForThisThread();
     stack.add(type, instance);
-    // Injector doesn't know if the member is a field
-    // or method, it doesn't matter
-    for (InjectableMember member : membersBox.getMembers(type.getType())) {
+    for (InjectableMember member : membersResolver.getMembers(type.getType())) {
       List<OptionalDefinedKey<?>> keys = member.getKeys();
       Object[] values = getValuesForKeys(keys, member, errors);
       member.inject(errors, instance, values);
@@ -71,7 +71,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     }
 
     ErrorAttachable errors = new ErrorAttachableImpl();
-    InjectableConstructor constructor = membersBox.getConstructor(type.getType());
+    InjectableConstructor constructor = membersResolver.getConstructor(type.getType());
     Object instance = constructor.createInstance(errors, getValuesForKeys(constructor.getKeys(), constructor, errors));
     @SuppressWarnings("unchecked")
     T value = (T) instance;

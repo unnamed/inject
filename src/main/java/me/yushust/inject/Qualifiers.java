@@ -6,6 +6,8 @@ import me.yushust.inject.util.Validate;
 
 import javax.inject.Named;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -17,6 +19,33 @@ public final class Qualifiers {
   private Qualifiers() {
     // Don't try to construct an util class!
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
+  }
+
+  public static boolean containsOnlyDefaultValues(Annotation annotation) {
+
+    for (Method method : annotation.annotationType().getDeclaredMethods()) {
+
+      Object defaultValue = method.getDefaultValue();
+      Object value;
+
+      if (defaultValue == null) {
+        return true;
+      }
+
+      try {
+        value = method.invoke(annotation);
+      } catch (IllegalAccessException ignored) {
+        continue;
+      } catch (InvocationTargetException ignored) {
+        continue;
+      }
+
+      if (!defaultValue.equals(value)) {
+        return false;
+      }
+    }
+
+    return false;
   }
 
   /**

@@ -2,7 +2,8 @@ package me.yushust.inject.key;
 
 import me.yushust.inject.util.Validate;
 
-import java.lang.reflect.*;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public class TypeReference<T> {
 
@@ -19,14 +20,14 @@ public class TypeReference<T> {
 
     ParameterizedType parameterized = (ParameterizedType) superClass;
 
-    this.type = Types.wrap(parameterized.getActualTypeArguments()[0]);
+    this.type = Types.compose(parameterized.getActualTypeArguments()[0]);
     this.rawType = (Class<? super T>) Types.getRawType(type);
   }
 
   @SuppressWarnings("unchecked")
   public TypeReference(Type type) {
     Validate.notNull(type);
-    this.type = Types.wrap(type);
+    this.type = Types.compose(type);
     this.rawType = (Class<? super T>) Types.getRawType(this.type);
   }
 
@@ -69,20 +70,15 @@ public class TypeReference<T> {
 
   @Override
   public final boolean equals(Object o) {
-    if (o == this) {
-      return true;
-    }
-    if (!(o instanceof TypeReference<?>)) {
-      return false;
-    }
-
+    if (o == this) return true;
+    if (!(o instanceof TypeReference<?>)) return false;
     TypeReference<?> other = (TypeReference<?>) o;
-    return Types.typeEquals(type, other.type);
+    return type.equals(other.type);
   }
 
   @Override
   public final String toString() {
-    return Types.asString(type);
+    return Types.getTypeName(type);
   }
 
   @Override
@@ -101,7 +97,8 @@ public class TypeReference<T> {
 
   public static <T> TypeReference<T> of(Type rawType, Type... typeArguments) {
     Validate.notNull(rawType);
-    return of(new ParameterizedTypeReference(null, rawType, typeArguments));
+    Validate.state(rawType instanceof Class, "Rawtype should be a Class");
+    return of(Types.parameterizedTypeOf(null, ((Class<?>) rawType), typeArguments));
   }
 
 }

@@ -1,20 +1,25 @@
 package me.yushust.inject.resolve;
 
+import me.yushust.inject.Qualifiers;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.key.resolve.ContextualTypes;
+import me.yushust.inject.key.CompositeTypeReflector;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MembersBoxImpl implements MembersBox {
+public class MembersResolverImpl implements MembersResolver {
 
   private final QualifierFactory qualifierFactory;
 
-  public MembersBoxImpl(QualifierFactory qualifierFactory) {
+  public MembersResolverImpl(QualifierFactory qualifierFactory) {
     this.qualifierFactory = Validate.notNull(qualifierFactory, "qualifierFactory");
   }
 
@@ -71,7 +76,7 @@ public class MembersBoxImpl implements MembersBox {
           continue;
         }
         TypeReference<?> fieldType = TypeReference.of(
-            ContextualTypes.resolveContextually(
+            CompositeTypeReflector.resolveContextually(
                 type, field.getGenericType()
             )
         );
@@ -131,7 +136,7 @@ public class MembersBoxImpl implements MembersBox {
       Type parameter = parameterTypes[i];
       Annotation[] annotations = parameterAnnotations[i];
       TypeReference<?> parameterType = TypeReference.of(
-          ContextualTypes.resolveContextually(
+          CompositeTypeReflector.resolveContextually(
               declaringType, parameter
           )
       );
@@ -153,7 +158,7 @@ public class MembersBoxImpl implements MembersBox {
       }
     }
     @SuppressWarnings({"rawtypes"})
-    Key key = Key.of(type, Annotations.getQualifiers(qualifierFactory, annotations));
+    Key key = Key.of(type, Qualifiers.getQualifiers(qualifierFactory, annotations));
     @SuppressWarnings("unchecked")
     OptionalDefinedKey<?> optionalDefinedKey =
         new OptionalDefinedKey<Object>(key, optional);

@@ -11,7 +11,7 @@ public interface Qualifier {
    * to this string, add also a predicate like
    * <p>annotated with @Named("name")</p>
    * <p>marked with @Marker</p>
-   * <p>annotated with @Annotation("param", key = 123)</p>
+   * <p>annotated with @Annotation(value = "param", key = 123)</p>
    */
   @Override
   String toString();
