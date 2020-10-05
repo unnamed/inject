@@ -1,11 +1,14 @@
 package me.yushust.inject.key;
 
 import me.yushust.inject.util.Validate;
+import me.yushust.inject.key.Types.AbstractTypeWrapper;
+import me.yushust.inject.key.Types.CompositeType;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class TypeReference<T> {
+public class TypeReference<T> extends AbstractTypeWrapper implements CompositeType {
 
   private final Class<? super T> rawType;
   private final Type type;
@@ -22,6 +25,7 @@ public class TypeReference<T> {
 
     this.type = Types.compose(parameterized.getActualTypeArguments()[0]);
     this.rawType = (Class<? super T>) Types.getRawType(type);
+    super.components.add(this.type);
   }
 
   @SuppressWarnings("unchecked")
@@ -29,13 +33,41 @@ public class TypeReference<T> {
     Validate.notNull(type);
     this.type = Types.compose(type);
     this.rawType = (Class<? super T>) Types.getRawType(this.type);
+    super.components.add(this.type);
   }
 
   private TypeReference(Type type, Class<? super T> rawType) {
     Validate.notNull(type, "type");
     Validate.notNull(rawType, "rawType");
-    this.type = type;
+    this.type = Types.compose(type);
     this.rawType = rawType;
+    super.components.add(this.type);
+  }
+
+  public final TypeReference<?> getFieldType(Field field) {
+    Validate.notNull(field, "field");
+    Validate.argument(
+        field.getDeclaringClass().isAssignableFrom(rawType),
+        "Field '%s' isn't present in any super-type of '%s'",
+        field.getName(),
+        rawType
+    );
+    Type resolvedType = CompositeTypeReflector.resolveContextually(
+        this, field.getGenericType()
+    );
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    TypeReference fieldType = new TypeReference(resolvedType, field.getType());
+    return fieldType;
+  }
+
+  /**
+   * Unsafe method, type must be the type of a member of this type,
+   * else, it throws a {@link IllegalStateException}
+   */
+  public final TypeReference<?> resolve(Type type) {
+    Validate.notNull(type, "type");
+    type = CompositeTypeReflector.resolveContextually(this, type);
+    return new TypeReference<>(type);
   }
 
   public final Class<? super T> getRawType() {
@@ -59,7 +91,7 @@ public class TypeReference<T> {
     if (getClass() == TypeReference.class) {
       return this;
     } else {
-      return new TypeReference<T>(type, rawType);
+      return new TypeReference<>(type, rawType);
     }
   }
 
@@ -92,13 +124,12 @@ public class TypeReference<T> {
   }
 
   public static <T> TypeReference<T> of(Type type) {
-    return new TypeReference<T>(type);
+    return new TypeReference<>(type);
   }
 
-  public static <T> TypeReference<T> of(Type rawType, Type... typeArguments) {
+  public static <T> TypeReference<T> of(Class<?> rawType, Type... typeArguments) {
     Validate.notNull(rawType);
-    Validate.state(rawType instanceof Class, "Rawtype should be a Class");
-    return of(Types.parameterizedTypeOf(null, ((Class<?>) rawType), typeArguments));
+    return of(Types.parameterizedTypeOf(null, rawType, typeArguments));
   }
 
 }

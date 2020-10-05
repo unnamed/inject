@@ -10,7 +10,7 @@ public class CyclicInjectionTest {
   @Test
   public void test() {
 
-    Injector injector = InjectorFactory.create();
+    Injector injector = Injector.create();
     Foo foo = injector.getInstance(Foo.class);
 
     Assertions.assertNotNull(foo);

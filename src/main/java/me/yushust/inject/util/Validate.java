@@ -1,5 +1,8 @@
 package me.yushust.inject.util;
 
+import me.yushust.inject.error.InjectionException;
+import me.yushust.inject.key.Key;
+
 /**
  * Collection of util methods for
  * parameter, argument, states validation.
@@ -148,6 +151,12 @@ public final class Validate {
    */
   public static String notEmpty(String string) {
     return notEmpty(string, null);
+  }
+
+  public static <T> void doesntRequiresContext(Key<T> key) {
+    if (key.requiresContext()) {
+      throw new InjectionException("The type '" + key.getType() + "' requires a context to be fully-specified!");
+    }
   }
 
 }

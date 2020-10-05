@@ -4,7 +4,6 @@ import me.yushust.inject.Binder;
 import me.yushust.inject.Module;
 import me.yushust.inject.error.BindingException;
 import me.yushust.inject.error.ErrorAttachableImpl;
-import me.yushust.inject.error.Errors;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
@@ -19,12 +18,12 @@ import java.util.Collections;
  * <p>This abstract class just removes the responsibility
  * of creating method that calls another methods</p>
  */
-public abstract class AbstractBinder extends ErrorAttachableImpl implements Binder {
+abstract class AbstractBinder extends ErrorAttachableImpl implements Binder {
 
   /** Delegates the real functionality to {@link Binder#bind(TypeReference)} */
   public <T> Qualified<T> bind(Class<T> keyType) {
     Validate.notNull(keyType, "keyType");
-    return bind(TypeReference.<T>of(keyType));
+    return bind(TypeReference.of(keyType));
   }
 
   /** Delegates the real functionality to {@link Binder#install(Iterable)}
@@ -43,9 +42,9 @@ public abstract class AbstractBinder extends ErrorAttachableImpl implements Bind
   /** Throws the errors attached to this attachable */
   public void reportAttachedErrors() {
     if (!hasErrors()) {
-      throw new IllegalStateException("The attachable doesn't contain errors!");
+      return;
     }
-    throw new BindingException(Errors.formatErrorMessages(getErrorMessages()));
+    throw new BindingException(formatMessages());
   }
 
 }

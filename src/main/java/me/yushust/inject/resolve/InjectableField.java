@@ -26,6 +26,8 @@ public class InjectableField implements InjectableMember {
     this.declaringType = Validate.notNull(declaringType, "declaringType");
     this.key = Validate.notNull(key, "key");
     this.field = Validate.notNull(field, "field");
+
+    Validate.doesntRequiresContext(key.getKey());
     this.field.setAccessible(true); // bro...
   }
 
@@ -38,7 +40,7 @@ public class InjectableField implements InjectableMember {
   }
 
   public List<OptionalDefinedKey<?>> getKeys() {
-    return Collections.<OptionalDefinedKey<?>>singletonList(key);
+    return Collections.singletonList(key);
   }
 
   /**

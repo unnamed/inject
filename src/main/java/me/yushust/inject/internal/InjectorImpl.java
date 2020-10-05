@@ -29,19 +29,22 @@ public class InjectorImpl extends InternalInjector implements Injector {
     throw new UnsupportedOperationException("This method isn't supported yet");
   }
 
+  @ThreadSensitive
   protected <T> ErrorAttachable injectMembers(Key<T> type, T instance) {
     ErrorAttachable errors = new ErrorAttachableImpl();
     ProvisionStack stack = stackForThisThread();
     stack.add(type, instance);
-    for (InjectableMember member : membersResolver.getMembers(type.getType())) {
-      List<OptionalDefinedKey<?>> keys = member.getKeys();
-      Object[] values = getValuesForKeys(keys, member, errors);
-      member.inject(errors, instance, values);
+    for (InjectableMember member : membersResolver.getFields(type.getType())) {
+      injectToMember(errors, instance, member);
+    }
+    for (InjectableMember member : membersResolver.getMethods(type.getType())) {
+      injectToMember(errors, instance, member);
     }
     stack.removeFirst();
     return errors;
   }
 
+  @ThreadSensitive
   protected <T> ErrorProne<T> getInstance(Key<T> type, boolean useExplicitBindings) {
     Class<? super T> rawType = type.getType().getRawType();
     // Default injections
@@ -51,7 +54,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     ) {
       @SuppressWarnings("unchecked")
       T value = (T) this;
-      return new ErrorProne<T>(value);
+      return new ErrorProne<>(value);
     }
     ProvisionStack stack = stackForThisThread();
     // If the stack isn't empty, it's a recursive call.
@@ -60,19 +63,26 @@ public class InjectorImpl extends InternalInjector implements Injector {
     // another instance
     if (stack.has(type)) {
       // It's a cyclic dependency and it's now fixed
-      return new ErrorProne<T>(stack.get(type));
+      return new ErrorProne<>(stack.get(type));
     }
 
     if (useExplicitBindings) {
       Provider<T> provider = getProviderAndInject(type);
       if (provider != null) {
-        return new ErrorProne<T>(provider.get());
+        return new ErrorProne<>(provider.get());
       }
     }
 
     ErrorAttachable errors = new ErrorAttachableImpl();
     InjectableConstructor constructor = membersResolver.getConstructor(type.getType());
-    Object instance = constructor.createInstance(errors, getValuesForKeys(constructor.getKeys(), constructor, errors));
+    Object instance = constructor.createInstance(
+        errors,
+        getValuesForKeys(
+            constructor.getKeys(),
+            constructor,
+            errors
+        )
+    );
     @SuppressWarnings("unchecked")
     T value = (T) instance;
 
@@ -80,9 +90,17 @@ public class InjectorImpl extends InternalInjector implements Injector {
       injectMembers(type, value);
     }
 
-    ErrorProne<T> errorProneValue = new ErrorProne<T>(value);
+    ErrorProne<T> errorProneValue = new ErrorProne<>(value);
     errorProneValue.attachAll(errors);
     return errorProneValue;
+  }
+
+  private void injectToMember(ErrorAttachable errors,
+                              Object instance,
+                              InjectableMember member) {
+    List<OptionalDefinedKey<?>> keys = member.getKeys();
+    Object[] values = getValuesForKeys(keys, member, errors);
+    member.inject(errors, instance, values);
   }
 
   private <T> Provider<T> getProviderAndInject(Key<T> key) {
@@ -107,7 +125,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
       // the type-instance relations are
       // removes automatically when ended
       // with the injection
-      ErrorProne<?> errorProne = getInstance(key.getKey(), false);
+      ErrorProne<?> errorProne = getInstance(key.getKey(), true);
       Object value = errorProne.getValue();
       if (errorProne.hasErrors()) {
         errors.attachAll(errorProne);

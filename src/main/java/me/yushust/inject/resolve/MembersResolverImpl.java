@@ -3,7 +3,6 @@ package me.yushust.inject.resolve;
 import me.yushust.inject.Qualifiers;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.key.CompositeTypeReflector;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Inject;
@@ -55,11 +54,9 @@ public class MembersResolverImpl implements MembersResolver {
     );
   }
 
-  public List<InjectableMember> getMembers(TypeReference<?> type) {
+  public List<InjectableField> getFields(TypeReference<?> type) {
 
-    // Initially only contains the fields,
-    // then all the methods are added to this list
-    List<InjectableMember> members = new ArrayList<InjectableMember>();
+    List<InjectableField> fields = new ArrayList<>();
     Class<?> clazz = type.getRawType();
 
     // Iterate all superclasses
@@ -75,23 +72,18 @@ public class MembersResolverImpl implements MembersResolver {
         if (!field.isAnnotationPresent(Inject.class)) {
           continue;
         }
-        TypeReference<?> fieldType = TypeReference.of(
-            CompositeTypeReflector.resolveContextually(
-                type, field.getGenericType()
-            )
-        );
+        TypeReference<?> fieldType = type.getFieldType(field);
         OptionalDefinedKey<?> key = keyOf(fieldType, field.getAnnotations());
-        members.add(new InjectableField(type, key, field));
+        fields.add(new InjectableField(type, key, field));
       }
     }
 
-    members.addAll(getMethods(type));
-    return members;
+    return fields;
   }
 
   public List<InjectableMethod> getMethods(TypeReference<?> type) {
 
-    List<InjectableMethod> methods = new ArrayList<InjectableMethod>();
+    List<InjectableMethod> methods = new ArrayList<>();
     Class<?> clazz = type.getRawType();
 
     // Iterate all superclasses
@@ -131,15 +123,11 @@ public class MembersResolverImpl implements MembersResolver {
       Annotation[][] parameterAnnotations
   ) {
     List<OptionalDefinedKey<?>> keys =
-        new ArrayList<OptionalDefinedKey<?>>();
+        new ArrayList<>();
     for (int i = 0; i < parameterTypes.length; i++) {
       Type parameter = parameterTypes[i];
       Annotation[] annotations = parameterAnnotations[i];
-      TypeReference<?> parameterType = TypeReference.of(
-          CompositeTypeReflector.resolveContextually(
-              declaringType, parameter
-          )
-      );
+      TypeReference<?> parameterType = declaringType.resolve(parameter);
       keys.add(keyOf(parameterType, annotations));
     }
     return keys;

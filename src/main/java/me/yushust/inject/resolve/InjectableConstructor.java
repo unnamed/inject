@@ -19,7 +19,7 @@ import java.util.List;
 public class InjectableConstructor {
 
   public static final InjectableConstructor DUMMY = new InjectableConstructor(
-      Collections.<OptionalDefinedKey<?>>emptyList(),
+      Collections.emptyList(),
       null
   );
 
@@ -32,6 +32,13 @@ public class InjectableConstructor {
   ) {
     this.keys = Collections.unmodifiableList(keys);
     this.constructor = constructor;
+
+    for (OptionalDefinedKey<?> key : keys) {
+      Validate.doesntRequiresContext(key.getKey());
+    }
+    if (constructor != null) {
+      this.constructor.setAccessible(true);
+    }
   }
 
   public List<OptionalDefinedKey<?>> getKeys() {
@@ -51,11 +58,7 @@ public class InjectableConstructor {
 
     try {
       return constructor.newInstance(values);
-    } catch (InstantiationException e) {
-      errors.attach(e);
-    } catch (IllegalAccessException e) {
-      errors.attach(e);
-    } catch (InvocationTargetException e) {
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       errors.attach(e);
     }
     return null;

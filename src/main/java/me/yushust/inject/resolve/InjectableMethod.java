@@ -29,6 +29,11 @@ public class InjectableMethod implements InjectableMember {
     this.declaringType = Validate.notNull(declaringType);
     this.keys = Collections.unmodifiableList(keys);
     this.method = Validate.notNull(method);
+
+    for (OptionalDefinedKey<?> key : keys) {
+      Validate.doesntRequiresContext(key.getKey());
+    }
+    this.method.setAccessible(true);
   }
 
   public TypeReference<?> getDeclaringType() {
@@ -66,9 +71,7 @@ public class InjectableMethod implements InjectableMember {
 
     try {
       method.invoke(target, values);
-    } catch (IllegalAccessException e) {
-      errors.attach(e);
-    } catch (InvocationTargetException e) {
+    } catch (IllegalAccessException | InvocationTargetException e) {
       errors.attach(e);
     }
   }

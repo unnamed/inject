@@ -17,7 +17,7 @@ import java.lang.annotation.Annotation;
  * <p>This abstract class just removes the responsibility
  * of creating method that calls another methods</p>
  */
-public abstract class AbstractQualifiedBindingBuilder<T> implements Binder.Qualified<T> {
+abstract class AbstractQualifiedBindingBuilder<T> implements Binder.Qualified<T> {
 
   protected final QualifierFactory qualifierFactory;
 
@@ -49,7 +49,7 @@ public abstract class AbstractQualifiedBindingBuilder<T> implements Binder.Quali
 
   /** Method alias for {@link Binder.Qualified#to(TypeReference)}*/
   public Binder.Scoped to(Class<? extends T> targetType) {
-    return to(TypeReference.<T>of(targetType));
+    return to(TypeReference.of(targetType));
   }
 
   /** Adds a qualifier to the constructing key */

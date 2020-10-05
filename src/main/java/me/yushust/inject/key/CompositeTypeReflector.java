@@ -9,10 +9,10 @@ import java.util.*;
  * Collection of util methods for contextually
  * handling of types.
  */
-public final class CompositeTypeReflector {
+final class CompositeTypeReflector {
 
   private static final List<TypeReflector<?>> REFLECTORS =
-      new LinkedList<TypeReflector<?>>();
+      new LinkedList<>();
 
   static {
     REFLECTORS.add(new TypeVariableReflector());
@@ -25,7 +25,7 @@ public final class CompositeTypeReflector {
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
-  public static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {
+  private static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {
 
     Validate.notNull(type, "type");
     Validate.notNull(rawType, "rawType");
@@ -77,7 +77,7 @@ public final class CompositeTypeReflector {
    * @param type    The possibly non-fully-specified type
    * @return A fully specified type
    */
-  public static Type resolveContextually(TypeReference<?> context, Type type) {
+  static Type resolveContextually(TypeReference<?> context, Type type) {
 
     Validate.notNull(context);
 

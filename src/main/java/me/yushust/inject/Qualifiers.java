@@ -34,9 +34,7 @@ public final class Qualifiers {
 
       try {
         value = method.invoke(annotation);
-      } catch (IllegalAccessException ignored) {
-        continue;
-      } catch (InvocationTargetException ignored) {
+      } catch (IllegalAccessException | InvocationTargetException ignored) {
         continue;
       }
 
@@ -59,18 +57,24 @@ public final class Qualifiers {
    *   {@literal @}Example(hello = "Hello", world = "World")
    * </p>
    */
-  public static String annotationToString(Class<? extends Annotation> annotationType,
-                                          Map<String, Object> annotationValues) {
+  public static String annotationToString(Annotation annotation) {
     StringBuilder builder = new StringBuilder("@");
-    builder.append(annotationType.getSimpleName());
+    builder.append(annotation.annotationType().getSimpleName());
     builder.append("(");
-    Iterator<String> methodNamesIterator = annotationValues.keySet().iterator();
-    while (methodNamesIterator.hasNext()) {
-      String methodName = methodNamesIterator.next();
-      Object value = annotationValues.get(methodName);
+    Method[] methods = annotation.annotationType().getDeclaredMethods();
+
+    for (int i = 0; i < methods.length; i++) {
+      Method method = methods[i];
+      String methodName = method.getName();
+      Object value = "<non accessible>";
+
+      try {
+        value = method.invoke(annotation);
+      } catch (IllegalAccessException | InvocationTargetException ignored) {
+      }
       // Annotations with methodName value doesn't require
       // name specification
-      if (!methodName.equals("value") || annotationValues.size() != 1) {
+      if (!methodName.equals("value") || methods.length != 1) {
         builder.append(methodName);
         builder.append(" = ");
       }
@@ -83,10 +87,11 @@ public final class Qualifiers {
         // Just append the value
         builder.append(value);
       }
-      if (methodNamesIterator.hasNext()) {
+      if (i != methods.length - 1) {
         builder.append(", ");
       }
     }
+
     builder.append(")");
     return builder.toString();
   }
@@ -98,7 +103,7 @@ public final class Qualifiers {
    * @return The collection of valid found qualifiers
    */
   public static Set<Qualifier> getQualifiers(QualifierFactory factory, Annotation[] annotations) {
-    Set<Qualifier> qualifiers = new HashSet<Qualifier>();
+    Set<Qualifier> qualifiers = new HashSet<>();
     for (Annotation annotation : annotations) {
       if (!annotation.annotationType().isAnnotationPresent(javax.inject.Qualifier.class)) {
         continue;
@@ -139,10 +144,7 @@ public final class Qualifiers {
     private NamedImpl(String name) {
       this.name = name;
       this.hashCode = (127 * "value".hashCode()) ^ name.hashCode();
-
-      Map<String, Object> values = new HashMap<String, Object>(1);
-      values.put("value", name);
-      this.toString = Qualifiers.annotationToString(Named.class, values);
+      this.toString = "@Named(\"" + name + "\")";
     }
 
     public Class<? extends Annotation> annotationType() {

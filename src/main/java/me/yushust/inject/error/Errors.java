@@ -10,8 +10,14 @@ import java.util.List;
  * Collection of static util methods for
  * ease the handling of {@link Throwable}s
  * and error messages.
+ *
+ * <p>We maintain this util class private because
+ * it can change in any update, if a class is made
+ * public, we need to maintain that class compatible
+ * with old versions, that can limit the development
+ * a bit.</p>
  */
-public final class Errors {
+final class Errors {
 
   private Errors() {
     throw new UnsupportedOperationException("Don't instantiate this class!");
@@ -25,7 +31,7 @@ public final class Errors {
    * @param throwable The throwable
    * @return The throwable stack trace
    */
-  public static String getStackTrace(Throwable throwable) {
+  static String getStackTrace(Throwable throwable) {
     Validate.notNull(throwable);
     // The StringWriter doesn't require a flush() or close()
     StringWriter writer = new StringWriter();
@@ -34,9 +40,13 @@ public final class Errors {
     return writer.toString();
   }
 
-  public static String formatErrorMessages(List<String> messages) {
+  static String formatErrorMessages(List<String> messages) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < messages.size(); i++) {
+      builder.append(i + 1);
+      builder.append(") ");
+      builder.append(messages.get(i));
+      builder.append("\n");
     }
     return builder.toString();
   }

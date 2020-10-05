@@ -43,6 +43,12 @@ public enum DefaultQualifierFactory implements QualifierFactory {
     public int hashCode() {
       return annotation.hashCode();
     }
+
+    @Override
+    public String toString() {
+      return "qualified with " + Qualifiers.annotationToString(annotation);
+    }
+
   }
 
   public static class ClassQualifier implements Qualifier {

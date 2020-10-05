@@ -12,9 +12,9 @@ import java.util.Set;
  * Collection of static util methods for easy
  * Type handling.
  */
-public final class Types {
+final class Types {
 
-  public static final Type[] EMPTY_TYPE_ARRAY = new Type[]{};
+  private static final Type[] EMPTY_TYPE_ARRAY = new Type[]{};
 
   private Types() {
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
@@ -25,9 +25,15 @@ public final class Types {
    * If the type isn't a raw type nor a TypeVariable,
    * the return type is a {@link CompositeType}.
    *
+   * <p>The types are wrapped because they can variate
+   * between java versions or implementations and we
+   * need a consistent implementation</p>
+   *
+   * TODO: Don't wrap just add equals method
+   *
    * @param type The original type
    */
-  public static Type compose(Type type) {
+  static Type compose(Type type) {
 
     if (type instanceof Class) {
       Class<?> clazz = (Class<?>) type;
@@ -73,7 +79,7 @@ public final class Types {
    * @param type The type.
    * @return The generic type of the type.
    */
-  public static Class<?> getRawType(Type type) {
+  static Class<?> getRawType(Type type) {
 
     if (type instanceof Class) {
       // it's already a raw type
@@ -120,20 +126,20 @@ public final class Types {
    * @param type The type
    * @return The type converted to string
    */
-  public static String getTypeName(Type type) {
+  static String getTypeName(Type type) {
     return type instanceof Class
         ? ((Class<?>) type).getName()
         : type.toString();
   }
 
   /** Static factory method to create {@link GenericArrayType}s */
-  public static GenericArrayType genericArrayTypeOf(Type type) {
+  static GenericArrayType genericArrayTypeOf(Type type) {
     type = compose(type);
     return new GenericArrayTypeWrapper(type);
   }
 
   /** Static factory method to create {@link ParameterizedType}s */
-  public static ParameterizedType parameterizedTypeOf(Type ownerType, Class<?> rawType, Type... parameterTypes) {
+  static ParameterizedType parameterizedTypeOf(Type ownerType, Class<?> rawType, Type... parameterTypes) {
     ownerType = compose(ownerType);
     parameterTypes = parameterTypes.clone();
     for (int i = 0; i < parameterTypes.length; i++) {
@@ -143,13 +149,13 @@ public final class Types {
   }
 
   /** Static factory method to create {@link WildcardType}s as supertype */
-  public static WildcardType wildcardSuperTypeOf(Type type) {
+  static WildcardType wildcardSuperTypeOf(Type type) {
     type = compose(type);
     return new WildcardTypeWrapper(new Type[]{Object.class}, new Type[]{type});
   }
 
   /** Static factory method to create {@link WildcardType} as subtype */
-  public static WildcardType wildcardSubTypeOf(Type type) {
+  static WildcardType wildcardSubTypeOf(Type type) {
     type = compose(type);
     return new WildcardTypeWrapper(new Type[]{type}, EMPTY_TYPE_ARRAY);
   }
@@ -185,7 +191,7 @@ public final class Types {
     // the map must be modified only on
     // the initialization of a composite type
     protected final Set<Type> components
-        = new HashSet<Type>();
+        = new HashSet<>();
 
     /**
      * Calls recursively {@link CompositeType#requiresContext()}

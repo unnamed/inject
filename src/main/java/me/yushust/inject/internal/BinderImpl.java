@@ -5,7 +5,6 @@ import me.yushust.inject.ProviderMethod;
 import me.yushust.inject.Qualifiers;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.key.CompositeTypeReflector;
 import me.yushust.inject.resolve.InjectableMethod;
 import me.yushust.inject.resolve.MembersResolver;
 import me.yushust.inject.resolve.QualifierFactory;
@@ -19,7 +18,7 @@ import java.util.Map;
 public class BinderImpl extends AbstractBinder {
 
   private final Map<Key<?>, Provider<?>> bindings =
-      new HashMap<Key<?>, Provider<?>>();
+      new HashMap<>();
 
   private final QualifierFactory qualifierFactory;
   private final MembersResolver membersResolver;
@@ -36,15 +35,17 @@ public class BinderImpl extends AbstractBinder {
     this.bindings.put(key, provider);
   }
 
-  @SuppressWarnings("unchecked")
   protected <T> InjectedProvider<? extends T> getProvider(Key<T> key) {
     // it's safe, the providers are setted
     // after (provider -> injected provider) conversion
-    return (InjectedProvider<? extends T>) this.bindings.get(key);
+    @SuppressWarnings("unchecked")
+    InjectedProvider<? extends T> provider =
+        (InjectedProvider<? extends T>) this.bindings.get(key);
+    return provider;
   }
 
   public <T> Qualified<T> bind(TypeReference<T> keyType) {
-    return new BindingBuilderImpl<T>(qualifierFactory, this, keyType);
+    return new BindingBuilderImpl<>(qualifierFactory, this, keyType);
   }
 
   public void install(Iterable<? extends Module> modules) {
@@ -58,12 +59,8 @@ public class BinderImpl extends AbstractBinder {
         if (!method.isAnnotationPresent(ProviderMethod.class)) {
           continue;
         }
-        TypeReference<?> key = TypeReference.of(
-            CompositeTypeReflector.resolveContextually(
-                injectableMethod.getDeclaringType(),
-                method.getGenericReturnType()
-            )
-        );
+        TypeReference<?> key = injectableMethod.getDeclaringType()
+            .resolve(method.getGenericReturnType());
         bindings.put(
             Key.of(key, Qualifiers.getQualifiers(qualifierFactory, method.getAnnotations())),
             null

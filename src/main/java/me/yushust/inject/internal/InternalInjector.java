@@ -3,6 +3,7 @@ package me.yushust.inject.internal;
 import me.yushust.inject.Injector;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.error.ErrorProne;
+import me.yushust.inject.error.InjectionException;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 
@@ -25,7 +26,7 @@ abstract class InternalInjector implements Injector {
   // a StackOverflowError if the stack is
   // accidentally removed from the thread
   private final ThreadLocal<ProvisionStack> provisionStackThreadLocal =
-      new ThreadLocal<ProvisionStack>();
+      new ThreadLocal<>();
   private boolean debug;
 
   /**
@@ -50,7 +51,7 @@ abstract class InternalInjector implements Injector {
    */
   @ExternalUseOnly
   public <T> T getInstance(Class<T> type) {
-    return getInstance(TypeReference.<T>of(type));
+    return getInstance(TypeReference.of(type));
   }
 
   /**
@@ -65,8 +66,10 @@ abstract class InternalInjector implements Injector {
     // the manual call of getInstance() or injectMembers(),
     // the type cannot be a key. Keys are used for injectable
     // members, not for manually call a inject method
-    T value = getInstance(Key.of(type), true)
-        .getValue(); // The errors are ignored here
+    ErrorProne<T> errorProne = getInstance(Key.of(type), true);
+    if (errorProne.hasErrors()) {
+      throw new InjectionException(errorProne.formatMessages());
+    }
     // We need to clear the stack
     // after a manual injection,
     // the stack is only cleared if initially
@@ -75,7 +78,7 @@ abstract class InternalInjector implements Injector {
     if (stack == null) {
       removeStackFromThisThread();
     }
-    return value;
+    return errorProne.getValue();
   }
 
   /**

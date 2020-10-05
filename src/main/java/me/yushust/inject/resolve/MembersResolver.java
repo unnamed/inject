@@ -26,17 +26,10 @@ public interface MembersResolver {
   InjectableConstructor getConstructor(TypeReference<?> type);
 
   /**
-   * @return Returns all the injectable members
-   * for the specified {@code type}.
-   *
-   * <p>The injector never should know the type of
-   * the injectable member (type = field, method, etc).
-   * It just check its keys, and injects its values</p>
-   *
-   * <p>Fields are placed first in the list, then,
-   * the methods</p>
+   * @return Returns all the injectable fields for
+   * the specified {@code type}.
    */
-  List<InjectableMember> getMembers(TypeReference<?> type);
+  List<InjectableField> getFields(TypeReference<?> type);
 
   /**
    * @return Returns all the injectable methods for

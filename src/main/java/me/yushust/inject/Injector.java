@@ -1,6 +1,15 @@
 package me.yushust.inject;
 
+import me.yushust.inject.internal.BinderImpl;
+import me.yushust.inject.internal.DefaultQualifierFactory;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.resolve.CachedMembersResolver;
+import me.yushust.inject.resolve.MembersResolver;
+import me.yushust.inject.resolve.MembersResolverImpl;
+import me.yushust.inject.resolve.QualifierFactory;
+
+import java.util.Arrays;
 
 public interface Injector {
 
@@ -63,5 +72,22 @@ public interface Injector {
    * @return The instance, or null if the class isn't injectable
    */
   <T> T getInstance(TypeReference<T> type);
+
+  static Injector create(Module... modules) {
+    return create(Arrays.asList(modules));
+  }
+
+  static Injector create(Iterable<? extends Module> modules) {
+    QualifierFactory qualifierFactory = DefaultQualifierFactory.INSTANCE;
+    MembersResolver membersResolver = CachedMembersResolver.wrap(
+        new MembersResolverImpl(qualifierFactory)
+    );
+    BinderImpl binder = new BinderImpl(qualifierFactory, membersResolver);
+    binder.install(modules);
+    if (binder.hasErrors()) {
+      binder.reportAttachedErrors();
+    }
+    return new InjectorImpl(membersResolver, binder);
+  }
 
 }

@@ -12,7 +12,7 @@ import javax.inject.Provider;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BindingBuilderImpl<T> extends AbstractQualifiedBindingBuilder<T> {
+class BindingBuilderImpl<T> extends AbstractQualifiedBindingBuilder<T> {
 
   private final BinderImpl binder;
   private Key<T> key;
@@ -52,11 +52,11 @@ public class BindingBuilderImpl<T> extends AbstractQualifiedBindingBuilder<T> {
 
   protected void qualified(Qualifier qualifier) {
     Validate.notNull(qualifier, "qualifier");
-    Set<Qualifier> qualifiers = new HashSet<Qualifier>(
+    Set<Qualifier> qualifiers = new HashSet<>(
         key.getQualifiers()
     );
     qualifiers.add(qualifier);
-    key = new Key<T>(key.getType(), qualifiers);
+    key = new Key<>(key.getType(), qualifiers);
   }
 
   private void requireNotBound() {

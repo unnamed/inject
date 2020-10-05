@@ -45,6 +45,9 @@ public interface ErrorAttachable {
    */
   List<String> getErrorMessages();
 
+  /** Formats the error messages in one message */
+  String formatMessages();
+
   /**
    * @return True if the errors has been attached
    * to this object.

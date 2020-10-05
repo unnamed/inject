@@ -14,7 +14,7 @@ import javax.inject.Provider;
  *
  * <p>This class is handled by the injector binder</p>
  */
-public final class InjectedProvider<T> implements Provider<T> {
+class InjectedProvider<T> implements Provider<T> {
 
   private final Provider<? extends T> delegate;
   private boolean injected;
@@ -22,10 +22,6 @@ public final class InjectedProvider<T> implements Provider<T> {
   public InjectedProvider(boolean injected, Provider<? extends T> delegate) {
     this.injected = injected;
     this.delegate = Validate.notNull(delegate);
-  }
-
-  public InjectedProvider(Provider<T> delegate) {
-    this(false, delegate);
   }
 
   public Provider<? extends T> getDelegate() {

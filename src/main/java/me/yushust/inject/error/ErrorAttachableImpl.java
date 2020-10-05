@@ -23,7 +23,7 @@ public class ErrorAttachableImpl implements ErrorAttachable {
   // can use a LinkedList instead of an
   // ArrayList compound by a resizeable array
   private final List<String> errorMessages =
-      new LinkedList<String>();
+      new LinkedList<>();
 
   /** Adds all the {@code errors} to the list of error messages */
   public void attach(Throwable... errors) {
@@ -62,6 +62,11 @@ public class ErrorAttachableImpl implements ErrorAttachable {
    */
   public List<String> getErrorMessages() {
     return Collections.unmodifiableList(errorMessages);
+  }
+
+  /** Formats the error messages in this error-attachable */
+  public String formatMessages() {
+    return Errors.formatErrorMessages(errorMessages);
   }
 
   /** Per default the errors cannot be reported */

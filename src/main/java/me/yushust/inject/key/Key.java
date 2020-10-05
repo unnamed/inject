@@ -1,6 +1,7 @@
 package me.yushust.inject.key;
 
 import me.yushust.inject.util.Validate;
+import me.yushust.inject.key.Types.CompositeType;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -14,11 +15,11 @@ import java.util.Set;
  * annotation types that works like qualifiers.
  *
  * <p>The key supports generic types using {@link TypeReference}, the key
- * cannot be created using a sub-class just like {@link TypeReference}.</p>
+ * cannot be created using a sub-class like {@link TypeReference}.</p>
  *
  * @param <T> The type of the key
  */
-public final class Key<T> implements Serializable {
+public final class Key<T> implements CompositeType, Serializable {
 
   private static final long serialVersionUID = 987654321L;
 
@@ -45,6 +46,12 @@ public final class Key<T> implements Serializable {
     this.toString = computeToString();
   }
 
+  /** Checks if the wrapped type requires context or not */
+  public boolean requiresContext() {
+    // delegate functionality to TypeReference
+    return type.requiresContext();
+  }
+
   /**
    * @return The generic or raw type of the key
    */
@@ -60,8 +67,12 @@ public final class Key<T> implements Serializable {
     return qualifiers;
   }
 
+  /**
+   * @return A key with the same type but
+   * with no qualifiers
+   */
   public Key<T> withNoQualifiers() {
-    return new Key<T>(type, Collections.<Qualifier>emptySet());
+    return new Key<>(type, Collections.emptySet());
   }
 
   @Override
@@ -93,11 +104,10 @@ public final class Key<T> implements Serializable {
 
   private String computeToString() {
     StringBuilder builder = new StringBuilder(type.toString());
-    builder.append("\n");
     for (Qualifier qualifier : qualifiers) {
+      builder.append("\n");
       builder.append("    ");
       builder.append(qualifier);
-      builder.append("\n");
     }
     return builder.toString();
   }
@@ -121,15 +131,15 @@ public final class Key<T> implements Serializable {
   }
 
   public static <T> Key<T> of(TypeReference<T> type) {
-    return new Key<T>(type, Collections.<Qualifier>emptySet());
+    return new Key<>(type, Collections.emptySet());
   }
 
   public static <T> Key<T> of(TypeReference<T> type, Iterable<? extends Qualifier> qualifiers) {
-    Set<Qualifier> qualifierSet = new HashSet<Qualifier>();
+    Set<Qualifier> qualifierSet = new HashSet<>();
     for (Qualifier qualifier : qualifiers) {
       qualifierSet.add(qualifier);
     }
-    return new Key<T>(type, qualifierSet);
+    return new Key<>(type, qualifierSet);
   }
 
 }

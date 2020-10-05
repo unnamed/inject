@@ -9,12 +9,12 @@ import java.util.Map;
 
 class ProvisionStack {
 
-  // Used to invoke O(1) "has" and "get" methods
+  // Used to invoke an O(1) "get" method
   private final Map<Key<?>, Object> values =
-      new HashMap<Key<?>, Object>();
+      new HashMap<>();
   // The real provision Stack, contains a relation of
   private final LinkedList<KeyInstanceEntry<?>> stack =
-      new LinkedList<KeyInstanceEntry<?>>();
+      new LinkedList<>();
 
   public boolean has(Key<?> key) {
     return values.containsKey(key);
@@ -38,7 +38,7 @@ class ProvisionStack {
 
   public <T> void add(Key<T> key, T value) {
     values.put(key, value);
-    stack.addFirst(new KeyInstanceEntry<T>(key, value));
+    stack.addFirst(new KeyInstanceEntry<>(key, value));
   }
 
   @Override

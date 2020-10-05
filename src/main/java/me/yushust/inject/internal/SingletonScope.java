@@ -1,17 +1,20 @@
-package me.yushust.inject.scope;
+package me.yushust.inject.internal;
 
-import me.yushust.inject.Injector;
+import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A singleton provider wrapper
+ * A singleton provider wrapper. The implementation is
+ * an enum to let the JVM make sure only one instance exists
  */
-class SingletonScope implements Scope {
+public enum SingletonScope implements Scope {
+
+  /** The singleton instance */
+  INSTANCE;
 
   public <T> Provider<T> scope(Provider<T> unscoped) {
 
@@ -20,7 +23,7 @@ class SingletonScope implements Scope {
       return unscoped;
     }
 
-    return new SingletonProvider<T>(unscoped);
+    return new SingletonProvider<>(unscoped);
   }
 
   /**
@@ -28,9 +31,16 @@ class SingletonScope implements Scope {
    * using double-checked-locking with ReentrantLock.
    * We use a volatile reference for more thread-safety
    *
+   * <p>The singleton provider wrapper executes the delegated
+   * provider once, then, returns the same saved instance.</p>
+   *
+   * <p>The singleton provider extends to {@link InjectedProvider}
+   * only for optimization, the injection is never invoked in
+   * the SingletonProvider, it's invoked in the delegate.</p>
+   *
    * @param <T> The provided type
    */
-  static class SingletonProvider<T> implements Provider<T> {
+  static class SingletonProvider<T> extends InjectedProvider<T> implements Provider<T> {
 
     private final Lock instanceLock = new ReentrantLock();
     private final Provider<T> unscoped;
@@ -47,31 +57,17 @@ class SingletonScope implements Scope {
      * @param unscoped The unscoped provider
      */
     SingletonProvider(Provider<T> unscoped) {
+      super(false, unscoped);
       this.unscoped = Validate.notNull(unscoped);
     }
 
-    /**
-     * Delegates members injection to the unscoped provider
-     *
-     * @param injector The injector
-     */
-    @Inject
-    public void inject(Injector injector) {
-      injector.injectMembers(unscoped);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public T get() {
 
       // non-synchronized check
       if (instance == null) {
-        // lock
         instanceLock.lock();
         try {
           if (instance == null) { // synchronized check
-            // instantiate
             instance = unscoped.get();
           }
         } finally { // important to release the lock in a finally block
@@ -79,9 +75,7 @@ class SingletonScope implements Scope {
         }
       }
 
-      // finally, return the instance
       return instance;
-
     }
 
   }

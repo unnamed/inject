@@ -31,10 +31,15 @@ public final class Providers {
     public T get() {
       return instance;
     }
+
+    @Override
+    public String toString() {
+      return "instance '" + instance + "'";
+    }
   }
 
   public static <T> Provider<? extends T> instanceProvider(Key<T> key, T instance) {
-    return new InstanceProvider<T>(key, instance);
+    return new InstanceProvider<>(key, instance);
   }
 
   private static class ProviderTypeProvider<T> implements Provider<T> {
@@ -61,7 +66,7 @@ public final class Providers {
   }
 
   public static <T> Provider<? extends T> providerTypeProvider(TypeReference<? extends Provider<? extends T>> providerClass) {
-    return new ProviderTypeProvider<T>(providerClass);
+    return new ProviderTypeProvider<>(providerClass);
   }
 
   private static class SelfReferredProvider<T> implements Provider<T> {
@@ -80,7 +85,7 @@ public final class Providers {
   }
 
   public static <T> Provider<? extends T> selfReferredProvider(Key<T> key) {
-    return new SelfReferredProvider<T>(key);
+    return new SelfReferredProvider<>(key);
   }
 
 }

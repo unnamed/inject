@@ -3,6 +3,8 @@ package me.yushust.inject.resolve;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.util.Validate;
 
+import java.util.Objects;
+
 /**
  * An extension for {@link Key} (using composition over inheritance)
  * that adds a boolean state representing the requirement of the
@@ -43,9 +45,6 @@ public final class OptionalDefinedKey<T> {
 
   @Override
   public int hashCode() {
-    int result = 1;
-    result = 31 * result + (optional ? 1 : 0);
-    result = 31 * result + key.hashCode();
-    return result;
+    return Objects.hash(optional, key);
   }
 }

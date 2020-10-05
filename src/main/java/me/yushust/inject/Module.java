@@ -4,7 +4,7 @@ package me.yushust.inject;
  * This interface represents a part of the {@link Injector}
  * configuration. A module is usually used to bind abstractions
  * (interfaces, abstract classes) to implementations (concrete
- * classes). To just add an scope to a class, you can use scope
+ * classes). To just add a scope to a class, you can use scope
  * annotations like {@link javax.inject.Singleton}.
  * You can also use annotations to bind abstractions to implementations
  * like {@link ImplementedBy} and {@link ProvidedBy}.

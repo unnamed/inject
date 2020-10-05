@@ -1,5 +1,7 @@
 package me.yushust.inject.scope;
 
+import me.yushust.inject.internal.SingletonScope;
+
 import javax.inject.Provider;
 
 /**
@@ -7,13 +9,19 @@ import javax.inject.Provider;
  */
 public final class Scopes {
 
-  public static final Scope SINGLETON = new SingletonScope();
+  public static final Scope SINGLETON = SingletonScope.INSTANCE;
   public static final Scope NONE = EmptyScope.INSTANCE;
 
   private Scopes() {
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
+  /**
+   * Represents an scope that always returns the
+   * same unscoped provider. The implementation is
+   * an enum to let the JVM make sure only one
+   * instance exists.
+   */
   private enum EmptyScope implements Scope {
     INSTANCE;
 
