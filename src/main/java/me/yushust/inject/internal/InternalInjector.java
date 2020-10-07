@@ -1,8 +1,6 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Injector;
-import me.yushust.inject.error.ErrorAttachable;
-import me.yushust.inject.error.ErrorProne;
 import me.yushust.inject.error.InjectionException;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
@@ -49,65 +47,58 @@ abstract class InternalInjector implements Injector {
    * {@link Injector#getInstance(TypeReference)} passing a
    * raw-TypeReference
    */
-  @ExternalUseOnly
   public <T> T getInstance(Class<T> type) {
     return getInstance(TypeReference.of(type));
   }
 
   /**
    * Invokes the overloaded method
-   * {@link InternalInjector#getInstance(Key, boolean)}
+   * {@link InternalInjector#getInstance(ProvisionStack, Key, boolean)}
    * passing an empty provision stack
    */
-  @ExternalUseOnly
   public <T> T getInstance(TypeReference<T> type) {
-    ProvisionStack stack = provisionStackThreadLocal.get();
+    boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
     // The creation of a new provision stack indicates
     // the manual call of getInstance() or injectMembers(),
     // the type cannot be a key. Keys are used for injectable
     // members, not for manually call a inject method
-    ErrorProne<T> errorProne = getInstance(Key.of(type), true);
-    if (errorProne.hasErrors()) {
-      throw new InjectionException(errorProne.formatMessages());
-    }
+    T value = getInstance(stackForThisThread(), Key.of(type), true);
     // We need to clear the stack
     // after a manual injection,
     // the stack is only cleared if initially
     // it was null, if not, it is possibly
     // being used
-    if (stack == null) {
+    if (stackWasNotPresent) {
       removeStackFromThisThread();
     }
-    return errorProne.getValue();
+    return value;
   }
 
   /**
    * Delegates the functionality to {@link Injector#injectMembers(TypeReference, Object)}
    */
-  @ExternalUseOnly
   public void injectMembers(Object object) {
     injectMembers(TypeReference.of(object.getClass()), object);
   }
 
   /**
    * Delegates the functionality to the abstract method
-   * {@link InternalInjector#injectMembers(Key, Object)}
+   * {@link InternalInjector#injectMembers(ProvisionStack, Key, Object)}
    * passing an empty provision stack
    */
-  @ExternalUseOnly
   public <T> void injectMembers(TypeReference<T> type, T instance) {
-    ProvisionStack stack = provisionStackThreadLocal.get();
+    boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
     // The creation of a new provision stack indicates
     // the manual call of getInstance() or injectMembers(),
     // the type cannot be a key. Keys are used for injectable
     // members, not for manually call a inject method
-    injectMembers(Key.of(type), instance);
+    injectMembers(stackForThisThread(), Key.of(type), instance);
     // We need to clear the stack
     // after a manual injection,
     // the stack is only cleared if initially
     // it was null, if not, it is possibly
     // being used
-    if (stack == null) {
+    if (stackWasNotPresent) {
       removeStackFromThisThread();
     }
   }
@@ -138,7 +129,11 @@ abstract class InternalInjector implements Injector {
    */
   @ThreadSensitive
   protected void removeStackFromThisThread() {
+    ProvisionStack stack = provisionStackThreadLocal.get();
     provisionStackThreadLocal.set(null);
+    if (stack != null && stack.hasErrors()) {
+      throw new InjectionException(stack.formatMessages());
+    }
   }
 
   /**
@@ -150,7 +145,7 @@ abstract class InternalInjector implements Injector {
    * @param instance The injected instance
    */
   @ThreadSensitive
-  protected abstract <T> ErrorAttachable injectMembers(Key<T> type, T instance);
+  protected abstract <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance);
 
   /**
    * Constructs an instance of the specified type. If the method isn't
@@ -163,7 +158,8 @@ abstract class InternalInjector implements Injector {
    *                            instance, true by default
    */
   @ThreadSensitive
-  protected abstract <T> ErrorProne<T> getInstance(Key<T> type,
-                                                   boolean useExplicitBindings);
+  protected abstract <T> T getInstance(ProvisionStack stack,
+                                       Key<T> type,
+                                       boolean useExplicitBindings);
 
 }

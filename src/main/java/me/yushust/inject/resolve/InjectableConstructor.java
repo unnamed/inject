@@ -1,6 +1,7 @@
 package me.yushust.inject.resolve;
 
 import me.yushust.inject.error.ErrorAttachable;
+import me.yushust.inject.util.ElementFormatter;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Constructor;
@@ -12,16 +13,8 @@ import java.util.List;
  * Represents an injectable constructor, a constructor
  * annotated with {@link javax.inject.Inject} or a
  * constructor with no parameters.
- *
- * <p>The constructor can also return null if the provided
- * {@code constructor} is null. Check {@link InjectableConstructor#DUMMY}</p>
  */
 public class InjectableConstructor {
-
-  public static final InjectableConstructor DUMMY = new InjectableConstructor(
-      Collections.emptyList(),
-      null
-  );
 
   private final List<OptionalDefinedKey<?>> keys;
   private final Constructor<?> constructor;
@@ -47,10 +40,6 @@ public class InjectableConstructor {
 
   public Object createInstance(ErrorAttachable errors, Object[] values) {
 
-    if (constructor == null) {
-      return null;
-    }
-
     Validate.argument(
         values.length == constructor.getParameterTypes().length,
         "Invalid parameter count"
@@ -59,7 +48,7 @@ public class InjectableConstructor {
     try {
       return constructor.newInstance(values);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-      errors.attach(e);
+      errors.attach("Errors while constructing " + ElementFormatter.formatConstructor(constructor, keys), e);
     }
     return null;
   }

@@ -1,6 +1,7 @@
 package me.yushust.inject.resolve;
 
 import me.yushust.inject.Qualifiers;
+import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
@@ -22,7 +23,8 @@ public class MembersResolverImpl implements MembersResolver {
     this.qualifierFactory = Validate.notNull(qualifierFactory, "qualifierFactory");
   }
 
-  public InjectableConstructor getConstructor(TypeReference<?> type) {
+  @Override
+  public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type) {
 
     Constructor<?> injectableConstructor = null;
     for (Constructor<?> constructor : type.getRawType().getDeclaredConstructors()) {
@@ -41,7 +43,8 @@ public class MembersResolverImpl implements MembersResolver {
     }
 
     if (injectableConstructor == null) {
-      return InjectableConstructor.DUMMY;
+      errors.attach("No constructor found for type '" + type + "'");
+      return null;
     }
 
     return new InjectableConstructor(

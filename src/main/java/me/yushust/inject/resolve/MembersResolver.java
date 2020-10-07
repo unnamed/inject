@@ -1,5 +1,6 @@
 package me.yushust.inject.resolve;
 
+import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface MembersResolver {
    * is found, the default/empty constructor is used (constructor
    * without parameters)</p>
    */
-  InjectableConstructor getConstructor(TypeReference<?> type);
+  InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type);
 
   /**
    * @return Returns all the injectable fields for

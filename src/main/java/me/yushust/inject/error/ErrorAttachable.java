@@ -23,11 +23,10 @@ public interface ErrorAttachable {
   void attach(String... errorMessages);
 
   /**
-   * Stores all the caught {@code errors} in this object
-   *
-   * @param errors The reported errors
+   * Attaches the specified error using the specified
+   * reason/title/header.
    */
-  void attach(Throwable... errors);
+  void attach(String header, Throwable error);
 
   /**
    * Stores all the errors of the specified {@code attachable}
@@ -45,8 +44,18 @@ public interface ErrorAttachable {
    */
   List<String> getErrorMessages();
 
-  /** Formats the error messages in one message */
+  /**
+   * Applies a snapshot, memento design pattern
+   */
+  void applySnapshot(List<String> errorMessages);
+
+  /**
+   * Formats the error messages in one message
+   */
   String formatMessages();
+
+  /** Returns the current error count */
+  int errorCount();
 
   /**
    * @return True if the errors has been attached

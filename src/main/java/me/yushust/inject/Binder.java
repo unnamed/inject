@@ -7,6 +7,7 @@ import me.yushust.inject.scope.Scope;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 
+// TODO: Add the EDSL specification
 public interface Binder extends ErrorAttachable {
 
   <T> Qualified<T> bind(Class<T> keyType);

@@ -2,6 +2,7 @@ package me.yushust.inject.resolve;
 
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.util.ElementFormatter;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Field;
@@ -68,7 +69,7 @@ public class InjectableField implements InjectableMember {
     try {
       field.set(target, values[0]);
     } catch (IllegalAccessException e) {
-      errors.attach(e);
+      errors.attach("Cannot set value in field " + ElementFormatter.formatField(field, key), e);
     }
   }
 

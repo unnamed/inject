@@ -33,7 +33,7 @@ class BindingBuilderImpl<T> extends AbstractQualifiedBindingBuilder<T> {
   }
 
   public Binder.Scoped to(TypeReference<? extends T> targetType) {
-    return this;
+    return toProvider(Providers.link(key, Key.of(targetType)));
   }
 
   public Binder.Scoped toProvider(Provider<? extends T> provider) {
@@ -67,7 +67,7 @@ class BindingBuilderImpl<T> extends AbstractQualifiedBindingBuilder<T> {
 
   private void selfBindingIfNotBound() {
     if (binder.getProvider(key) == null) {
-      toProvider(Providers.selfReferredProvider(key));
+      toProvider(Providers.link(key, key));
     }
   }
 

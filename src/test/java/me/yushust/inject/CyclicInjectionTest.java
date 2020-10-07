@@ -21,9 +21,8 @@ public class CyclicInjectionTest {
 
   public static class Foo {
     @Inject private Bar bar;
-
     @Inject
-    private void inject() {
+    public void inject() {
       Assertions.assertNotNull(bar);
       Assertions.assertNotNull(bar.foo);
       Assertions.assertNotNull(bar.foo.bar);
@@ -35,7 +34,7 @@ public class CyclicInjectionTest {
     @Inject private Foo foo;
 
     @Inject
-    private void inject() {
+    public void inject() {
       Assertions.assertNotNull(foo);
       Assertions.assertNotNull(foo.bar);
       Assertions.assertNotNull(foo.bar.foo);

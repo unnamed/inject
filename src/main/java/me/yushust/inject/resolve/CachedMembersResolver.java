@@ -1,5 +1,6 @@
 package me.yushust.inject.resolve;
 
+import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
@@ -12,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CachedMembersResolver implements MembersResolver {
 
+  /** Sentinel value for indicate that a constructor was not resolved yet */
+  private static final Object CONSTRUCTOR_NOT_DEFINED = new Object();
+
   private final Map<TypeReference<?>, Solution> solutions =
       new ConcurrentHashMap<>();
 
@@ -21,21 +25,20 @@ public class CachedMembersResolver implements MembersResolver {
     this.delegate = Validate.notNull(delegate, "delegate");
   }
 
-  public InjectableConstructor getConstructor(TypeReference<?> type) {
+  public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type) {
     Solution solution = solutions.get(type);
-    if (solution == null || solution.constructor == null) {
+    // null constructor is valid and indicates that the constructor was
+    // already resolved, the sentinel value indicates that the constructor
+    // was never resolved!
+    if (solution == null || solution.constructor == CONSTRUCTOR_NOT_DEFINED) {
       if (solution == null) {
         solution = new Solution();
         solutions.put(type, solution);
       }
-      // it should never return null, so we
-      // are ok, if no constructor is found,
-      // solution.constructor is always a
-      // dummy injectable constructor, so the
-      // constructor is never resolved again
-      solution.constructor = delegate.getConstructor(type);
+      solution.constructor = delegate.getConstructor(errors, type);
     }
-    return solution.constructor;
+    // so it's null or an instance of injectable constructor
+    return (InjectableConstructor) solution.constructor;
   }
 
   public List<InjectableField> getFields(TypeReference<?> type) {
@@ -72,7 +75,7 @@ public class CachedMembersResolver implements MembersResolver {
 
   /** Represents an already resolved class */
   private static class Solution {
-    private InjectableConstructor constructor;
+    private Object constructor = CONSTRUCTOR_NOT_DEFINED;
     private List<InjectableField> fields;
     private List<InjectableMethod> methods;
   }

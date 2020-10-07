@@ -40,6 +40,16 @@ public class ErrorAttachableImpl implements ErrorAttachable {
     Collections.addAll(errorMessages, messages);
   }
 
+  @Override
+  public void attach(String header, Throwable error) {
+    Validate.notNull(error, "error");
+    String stackTrace = Errors.getStackTrace(error);
+    if (header != null) {
+      stackTrace = header + "\n" + stackTrace;
+    }
+    errorMessages.add(stackTrace);
+  }
+
   /** Attaches all the error messages of the specified {@code attachable}
    * into this ErrorAttachable */
   public void attachAll(ErrorAttachable attachable) {
@@ -64,9 +74,20 @@ public class ErrorAttachableImpl implements ErrorAttachable {
     return Collections.unmodifiableList(errorMessages);
   }
 
+  @Override
+  public void applySnapshot(List<String> errorMessages) {
+    this.errorMessages.clear();
+    this.errorMessages.addAll(errorMessages);
+  }
+
   /** Formats the error messages in this error-attachable */
   public String formatMessages() {
     return Errors.formatErrorMessages(errorMessages);
+  }
+
+  @Override
+  public int errorCount() {
+    return errorMessages.size();
   }
 
   /** Per default the errors cannot be reported */

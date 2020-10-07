@@ -43,10 +43,10 @@ final class Errors {
   static String formatErrorMessages(List<String> messages) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < messages.size(); i++) {
+      builder.append("\n");
       builder.append(i + 1);
       builder.append(") ");
       builder.append(messages.get(i));
-      builder.append("\n");
     }
     return builder.toString();
   }

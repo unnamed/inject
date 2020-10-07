@@ -1,5 +1,6 @@
 package me.yushust.inject.internal;
 
+import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.key.Key;
 
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-class ProvisionStack {
+class ProvisionStack extends ErrorAttachableImpl {
 
   // Used to invoke an O(1) "get" method
   private final Map<Key<?>, Object> values =

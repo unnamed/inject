@@ -3,21 +3,32 @@ package me.yushust.inject.key;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Collection of static util methods for easy
  * Type handling.
  */
-final class Types {
+public final class Types {
 
+  private static final List<String> OMITTED_PACKAGES = new ArrayList<>();
   private static final Type[] EMPTY_TYPE_ARRAY = new Type[]{};
+
+  static {
+    OMITTED_PACKAGES.add("java.lang.");
+    OMITTED_PACKAGES.add("java.util.");
+    OMITTED_PACKAGES.add("me.yushust.inject.internal.");
+    OMITTED_PACKAGES.add("me.yushust.inject.");
+  }
 
   private Types() {
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
+  }
+
+  /** Adds the specified {@code packageName} to the list of omitted packages */
+  public static void omitPackage(String packageName) {
+    Validate.notEmpty(packageName, "packageName");
+    OMITTED_PACKAGES.add(packageName);
   }
 
   /**
@@ -127,9 +138,19 @@ final class Types {
    * @return The type converted to string
    */
   static String getTypeName(Type type) {
-    return type instanceof Class
-        ? ((Class<?>) type).getName()
-        : type.toString();
+    if (type instanceof Class) {
+      Class<?> clazz = (Class<?>) type;
+      String className = clazz.getName();
+      for (String packageName : OMITTED_PACKAGES) {
+        if (className.startsWith(packageName)) {
+          className = className.substring(packageName.length());
+          break;
+        }
+      }
+      return className;
+    } else {
+      return type.toString();
+    }
   }
 
   /** Static factory method to create {@link GenericArrayType}s */

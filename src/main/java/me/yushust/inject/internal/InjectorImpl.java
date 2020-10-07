@@ -1,15 +1,9 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Injector;
-import me.yushust.inject.error.ErrorAttachable;
-import me.yushust.inject.error.ErrorAttachableImpl;
-import me.yushust.inject.error.ErrorProne;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.resolve.InjectableConstructor;
-import me.yushust.inject.resolve.InjectableMember;
-import me.yushust.inject.resolve.MembersResolver;
-import me.yushust.inject.resolve.OptionalDefinedKey;
+import me.yushust.inject.resolve.*;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Provider;
@@ -25,27 +19,27 @@ public class InjectorImpl extends InternalInjector implements Injector {
     this.binder = Validate.notNull(binder);
   }
 
+  @Override
   public void injectStaticMembers(Class<?> clazz) {
     throw new UnsupportedOperationException("This method isn't supported yet");
   }
 
   @ThreadSensitive
-  protected <T> ErrorAttachable injectMembers(Key<T> type, T instance) {
-    ErrorAttachable errors = new ErrorAttachableImpl();
-    ProvisionStack stack = stackForThisThread();
+  @Override
+  protected <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
     stack.add(type, instance);
     for (InjectableMember member : membersResolver.getFields(type.getType())) {
-      injectToMember(errors, instance, member);
+      injectToMember(stack, instance, member);
     }
     for (InjectableMember member : membersResolver.getMethods(type.getType())) {
-      injectToMember(errors, instance, member);
+      injectToMember(stack, instance, member);
     }
     stack.removeFirst();
-    return errors;
   }
 
   @ThreadSensitive
-  protected <T> ErrorProne<T> getInstance(Key<T> type, boolean useExplicitBindings) {
+  @Override
+  protected <T> T getInstance(ProvisionStack stack, Key<T> type, boolean useExplicitBindings) {
     Class<? super T> rawType = type.getType().getRawType();
     // Default injections
     if (
@@ -54,56 +48,57 @@ public class InjectorImpl extends InternalInjector implements Injector {
     ) {
       @SuppressWarnings("unchecked")
       T value = (T) this;
-      return new ErrorProne<>(value);
+      return value;
     }
-    ProvisionStack stack = stackForThisThread();
     // If the stack isn't empty, it's a recursive call.
     // If the key is present in the provision stack,
     // we can return the stored instance instead of creating
     // another instance
     if (stack.has(type)) {
       // It's a cyclic dependency and it's now fixed
-      return new ErrorProne<>(stack.get(type));
+      return stack.get(type);
     }
 
     if (useExplicitBindings) {
-      Provider<T> provider = getProviderAndInject(type);
+      Provider<T> provider = getProviderAndInject(stack, type);
       if (provider != null) {
-        return new ErrorProne<>(provider.get());
+        return provider.get();
       }
     }
 
-    ErrorAttachable errors = new ErrorAttachableImpl();
-    InjectableConstructor constructor = membersResolver.getConstructor(type.getType());
+    InjectableConstructor constructor = membersResolver.getConstructor(stack, type.getType());
+    if (constructor == null) { // the errors are thrown by the caller
+      return null;
+    }
+
     Object instance = constructor.createInstance(
-        errors,
+        stack,
         getValuesForKeys(
             constructor.getKeys(),
             constructor,
-            errors
+            stack
         )
     );
+
     @SuppressWarnings("unchecked")
     T value = (T) instance;
 
     if (value != null) {
-      injectMembers(type, value);
+      injectMembers(stack, type, value);
     }
 
-    ErrorProne<T> errorProneValue = new ErrorProne<>(value);
-    errorProneValue.attachAll(errors);
-    return errorProneValue;
+    return value;
   }
 
-  private void injectToMember(ErrorAttachable errors,
+  private void injectToMember(ProvisionStack stack,
                               Object instance,
                               InjectableMember member) {
     List<OptionalDefinedKey<?>> keys = member.getKeys();
-    Object[] values = getValuesForKeys(keys, member, errors);
-    member.inject(errors, instance, values);
+    Object[] values = getValuesForKeys(keys, member, stack);
+    member.inject(stack, instance, values);
   }
 
-  private <T> Provider<T> getProviderAndInject(Key<T> key) {
+  private <T> Provider<T> getProviderAndInject(ProvisionStack stack, Key<T> key) {
     @SuppressWarnings("unchecked")
     InjectedProvider<T> provider = (InjectedProvider<T>) binder.getProvider(key);
     if (provider == null) {
@@ -111,13 +106,13 @@ public class InjectorImpl extends InternalInjector implements Injector {
     }
     if (!provider.isInjected()) {
       Provider<? extends T> delegated = provider.getDelegate();
-      injectMembers(Key.of(TypeReference.of(delegated.getClass())), delegated);
+      injectMembers(stack, Key.of(TypeReference.of(delegated.getClass())), delegated);
       provider.setInjected(true);
     }
     return provider;
   }
 
-  private Object[] getValuesForKeys(List<OptionalDefinedKey<?>> keys, Object member, ErrorAttachable errors) {
+  private Object[] getValuesForKeys(List<OptionalDefinedKey<?>> keys, Object member, ProvisionStack stack) {
     Object[] values = new Object[keys.size()];
     for (int i = 0; i < keys.size(); i++) {
       OptionalDefinedKey<?> key = keys.get(i);
@@ -125,17 +120,19 @@ public class InjectorImpl extends InternalInjector implements Injector {
       // the type-instance relations are
       // removes automatically when ended
       // with the injection
-      ErrorProne<?> errorProne = getInstance(key.getKey(), true);
-      Object value = errorProne.getValue();
-      if (errorProne.hasErrors()) {
-        errors.attachAll(errorProne);
-      }
+      Object value = getInstance(stack, key.getKey(), true);
+      List<String> snapshot = stack.getErrorMessages();
       if (value == null && !key.isOptional()) {
-        errors.attach(
+        stack.attach(
             "Cannot inject " + member + ":\n"
-                + "    Reason: Cannot get an instance for key, and injection isn't optional"
+                + "    Reason: Cannot get an instance for key, and injection isn't optional\n"
                 + "    Key: " + key.getKey()
         );
+      } else {
+        // remove errors because the injection
+        // is optional and we don't need a report
+        // of fails that can be valid
+        stack.applySnapshot(snapshot);
       }
       values[i] = value;
     }
