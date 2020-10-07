@@ -11,10 +11,12 @@ public enum DefaultQualifierFactory implements QualifierFactory {
 
   INSTANCE;
 
+  @Override
   public Qualifier getQualifier(Class<? extends Annotation> annotationType) {
     return new ClassQualifier(annotationType);
   }
 
+  @Override
   public Qualifier getQualifier(Annotation annotation) {
     if (Qualifiers.containsOnlyDefaultValues(annotation)) {
       return new ClassQualifier(annotation.annotationType());
@@ -23,7 +25,7 @@ public enum DefaultQualifierFactory implements QualifierFactory {
     }
   }
 
-  public static class InstanceQualifier implements Qualifier {
+  private static class InstanceQualifier implements Qualifier {
 
     private final Annotation annotation;
 
@@ -51,7 +53,7 @@ public enum DefaultQualifierFactory implements QualifierFactory {
 
   }
 
-  public static class ClassQualifier implements Qualifier {
+  private static class ClassQualifier implements Qualifier {
 
     private final Class<? extends Annotation> annotationType;
 
