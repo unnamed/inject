@@ -17,7 +17,7 @@ import java.lang.annotation.*;
  * functionality</p>
  */
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Documented
 public @interface ThreadSensitive {
 }
