@@ -33,7 +33,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
   @Override
   protected <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
     if (instance != null) {
-      stack.add(type, instance);
+      stack.push(type, instance);
     }
     for (InjectableMember member : membersResolver.getFields(type.getType())) {
       injectToMember(stack, instance, member);
@@ -42,7 +42,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
       injectToMember(stack, instance, member);
     }
     if (instance != null) {
-      stack.removeFirst();
+      stack.pop();
     }
   }
 

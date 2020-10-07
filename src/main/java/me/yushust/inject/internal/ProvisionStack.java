@@ -30,14 +30,14 @@ class ProvisionStack extends ErrorAttachableImpl {
     return value;
   }
 
-  public void removeFirst() {
+  public void pop() {
     Map.Entry<Key<?>, Object> entry = stack.removeFirst();
     if (entry != null) {
       values.remove(entry.getKey());
     }
   }
 
-  public <T> void add(Key<T> key, T value) {
+  public <T> void push(Key<T> key, T value) {
     values.put(key, value);
     stack.addFirst(new KeyInstanceEntry<>(key, value));
   }

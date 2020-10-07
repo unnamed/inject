@@ -14,18 +14,6 @@ import java.util.Arrays;
 public interface Injector {
 
   /**
-   * @return True if the debug mode
-   * is enabled
-   */
-  boolean isDebugEnabled();
-
-  /**
-   * @return Toggles the debug mode
-   * for this injector
-   */
-  Injector toggleDebug();
-
-  /**
    * Injects the static members of the specified class,
    * equivalent to execute the overloaded method
    * {@link Injector#injectMembers(TypeReference, Object)}

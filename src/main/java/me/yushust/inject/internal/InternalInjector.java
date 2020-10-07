@@ -25,22 +25,6 @@ abstract class InternalInjector implements Injector {
   // accidentally removed from the thread
   protected final ThreadLocal<ProvisionStack> provisionStackThreadLocal =
       new ThreadLocal<>();
-  private boolean debug;
-
-  /**
-   * @return True if the debug is enabled in this injector
-   */
-  public boolean isDebugEnabled() {
-    return debug;
-  }
-
-  /**
-   * Toggles the debug mode. {@code debug = !debug}
-   */
-  public Injector toggleDebug() {
-    debug = !debug;
-    return this;
-  }
 
   /**
    * Delegates the functionality to the overloaded method
