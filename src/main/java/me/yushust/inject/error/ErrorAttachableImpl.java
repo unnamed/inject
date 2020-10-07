@@ -25,16 +25,8 @@ public class ErrorAttachableImpl implements ErrorAttachable {
   private final List<String> errorMessages =
       new LinkedList<>();
 
-  /** Adds all the {@code errors} to the list of error messages */
-  public void attach(Throwable... errors) {
-    Validate.notNull(errors, "errors");
-    for (Throwable error : errors) {
-      String stackTrace = Errors.getStackTrace(error);
-      errorMessages.add(stackTrace);
-    }
-  }
-
   /** Adds all the {@code messages} to the list of error messages */
+  @Override
   public void attach(String... messages) {
     Validate.notNull(messages, "errorMessages");
     Collections.addAll(errorMessages, messages);
@@ -52,6 +44,7 @@ public class ErrorAttachableImpl implements ErrorAttachable {
 
   /** Attaches all the error messages of the specified {@code attachable}
    * into this ErrorAttachable */
+  @Override
   public void attachAll(ErrorAttachable attachable) {
     errorMessages.addAll(attachable.getErrorMessages());
   }
@@ -60,6 +53,7 @@ public class ErrorAttachableImpl implements ErrorAttachable {
    * @return True if the errors has been attached
    * to this object.
    */
+  @Override
   public boolean hasErrors() {
     return !errorMessages.isEmpty();
   }
@@ -70,6 +64,7 @@ public class ErrorAttachableImpl implements ErrorAttachable {
    *
    * @return The attached error messages
    */
+  @Override
   public List<String> getErrorMessages() {
     return Collections.unmodifiableList(errorMessages);
   }
@@ -81,6 +76,7 @@ public class ErrorAttachableImpl implements ErrorAttachable {
   }
 
   /** Formats the error messages in this error-attachable */
+  @Override
   public String formatMessages() {
     return Errors.formatErrorMessages(errorMessages);
   }
@@ -90,7 +86,8 @@ public class ErrorAttachableImpl implements ErrorAttachable {
     return errorMessages.size();
   }
 
-  /** Per default the errors cannot be reported */
+  /** By default the errors cannot be reported */
+  @Override
   public void reportAttachedErrors() {
     throw new UnsupportedOperationException("The attached errors cannot be reported here!");
   }
