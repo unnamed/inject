@@ -1,6 +1,6 @@
-package me.yushust.inject.util;
+package me.yushust.inject.resolve;
 
-import me.yushust.inject.resolve.OptionalDefinedKey;
+import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -12,13 +12,13 @@ import java.util.List;
  * Helper class for formatting elements
  * like fields, methods, annotations, etc.
  */
-public final class ElementFormatter {
+final class ElementFormatter {
 
   private ElementFormatter() {
     throw new UnsupportedOperationException("This utility class should not be instantiated!");
   }
 
-  public static String formatField(Field field, OptionalDefinedKey<?> key) {
+  static String formatField(Field field, OptionalDefinedKey<?> key) {
     StringBuilder builder = new StringBuilder();
     if (key.isOptional()) {
       builder.append("@Nullable ");
@@ -29,13 +29,13 @@ public final class ElementFormatter {
     return builder.toString();
   }
 
-  public static String formatConstructor(Constructor<?> constructor, List<OptionalDefinedKey<?>> keys) {
+  static String formatConstructor(Constructor<?> constructor, List<OptionalDefinedKey<?>> keys) {
     Validate.notNull(constructor, "constructor");
     return constructor.getDeclaringClass().getName() + '('
         + formatParameters(constructor.getParameters(), keys) + ')';
   }
 
-  public static String formatParameters(Parameter[] parameters, List<OptionalDefinedKey<?>> keys) {
+  private static String formatParameters(Parameter[] parameters, List<OptionalDefinedKey<?>> keys) {
 
     Validate.notNull(parameters, "parameters");
     Validate.notNull(keys, "keys");
@@ -67,7 +67,7 @@ public final class ElementFormatter {
    * Formats a method to a human-friendly format like
    * <pre>MyClass#someMethod(@Nullable String, Object)</pre>
    */
-  public static String formatMethod(Method method, List<OptionalDefinedKey<?>> keys) {
+  static String formatMethod(Method method, List<OptionalDefinedKey<?>> keys) {
     return method.getDeclaringClass().getName() + '#' + method.getName() + '('
         + formatParameters(method.getParameters(), keys) + ')';
   }

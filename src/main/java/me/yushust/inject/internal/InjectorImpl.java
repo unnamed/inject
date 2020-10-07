@@ -7,6 +7,7 @@ import me.yushust.inject.resolve.*;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Provider;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 public class InjectorImpl extends InternalInjector implements Injector {
@@ -21,20 +22,28 @@ public class InjectorImpl extends InternalInjector implements Injector {
 
   @Override
   public void injectStaticMembers(Class<?> clazz) {
-    throw new UnsupportedOperationException("This method isn't supported yet");
+    boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
+    injectMembers(stackForThisThread(), Key.of(TypeReference.of(clazz)), null);
+    if (stackWasNotPresent) {
+      removeStackFromThisThread();
+    }
   }
 
   @ThreadSensitive
   @Override
   protected <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
-    stack.add(type, instance);
+    if (instance != null) {
+      stack.add(type, instance);
+    }
     for (InjectableMember member : membersResolver.getFields(type.getType())) {
       injectToMember(stack, instance, member);
     }
     for (InjectableMember member : membersResolver.getMethods(type.getType())) {
       injectToMember(stack, instance, member);
     }
-    stack.removeFirst();
+    if (instance != null) {
+      stack.removeFirst();
+    }
   }
 
   @ThreadSensitive
@@ -93,9 +102,15 @@ public class InjectorImpl extends InternalInjector implements Injector {
   private void injectToMember(ProvisionStack stack,
                               Object instance,
                               InjectableMember member) {
-    List<OptionalDefinedKey<?>> keys = member.getKeys();
-    Object[] values = getValuesForKeys(keys, member, stack);
-    member.inject(stack, instance, values);
+    boolean isStatic = Modifier.isStatic(member.getMember().getModifiers());
+    if (
+        (instance == null && isStatic)
+        || (instance != null && !isStatic)
+    ) {
+      List<OptionalDefinedKey<?>> keys = member.getKeys();
+      Object[] values = getValuesForKeys(keys, member, stack);
+      member.inject(stack, instance, values);
+    }
   }
 
   private <T> Provider<T> getProviderAndInject(ProvisionStack stack, Key<T> key) {

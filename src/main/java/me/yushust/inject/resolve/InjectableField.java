@@ -2,7 +2,6 @@ package me.yushust.inject.resolve;
 
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.util.ElementFormatter;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Field;

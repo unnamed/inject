@@ -23,7 +23,7 @@ abstract class InternalInjector implements Injector {
   // handling a ProvisionStack, you can cause
   // a StackOverflowError if the stack is
   // accidentally removed from the thread
-  private final ThreadLocal<ProvisionStack> provisionStackThreadLocal =
+  protected final ThreadLocal<ProvisionStack> provisionStackThreadLocal =
       new ThreadLocal<>();
   private boolean debug;
 
