@@ -32,6 +32,11 @@ public interface Module {
    *
    * @param binder The configuring binder, attached to an specific injector
    */
-  void configure(Binder binder);
+  default void configure(Binder binder) {
+    // the method isn't abstract because
+    // we don't want the user to implement
+    // this method always, it can just use
+    // provider methods
+  }
 
 }
