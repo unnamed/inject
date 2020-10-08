@@ -27,13 +27,6 @@ abstract class AbstractBinder extends ErrorAttachableImpl implements Binder {
   }
 
   /** Delegates the real functionality to {@link Binder#install(Iterable)}
-   * passing a singleton list as {@code Iterable{@literal <}Module{@literal >}}*/
-  public void install(Module module) {
-    Validate.notNull(module, "module");
-    install(Collections.singletonList(module));
-  }
-
-  /** Delegates the real functionality to {@link Binder#install(Iterable)}
    * passing an {@code ArrayList{@literal <}Module{@literal >}}*/
   public void install(Module... modules) {
     install(Arrays.asList(modules));

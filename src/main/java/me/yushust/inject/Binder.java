@@ -14,8 +14,6 @@ public interface Binder extends ErrorAttachable {
 
   <T> Qualified<T> bind(TypeReference<T> keyType);
 
-  void install(Module module);
-
   void install(Module... modules);
 
   void install(Iterable<? extends Module> modules);

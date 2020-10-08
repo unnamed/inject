@@ -52,6 +52,7 @@ public class BinderImpl extends AbstractBinder {
         : new InjectedProvider<T>(false, provider);
   }
 
+  @Override
   public <T> Qualified<T> bind(TypeReference<T> keyType) {
     return new BindingBuilderImpl<>(qualifierFactory, this, keyType);
   }
