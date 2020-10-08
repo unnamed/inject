@@ -84,7 +84,8 @@ public class MembersResolverImpl implements MembersResolver {
     return fields;
   }
 
-  public List<InjectableMethod> getMethods(TypeReference<?> type) {
+  @Override
+  public List<InjectableMethod> getMethods(TypeReference<?> type, Class<? extends Annotation> annotation) {
 
     List<InjectableMethod> methods = new ArrayList<>();
     Class<?> clazz = type.getRawType();
@@ -100,7 +101,7 @@ public class MembersResolverImpl implements MembersResolver {
       // javax.inject.Inject and add to the methods list,
       // not to the members list
       for (Method method : checking.getDeclaredMethods()) {
-        if (!method.isAnnotationPresent(Inject.class)) {
+        if (!method.isAnnotationPresent(annotation)) {
           continue;
         }
         methods.add(

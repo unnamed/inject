@@ -3,6 +3,7 @@ package me.yushust.inject.resolve;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
@@ -34,8 +35,9 @@ public interface MembersResolver {
 
   /**
    * @return Returns all the injectable methods for
-   * the specified {@code type}.
+   * the specified {@code type}. The resolved methods
+   * can also be used to get the module provider methods
    */
-  List<InjectableMethod> getMethods(TypeReference<?> type);
+  List<InjectableMethod> getMethods(TypeReference<?> type, Class<? extends Annotation> annotation);
 
 }

@@ -51,7 +51,8 @@ public class InjectableField implements InjectableMember {
    *                                  isn't static, or if the target isn't present in the type or its supertypes,
    *                                  or if the {@code values} length isn't 1
    */
-  public void inject(ErrorAttachable errors, Object target, Object[] values) {
+  @Override
+  public Object inject(ErrorAttachable errors, Object target, Object[] values) {
 
     Validate.argument(
         target != null
@@ -70,6 +71,8 @@ public class InjectableField implements InjectableMember {
     } catch (IllegalAccessException e) {
       errors.attach("Cannot set value in field " + ElementFormatter.formatField(field, key), e);
     }
+
+    return null;
   }
 
   @Override

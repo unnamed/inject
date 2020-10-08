@@ -4,6 +4,7 @@ import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,7 +58,8 @@ public class CachedMembersResolver implements MembersResolver {
     return solution.fields;
   }
 
-  public List<InjectableMethod> getMethods(TypeReference<?> type) {
+  @Override
+  public List<InjectableMethod> getMethods(TypeReference<?> type, Class<? extends Annotation> annotation) {
     Solution solution = solutions.get(type);
     if (solution == null || solution.methods == null) {
       if (solution == null) {
@@ -67,7 +69,7 @@ public class CachedMembersResolver implements MembersResolver {
       if (solution.methods == null) {
         // the getMethods(...) method should never return
         // a null pointer, so it's never resolved again
-        solution.methods = delegate.getMethods(type);
+        solution.methods = delegate.getMethods(type, annotation);
       }
     }
     return solution.methods;

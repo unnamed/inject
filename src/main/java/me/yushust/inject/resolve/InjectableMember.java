@@ -42,7 +42,7 @@ public interface InjectableMember {
    *
    * @param values The injected values
    */
-  void inject(ErrorAttachable errors, Object target, Object[] values);
+  Object inject(ErrorAttachable errors, Object target, Object[] values);
 
   /**
    * Converts the injectable member to a string that contains

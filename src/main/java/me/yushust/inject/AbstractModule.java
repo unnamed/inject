@@ -39,6 +39,11 @@ public abstract class AbstractModule implements Module {
     binder().install(modules);
   }
 
-  protected abstract void configure();
+  protected void configure() {
+    // the method isn't abstract because
+    // we don't want the user to implement
+    // this method always, it can just use
+    // provider methods
+  }
 
 }

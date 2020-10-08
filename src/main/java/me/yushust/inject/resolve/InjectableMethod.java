@@ -56,7 +56,7 @@ public class InjectableMethod implements InjectableMember {
    *                                  isn't static, or if the target
    *                                  isn't present in the type or its supertypes;
    */
-  public void inject(ErrorAttachable errors, Object target, Object[] values) {
+  public Object inject(ErrorAttachable errors, Object target, Object[] values) {
 
     Validate.argument(
         target != null
@@ -70,9 +70,10 @@ public class InjectableMethod implements InjectableMember {
     );
 
     try {
-      method.invoke(target, values);
+      return method.invoke(target, values);
     } catch (IllegalAccessException | InvocationTargetException e) {
       errors.attach("Error while trying to invoke " + ElementFormatter.formatMethod(method, keys), e);
+      return null;
     }
   }
 }

@@ -6,6 +6,7 @@ import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.resolve.*;
 import me.yushust.inject.util.Validate;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -38,7 +39,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     for (InjectableMember member : membersResolver.getFields(type.getType())) {
       injectToMember(stack, instance, member);
     }
-    for (InjectableMember member : membersResolver.getMethods(type.getType())) {
+    for (InjectableMember member : membersResolver.getMethods(type.getType(), Inject.class)) {
       injectToMember(stack, instance, member);
     }
     if (instance != null) {
@@ -54,6 +55,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     if (
         rawType == Injector.class
         || rawType == InternalInjector.class
+        || rawType == InjectorImpl.class
     ) {
       @SuppressWarnings("unchecked")
       T value = (T) this;
@@ -99,7 +101,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     return value;
   }
 
-  private void injectToMember(ProvisionStack stack,
+  Object injectToMember(ProvisionStack stack,
                               Object instance,
                               InjectableMember member) {
     boolean isStatic = Modifier.isStatic(member.getMember().getModifiers());
@@ -109,7 +111,9 @@ public class InjectorImpl extends InternalInjector implements Injector {
     ) {
       List<OptionalDefinedKey<?>> keys = member.getKeys();
       Object[] values = getValuesForKeys(keys, member, stack);
-      member.inject(stack, instance, values);
+      return member.inject(stack, instance, values);
+    } else {
+      return null;
     }
   }
 
