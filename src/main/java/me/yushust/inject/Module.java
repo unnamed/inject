@@ -7,7 +7,7 @@ package me.yushust.inject;
  * classes). To just add a scope to a class, you can use scope
  * annotations like {@link javax.inject.Singleton}.
  * You can also use annotations to bind abstractions to implementations
- * like {@link ImplementedBy} and {@link ProvidedBy}.
+ * like {@link Targetted} and {@link ProvidedBy}.
  *
  * <p>Read about the embedded dsl to configure injector in {@link Binder}.</p>
  *

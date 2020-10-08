@@ -19,25 +19,30 @@ class InjectedProvider<T> implements Provider<T> {
   private final Provider<? extends T> delegate;
   private boolean injected;
 
-  public InjectedProvider(boolean injected, Provider<? extends T> delegate) {
+  InjectedProvider(boolean injected, Provider<? extends T> delegate) {
     this.injected = injected;
     this.delegate = Validate.notNull(delegate);
   }
 
-  public Provider<? extends T> getDelegate() {
+  Provider<? extends T> getDelegate() {
     return delegate;
   }
 
-  public boolean isInjected() {
+  boolean isInjected() {
     return this.injected;
   }
 
-  public void setInjected(boolean injected) {
+  void setInjected(boolean injected) {
     this.injected = injected;
   }
 
+  @Override
   public T get() {
     return delegate.get();
+  }
+
+  <O> InjectedProvider<O> withProvider(Provider<O> provider) {
+    return new InjectedProvider<>(injected, provider);
   }
 
   @Override

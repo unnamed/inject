@@ -70,6 +70,8 @@ public class InjectorImpl extends InternalInjector implements Injector {
       return stack.get(type);
     }
 
+    AnnotationScanner.bind(type.getType(), binder);
+    AnnotationScanner.scope(type.getType(), binder);
     if (useExplicitBindings) {
       Provider<T> provider = getProviderAndInject(stack, type);
       if (provider != null) {
