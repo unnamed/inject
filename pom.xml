@@ -8,6 +8,17 @@
     <artifactId>trew</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
+    <distributionManagement>
+        <repository>
+            <id>unnamed-releases</id>
+            <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>unnamed-snapshots</id>
+            <url>https://repo.unnamed.team/repository/unnamed-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
