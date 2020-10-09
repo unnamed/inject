@@ -23,12 +23,20 @@ public abstract class AbstractModule implements Module {
     return binder;
   }
 
-  protected final <T> Binder.Qualified<T> bind(Class<T> keyType) {
+  protected final <T> Binder.QualifiedBindingBuilder<T> bind(Class<T> keyType) {
     return binder().bind(keyType);
   }
 
-  protected final <T> Binder.Qualified<T> bind(TypeReference<T> keyType) {
+  protected final <T> Binder.QualifiedBindingBuilder<T> bind(TypeReference<T> keyType) {
     return binder().bind(keyType);
+  }
+
+  protected final <T> Binder.MultiBindingBuilder<T> multibind(Class<T> keyType) {
+    return binder().multibind(keyType);
+  }
+
+  protected final <T> Binder.MultiBindingBuilder<T> multibind(TypeReference<T> keyType) {
+    return binder().multibind(keyType);
   }
 
   protected final void install(Module... modules) {
