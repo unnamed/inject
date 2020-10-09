@@ -1,6 +1,6 @@
 # Trew D.I. [![Build Status](https://travis-ci.com/yusshu/trew.svg?branch=master)](https://travis-ci.com/yusshu/trew)
 
-Trew is a very lightweight and fast dependency injection library based on [Guice](https://github.com/google/guice) like the old [Syringe DI](https;//github.com/unnamed/syringe). Trew, unlike Syringe, supports circular dependencies, this is an important difference between these D.I
+Trew is a very lightweight and fast dependency injection library based on [Guice](https://github.com/google/guice) like the old [Syringe DI](https://github.com/unnamed/syringe). Trew, unlike Syringe, supports circular dependencies, this is an important difference between these D.I
 
 ## Why?
 Trew helps you create a very scalable and orderly application in Java, check this examples with Trew and without Trew
