@@ -21,7 +21,7 @@ import java.util.Collections;
 abstract class AbstractBinder extends ErrorAttachableImpl implements Binder {
 
   /** Delegates the real functionality to {@link Binder#bind(TypeReference)} */
-  public <T> Qualified<T> bind(Class<T> keyType) {
+  public <T> QualifiedBindingBuilder<T> bind(Class<T> keyType) {
     Validate.notNull(keyType, "keyType");
     return bind(TypeReference.of(keyType));
   }

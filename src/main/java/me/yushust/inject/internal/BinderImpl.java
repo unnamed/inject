@@ -53,8 +53,18 @@ public class BinderImpl extends AbstractBinder {
   }
 
   @Override
-  public <T> Qualified<T> bind(TypeReference<T> keyType) {
+  public <T> QualifiedBindingBuilder<T> bind(TypeReference<T> keyType) {
     return new BindingBuilderImpl<>(qualifierFactory, this, keyType);
+  }
+
+  @Override
+  public <T> MultiBindingBuilder<T> multibind(Class<T> keyType) {
+    throw new UnsupportedOperationException("This method isn't supported yet!");
+  }
+
+  @Override
+  public <T> MultiBindingBuilder<T> multibind(TypeReference<T> keyType) {
+    throw new UnsupportedOperationException("This method isn't supported yet!");
   }
 
   @Override

@@ -10,80 +10,150 @@ import java.lang.annotation.Annotation;
 // TODO: Add the EDSL specification
 public interface Binder extends ErrorAttachable {
 
-  <T> Qualified<T> bind(Class<T> keyType);
+  <T> QualifiedBindingBuilder<T> bind(Class<T> keyType);
 
-  <T> Qualified<T> bind(TypeReference<T> keyType);
+  <T> QualifiedBindingBuilder<T> bind(TypeReference<T> keyType);
+
+  <T> MultiBindingBuilder<T> multibind(Class<T> keyType);
+
+  <T> MultiBindingBuilder<T> multibind(TypeReference<T> keyType);
 
   void install(Module... modules);
 
   void install(Iterable<? extends Module> modules);
 
+  /**
+   * Represents a binding builder that can be
+   * scoped. This interface marks the end of
+   * the configuration of a binding
+   */
   interface Scoped {
 
+    /** Scopes the binding being built */
     void in(Scope scope);
 
-    /**
-     * Scopes the binding to the
-     * singleton scope, a method alias for
-     * {@code in(Scopes.SINGLETON)}
-     */
+    /** Alias method for ins(Scopes.SINGLETON) */
     void singleton();
 
   }
 
-  interface Qualified<T> extends Scoped {
+  /**
+   * Represents a binding builder that can be
+   * qualified, for example with an annotation,
+   * an annotation type, etc.
+   * @param <R> The return type for all the
+   *           qualify methods
+   */
+  interface Qualified<R> {
 
-    // qualifying key start
-    /**
-     * Adds a type-qualifier strategy to the
-     * binding key.
-     *
-     * <p>The qualifier type must be
-     * annotated with {@link javax.inject.Qualifier},
-     * else, an error is added to the binder and
-     * thrown when the configuration stage ends.</p>
-     *
-     * @param qualifierType The qualifier type
-     */
-    Qualified<T> markedWith(Class<? extends Annotation> qualifierType);
+    /** Qualifies the key with the specified annotation type */
+    R markedWith(Class<? extends Annotation> qualifierType);
 
-    /**
-     * Adds an instance-qualifier strategy to the
-     * binding key.
-     *
-     * <p>The qualifier type must be
-     * annotated with {@link javax.inject.Qualifier},
-     * else, an error is added to the binder and
-     * thrown when the configuration stage ends.</p>
-     *
-     * @param annotation The qualifier instance
-     */
-    Qualified<T> qualified(Annotation annotation);
+    /** Qualifies the key with the specific annotation instance */
+    R qualified(Annotation annotation);
 
-    /**
-     * Adds an instance-qualifier strategy to the
-     * binding key, using as annotation {@link javax.inject.Named}
-     * and as annotation value the specified {@code name}.
-     *
-     * It's a method alias for {@code qualified(Qualifiers.createNamed(name))}
-     * @param name The {@link javax.inject.Named} annotation value
-     */
-    Qualified<T> named(String name);
-    // qualifying key end
+    /** Qualifies the key with the specific name */
+    R named(String name);
 
-    // linking key start
-    Scoped to(Class<? extends T> targetType);
+  }
 
-    Scoped to(TypeReference<? extends T> targetType);
+  /**
+   * Represents a binding builder that can be
+   * linked to another key (or the same key)
+   * @param <R> The return type for the
+   *           link creation methods
+   * @param <T> The key being bound
+   */
+  interface Linked<R, T> {
 
-    Scoped toProvider(Provider<? extends T> provider);
+    /** Links the key to a class */
+    R to(Class<? extends T> targetType);
 
-    <P extends Provider<? extends T>> Scoped toProvider(Class<P> providerClass);
+    /** Links the key to a (possible) generic type */
+    R to(TypeReference<? extends T> targetType);
 
-    <P extends Provider<? extends T>> Scoped toProvider(TypeReference<P> providerClass);
+    /** Links the key to a specific provider */
+    R toProvider(Provider<? extends T> provider);
 
+    /** Links the key to a specific provider type */
+    <P extends Provider<? extends T>> R toProvider(Class<P> providerClass);
+
+    /** Links the key to a specific provider (possible) generic type */
+    <P extends Provider<? extends T>> R toProvider(TypeReference<P> providerClass);
+
+  }
+
+  /**
+   * Represents a binding builder that can be qualified,
+   * linked and scoped. This is the principal binding
+   * builder.
+   * @param <T> The key being bound
+   */
+  interface QualifiedBindingBuilder<T> extends Qualified<QualifiedBindingBuilder<T>>, Linked<Scoped, T>, Scoped {
+
+    /** Binds the key to a specific instance */
     void toInstance(T instance);
-    // linking key end
+
+  }
+
+  /**
+   * Represents a binding builder for collections,
+   * it can be qualified.
+   * @param <T> The element key being bound
+   */
+  interface MultiBindingBuilder<T> extends Qualified<MultiBindingBuilder<T>> {
+
+    /** Starts linking and scoping the element type as a Set */
+    CollectionMultiBindingBuilder<T> asSet();
+
+    /** Starts linking and scoping the element type as a List */
+    CollectionMultiBindingBuilder<T> asList();
+
+    /** Starts linking and scoping the element type as a Map with the specified key type */
+    <K> MapMultiBindingBuilder<K, T> asMap(Class<K> keyClass);
+
+    /** Starts linking and scoping the element type as a Map with the specified key type */
+    <K> MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference);
+
+  }
+
+  /**
+   * Represents a binding builder for collections,
+   * it can be linked and scoped, it's qualified
+   * using {@link MultiBindingBuilder}
+   * @param <T> The collection element type
+   */
+  interface CollectionMultiBindingBuilder<T> extends Linked<CollectionMultiBindingBuilder<T>, T>, Scoped {
+
+    /** Adds an instance of the specific element type to the collection */
+    CollectionMultiBindingBuilder<T> toInstance(T instance);
+
+  }
+
+  /**
+   * Represents a binding builder for maps,
+   * binds using a key and a value. It can be
+   * scoped.
+   * @param <K> The map key type
+   * @param <V> The map value type
+   */
+  interface MapMultiBindingBuilder<K, V> extends Scoped {
+
+    /** Starts linking a key to a value */
+    KeyBinder<K, V> bind(K key);
+
+  }
+
+  /**
+   * Represents a map key that's being bound
+   * to a value. It can be linked to a provider
+   * @param <K> The map key type
+   * @param <V> The map value type
+   */
+  interface KeyBinder<K, V> extends Linked<MapMultiBindingBuilder<K, V>, V> {
+
+    /** Adds an instance of the specific value type to the map */
+    MapMultiBindingBuilder<K, V> toInstance(V instance);
 
   }
 
