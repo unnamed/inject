@@ -66,7 +66,7 @@ public class Consumer {
   
   public Consumer(Tea tea, Cookie cookie) {
     // trew checks nullability for you, if an injectable is annotated with
-    // any @Nullable annotation, it's handles as an optional injection
+    // any @Nullable annotation, it's handled as an optional injection
     this.tea = Objects.requireNonNull(tea);
     this.cookie = Objects.requireNonNull(cookie);
   }
