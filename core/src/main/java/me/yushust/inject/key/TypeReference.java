@@ -7,6 +7,7 @@ import me.yushust.inject.key.Types.CompositeType;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 public class TypeReference<T> extends AbstractTypeWrapper implements CompositeType {
 
@@ -131,6 +132,10 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
   public static <T> TypeReference<T> of(Class<?> rawType, Type... typeArguments) {
     Validate.notNull(rawType);
     return of(Types.parameterizedTypeOf(null, rawType, typeArguments));
+  }
+
+  public static <K, V> TypeReference<Map<K, V>> mapTypeOf(TypeReference<K> key, TypeReference<V> value) {
+    return of(Map.class, key.getType(), value.getType());
   }
 
 }

@@ -24,21 +24,24 @@ class MultiBindingBuilderImpl<T> implements
     this.binder = binder;
   }
 
+  /** Starts building a binding as a Set */
   @Override
   public Binder.CollectionMultiBindingBuilder<T> asSet() {
     Key<Set<T>> setKey = Key.of(TypeReference.of(Set.class, key.getType().getType()));
     return new CollectionMultiBindingBuilderImpl<>(setKey, key, HashSet::new);
   }
 
+  /** Starts building a binding as a List */
   @Override
   public Binder.CollectionMultiBindingBuilder<T> asList() {
     Key<List<T>> listKey = Key.of(TypeReference.of(List.class, key.getType().getType()));
     return new CollectionMultiBindingBuilderImpl<>(listKey, key, ArrayList::new);
   }
 
+  /** Starts building a binding as a Map */
   @Override
   public <K> Binder.MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference) {
-    Key<Map<K, T>> mapKey = Key.of(TypeReference.of(Map.class, keyReference.getType(), key.getType().getType()));
+    Key<Map<K, T>> mapKey = Key.of(TypeReference.mapTypeOf(keyReference, key.getType()));
     return new MapMultiBindingBuilderImpl<>(HashMap::new, mapKey, key);
   }
 
