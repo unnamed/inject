@@ -99,6 +99,7 @@ class MultiBindingBuilderImpl<T> implements
 
     @Override
     public Binder.CollectionMultiBindingBuilder<E> toProvider(Provider<? extends E> provider) {
+
       InjectedProvider<? extends Collection<E>> collectionProvider = binder.getProvider(collectionKey);
 
       if (collectionProvider == null) {
