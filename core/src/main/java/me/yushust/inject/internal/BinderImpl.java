@@ -1,6 +1,9 @@
 package me.yushust.inject.internal;
 
-import me.yushust.inject.*;
+import me.yushust.inject.Binder;
+import me.yushust.inject.Module;
+import me.yushust.inject.Provides;
+import me.yushust.inject.Qualifiers;
 import me.yushust.inject.error.BindingException;
 import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.key.Key;
@@ -66,7 +69,7 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   }
 
   @Override
-  public <T> MultiBindingBuilder<T> multibind(TypeReference<T> keyType) {
+  public <T> Binder.MultiBindingBuilder<T> multibind(TypeReference<T> keyType) {
     return new MultiBindingBuilderImpl<>(qualifierFactory, this, keyType);
   }
 
