@@ -399,9 +399,9 @@ public final class Types {
       ParameterizedType that = (ParameterizedType) o;
       return rawType.equals(that.getRawType()) &&
           Arrays.equals(typeArguments, that.getActualTypeArguments()) &&
-          ownerType == null
+          (ownerType == null
           ? that.getOwnerType() == null
-          : ownerType.equals(that.getOwnerType());
+          : ownerType.equals(that.getOwnerType()));
     }
 
     @Override
