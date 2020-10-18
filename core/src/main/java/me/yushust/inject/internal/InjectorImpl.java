@@ -206,15 +206,13 @@ public class InjectorImpl extends InternalInjector implements Injector {
       // the type-instance relations are
       // removes automatically when ended
       // with the injection
-      Object value = getInstance(stack, key.getKey(), true);
       List<String> snapshot = stack.getErrorMessages();
+      Object value = getInstance(stack, key.getKey(), true);
       if (value == null && !key.isOptional()) {
-        stack.attach(
-            "Cannot inject " + member + ":\n"
-                + "    Reason: Cannot get an instance for key, and injection isn't optional\n"
-                + "    Key: " + key.getKey()
-        );
-      } else {
+        stack.attach("Cannot inject " + member + ":\n"
+            + "    Reason: Cannot get an instance for key, and injection isn't optional\n"
+            + "    Key: " + key.getKey());
+      } else if (key.isOptional()) {
         // remove errors because the injection
         // is optional and we don't need a report
         // of fails that can be valid

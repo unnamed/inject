@@ -27,18 +27,21 @@ interface KeyBuilder<R, T> extends Binder.Qualified<R> {
 
   @Override
   default R markedWith(Class<? extends Annotation> qualifierType) {
+    Validate.notNull(qualifierType, "qualifierType");
     qualified(factory().getQualifier(qualifierType));
     return getReturnValue();
   }
 
   @Override
   default R qualified(Annotation annotation) {
+    Validate.notNull(annotation, "annotation");
     qualified(factory().getQualifier(annotation));
     return getReturnValue();
   }
 
   @Override
   default R named(String name) {
+    Validate.notNull(name, "name");
     return qualified(Qualifiers.createNamed(name));
   }
 

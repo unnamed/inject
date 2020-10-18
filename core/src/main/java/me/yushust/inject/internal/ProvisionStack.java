@@ -45,6 +45,10 @@ class ProvisionStack extends ErrorAttachableImpl {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
+    builder.append('(');
+    builder.append(errorCount());
+    builder.append(" errors");
+    builder.append(") ");
     Iterator<KeyInstanceEntry<?>> entries = stack.iterator();
     while (entries.hasNext()) {
       KeyInstanceEntry<?> entry = entries.next();

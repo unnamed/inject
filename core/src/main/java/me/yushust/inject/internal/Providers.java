@@ -2,6 +2,9 @@ package me.yushust.inject.internal;
 
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.scope.Scope;
+import me.yushust.inject.scope.Scopes;
+import me.yushust.inject.util.Validate;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -34,19 +37,36 @@ public final class Providers {
    * The bound instances are also injected
    * with {@link me.yushust.inject.Injector#injectMembers}
    */
-  private static class InstanceProvider<T> implements Provider<T> {
+  private static class InstanceProvider<T> extends InjectedProvider<T> {
 
     private final Key<T> key;
     private final T instance;
 
     private InstanceProvider(Key<T> key, T instance) {
+      super(false, () -> null);
       this.key = key;
       this.instance = instance;
     }
 
-    @Inject
-    public void inject(InternalInjector injector) {
-      injector.injectMembers(injector.stackForThisThread(), key.withNoQualifiers(), instance);
+    @Override
+    void inject(ProvisionStack stack, InternalInjector injector) {
+      injector.injectMembers(stack, key.withNoQualifiers(), instance);
+    }
+
+    @Override
+    InjectedProvider<T> withScope(Scope scope) {
+      if (scope == Scopes.SINGLETON) {
+        return this;
+      }
+      return new InjectedProvider<>(
+          isInjected(),
+          scope.scope(this)
+      );
+    }
+
+    @Override
+    Provider<T> getDelegate() {
+      return this;
     }
 
     @Override
@@ -61,6 +81,8 @@ public final class Providers {
   }
 
   public static <T> Provider<? extends T> instanceProvider(Key<T> key, T instance) {
+    Validate.notNull(key, "key");
+    Validate.notNull(instance, "instance");
     return new InstanceProvider<>(key, instance);
   }
 
@@ -123,6 +145,7 @@ public final class Providers {
   }
 
   public static <T> Provider<? extends T> providerTypeProvider(TypeReference<? extends Provider<? extends T>> providerClass) {
+    Validate.notNull(providerClass);
     return new ProviderTypeProvider<>(providerClass);
   }
 
@@ -175,6 +198,8 @@ public final class Providers {
   }
 
   public static <T> Provider<? extends T> link(Key<T> key, Key<? extends T> target) {
+    Validate.notNull(key, "key");
+    Validate.notNull(target, "target");
     return new LinkedProvider<>(key, target);
   }
 

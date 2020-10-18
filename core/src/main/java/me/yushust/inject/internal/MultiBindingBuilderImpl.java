@@ -103,6 +103,7 @@ class MultiBindingBuilderImpl<T> implements
     @Override
     public Binder.CollectionMultiBindingBuilder<E> toProvider(Provider<? extends E> provider) {
 
+      Validate.notNull(provider, "provider");
       InjectedProvider<? extends Collection<E>> collectionProvider = binder.getProvider(collectionKey);
 
       if (collectionProvider == null) {
@@ -245,6 +246,7 @@ class MultiBindingBuilderImpl<T> implements
 
     @Override
     public Binder.MapMultiBindingBuilder<K, V> toProvider(Provider<? extends V> provider) {
+      Validate.notNull(provider, "provider");
       InjectedProvider<? extends Map<K, V>> mapProvider = binder.getProvider(bindingBuilder.mapKey);
 
       if (mapProvider == null) {
@@ -299,6 +301,7 @@ class MultiBindingBuilderImpl<T> implements
 
     @Override
     InjectedProvider<Map<K, V>> withScope(Scope scope) {
+      Validate.notNull(scope, "scope");
       return new InjectedProvider<>(
           isInjected(),
           scope.scope(this)

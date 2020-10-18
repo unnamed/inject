@@ -38,6 +38,7 @@ class BindingBuilderImpl<T> implements
 
   @Override
   public Binder.Scoped toProvider(Provider<? extends T> provider) {
+    Validate.notNull(provider, "provider");
     requireNotBound();
     binder.bindTo(key, provider);
     return this;
@@ -45,6 +46,7 @@ class BindingBuilderImpl<T> implements
 
   @Override
   public void toInstance(T instance) {
+    Validate.notNull(instance, "instance");
     toProvider(Providers.instanceProvider(key, instance));
   }
 

@@ -31,7 +31,11 @@ class InjectedProvider<T> implements Provider<T> {
     if (this.injected) {
       return;
     }
-    injector.injectMembers(stack, Key.of(TypeReference.of(delegate.getClass())), delegate);
+    if (delegate instanceof InjectedProvider) {
+      ((InjectedProvider<?>) delegate).inject(stack, injector);
+    } else {
+      injector.injectMembers(stack, Key.of(TypeReference.of(delegate.getClass())), delegate);
+    }
     this.injected = true;
   }
 
