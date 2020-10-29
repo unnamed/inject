@@ -104,6 +104,6 @@ Put this in your POM.xml `<dependencies>` section
 <dependency>
     <groupId>me.yushust.inject</groupId>
     <artifactId>trew</artifactId>
-    <version>0.2.2-SNAPSHOT</version> <!--Check the latest version in the repositories-->
+    <version>0.2.3-SNAPSHOT</version> <!--Check the latest version in the repositories-->
 </dependency>
 ```
