@@ -50,7 +50,7 @@ public final class Providers {
 
     @Override
     void inject(ProvisionStack stack, InternalInjector injector) {
-      injector.injectMembers(stack, key.withNoQualifiers(), instance);
+      // TODO: This shit won't work til 2021. injector.injectMembers(stack, key.withNoQualifiers(), instance);
     }
 
     @Override
