@@ -1,5 +1,6 @@
 package me.yushust.inject.resolve;
 
+import me.yushust.inject.Assist;
 import me.yushust.inject.Qualifiers;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.Key;
@@ -72,7 +73,8 @@ public class MembersResolverImpl implements MembersResolver {
       // exclude fields that aren't annotated with
       // javax.inject.Inject
       for (Field field : checking.getDeclaredFields()) {
-        if (!field.isAnnotationPresent(Inject.class)) {
+        if (!field.isAnnotationPresent(Inject.class)
+            && !field.isAnnotationPresent(Assist.class)) {
           continue;
         }
         TypeReference<?> fieldType = type.getFieldType(field);
@@ -139,6 +141,7 @@ public class MembersResolverImpl implements MembersResolver {
 
   private OptionalDefinedKey<?> keyOf(TypeReference<?> type, Annotation[] annotations) {
     boolean optional = false;
+    boolean assisted = false;
     for (Annotation annotation : annotations) {
       Class<? extends Annotation> annotationType = annotation.annotationType();
       if (!optional) {
@@ -148,12 +151,15 @@ public class MembersResolverImpl implements MembersResolver {
           optional = true;
         }
       }
+      if (!assisted && annotationType == Assist.class) {
+        assisted = true;
+      }
     }
     @SuppressWarnings({"rawtypes"})
     Key key = Key.of(type, Qualifiers.getQualifiers(qualifierFactory, annotations));
     @SuppressWarnings("unchecked")
     OptionalDefinedKey<?> optionalDefinedKey =
-        new OptionalDefinedKey<Object>(key, optional);
+        new OptionalDefinedKey<Object>(key, optional, assisted);
     return optionalDefinedKey;
   }
 
