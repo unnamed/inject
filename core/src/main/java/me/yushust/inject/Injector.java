@@ -9,9 +9,18 @@ import me.yushust.inject.resolve.MembersResolver;
 import me.yushust.inject.resolve.MembersResolverImpl;
 import me.yushust.inject.resolve.QualifierFactory;
 
+import javax.inject.Provider;
 import java.util.Arrays;
 
 public interface Injector {
+
+  /** Returns the explicit bound provider for the specified key */
+  default <T> Provider<? extends T> getProvider(Class<T> key) {
+    return getProvider(TypeReference.of(key));
+  }
+
+  /** Returns the explicit bound provider for the specified key */
+  <T> Provider<? extends T> getProvider(TypeReference<T> key);
 
   /**
    * Injects the static members of the specified class,

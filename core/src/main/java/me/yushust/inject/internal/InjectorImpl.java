@@ -27,6 +27,11 @@ public class InjectorImpl extends InternalInjector implements Injector {
   }
 
   @Override
+  public <T> Provider<? extends T> getProvider(TypeReference<T> key) {
+    return binder.getProvider(Key.of(key));
+  }
+
+  @Override
   public void injectStaticMembers(Class<?> clazz) {
     boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
     injectMembers(stackForThisThread(), Key.of(TypeReference.of(clazz)), null);
