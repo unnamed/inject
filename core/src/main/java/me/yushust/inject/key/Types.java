@@ -61,7 +61,11 @@ public final class Types {
    */
   static Type compose(Type type) {
 
-    if (type instanceof Class) {
+    if (type instanceof TypeReference) {
+      // unwrap, TypeReference wrapped types are already composed
+      // so it's not necessary call compose(...) for the wrapped type
+      return ((TypeReference<?>) type).getType();
+    } else if (type instanceof Class) {
       Class<?> clazz = (Class<?>) type;
       if (clazz.isArray()) {
         // If the class is an array, we convert
