@@ -29,7 +29,7 @@ public class MembersResolverImpl implements MembersResolver {
 
     Constructor<?> injectableConstructor = null;
     for (Constructor<?> constructor : type.getRawType().getDeclaredConstructors()) {
-      if (!constructor.isAnnotationPresent(Inject.class)) {
+      if (!constructor.isAnnotationPresent(annotation)) {
         continue;
       }
       injectableConstructor = constructor;

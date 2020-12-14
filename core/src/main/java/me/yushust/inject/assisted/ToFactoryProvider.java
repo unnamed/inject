@@ -15,9 +15,7 @@ import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ToFactoryProvider<T>
     extends InjectedProvider<T>
@@ -44,92 +42,103 @@ public class ToFactoryProvider<T>
       throw new FactoryException(errors.formatMessages());
     }
 
-    String creatorMethod = null;
+    if (factory.getMethods().length != 1) {
+      throw new FactoryException("Factory " + factory.getName() + " has invalid method count");
+    }
 
-    for (Method method : factory.getMethods()) {
-      TypeReference<?> given = TypeReference.of(method.getGenericReturnType());
-      if (!given.equals(required)) {
-        throw new FactoryException("Method " + method.getName() + " of factory "
-            + factory.getName() + " doesn't return " + given);
+    Method method = factory.getMethods()[0];
+
+    TypeReference<?> given = TypeReference.of(method.getGenericReturnType());
+    if (!given.equals(required)) {
+      throw new FactoryException("Method " + method.getName() + " of factory "
+          + factory.getName() + " doesn't return " + given);
+    }
+
+    List<OptionalDefinedKey<?>> keys = binder.getResolver().keysOf(
+        TypeReference.of(factory),
+        method.getGenericParameterTypes(),
+        method.getParameterAnnotations()
+    );
+
+    Set<Key<?>> assists = new HashSet<>();
+
+    for (OptionalDefinedKey<?> parameterKey : keys) {
+      if (!assists.add(parameterKey.getKey())) {
+        throw new FactoryException("Creator method has two equal assisted values! " +
+            "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")");
       }
+    }
 
-      List<OptionalDefinedKey<?>> keys = binder.getResolver().keysOf(
-          TypeReference.of(factory),
-          method.getGenericParameterTypes(),
-          method.getParameterAnnotations()
-      );
+    Set<Key<?>> constructorAssists = new HashSet<>();
 
-      Set<Key<?>> assists = new HashSet<>();
-
-      for (OptionalDefinedKey<?> parameterKey : keys) {
-        if (!assists.add(parameterKey.getKey())) {
-          throw new FactoryException("Creator method has two equal assisted values! " +
+    for (OptionalDefinedKey<?> parameterKey : constructor.getKeys()) {
+      if (parameterKey.isAssisted()) {
+        if (!assists.contains(parameterKey.getKey())) {
+          throw new FactoryException("Constructor requires assist for "
+              + parameterKey.getKey() + " and method doesn't give it!");
+        } else if (!constructorAssists.add(parameterKey.getKey())) {
+          throw new FactoryException("Constructor has two equal assisted keys! " +
               "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")");
         }
       }
+    }
 
-      Set<Key<?>> constructorAssists = new HashSet<>();
+    if (assists.size() != constructorAssists.size()) {
+      throw new FactoryException("Assists mismatch! Constructor has "
+          + constructorAssists.size() + " values and method " + assists.size() + " values.");
+    }
 
-      for (OptionalDefinedKey<?> parameterKey : constructor.getKeys()) {
-        if (parameterKey.isAssisted()) {
-          if (!assists.contains(parameterKey.getKey())) {
-            throw new FactoryException("Constructor requires assist for "
-                + parameterKey.getKey() + " and method doesn't give it!");
-          } else if (!constructorAssists.add(parameterKey.getKey())) {
-            throw new FactoryException("Constructor has two equal assisted keys! " +
-                "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")");
-          }
-        }
+    class ProxiedInstanceProvider<O> extends InjectedProvider<O> {
+
+      private Object factoryInstance;
+
+      public ProxiedInstanceProvider() {
+        super(() -> null);
       }
 
-      if (assists.size() != constructorAssists.size()) {
-        throw new FactoryException("Assists mismatch! Constructor has "
-            + constructorAssists.size() + " values and method " + assists.size() + " values.");
-      }
+      @Override
+      public void inject(ProvisionStack stack, InternalInjector injector) {
+        factoryInstance = Proxy.newProxyInstance(
+            getClass().getClassLoader(),
+            new Class[] {factory},
+            (proxy, method, args) -> {
+              if (method.getName().equals(method.getName())) {
+                Object[] givenArgs = new Object[constructor.getKeys().size()];
+                Map<Key<?>, Object> values = new HashMap<>();
+                for (int i = 0; i < args.length; i++) {
+                  Key<?> valueKey = keys.get(i).getKey();
+                  Object value = args[i];
+                  values.put(valueKey, value);
+                }
+                int i = 0;
+                for (OptionalDefinedKey<?> injection : constructor.getKeys()) {
+                  if (injection.isAssisted()) {
+                    givenArgs[i] = values.get(injection.getKey());
+                  } else {
+                    Object val = injector.getInstance(injector.stackForThisThread(), injection.getKey(), true);
+                    givenArgs[i] = val;
+                  }
+                  i++;
+                }
 
-      creatorMethod = method.getName();
-      break;
-    }
-
-    if (creatorMethod == null) {
-      throw new FactoryException("Factory " + factory.getName() + " has no creator method");
-    }
-
-    binder.$unsafeBind(Key.of(factory), new ProxiedInstanceProvider<>(key, creatorMethod));
-  }
-
-  private class ProxiedInstanceProvider<O> extends InjectedProvider<O> {
-
-    private final Key<O> key;
-    private final String creatorMethodName;
-    private Object factoryInstance;
-
-    public ProxiedInstanceProvider(Key<O> key, String creatorMethodName) {
-      super(() -> null);
-      this.key = key;
-      this.creatorMethodName = creatorMethodName;
-    }
-
-    @Override
-    public void inject(ProvisionStack stack, InternalInjector injector) {
-      factoryInstance = Proxy.newProxyInstance(
-          getClass().getClassLoader(),
-          new Class[] {factory},
-          (proxy, method, args) -> {
-            if (method.getName().equals(creatorMethodName)) {
-              return injector.getInstance(injector.stackForThisThread(), key, false);
+                Object instance = constructor.createInstance(injector.stackForThisThread(), givenArgs);
+                injector.injectMembers((TypeReference<Object>) key.getType(), instance);
+                return instance;
+              }
+              return null;
             }
-            return null;
-          }
-      );
+        );
+      }
+
+      @Override
+      public O get() {
+        @SuppressWarnings("unchecked")
+        O value = (O) factoryInstance;
+        return value;
+      }
     }
 
-    @Override
-    public O get() {
-      @SuppressWarnings("unchecked")
-      O value = (O) factoryInstance;
-      return value;
-    }
+    binder.$unsafeBind(Key.of(factory), new ProxiedInstanceProvider<>());
   }
 
   @Override
