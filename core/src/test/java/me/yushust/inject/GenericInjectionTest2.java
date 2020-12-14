@@ -1,19 +1,26 @@
 package me.yushust.inject;
 
 import me.yushust.inject.key.TypeReference;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class GenericInjectionTest2 {
 
   @Test
   public void test() {
 
-    Injector injector = Injector.create(binder -> {
-      binder.install(new DynamicModule<>(new TypeReference<String>() {}));
-    });
+    Injector injector = Injector.create(binder ->
+      binder.install(new DynamicModule<>(new TypeReference<String>() {})));
+
+    TypeReference<List<String>> expected = new TypeReference<List<String>>() {};
+    TypeReference<List<String>> type = injector.getInstance(new TypeReference<TypeReference<List<String>>>() {});
+
+    Assertions.assertEquals(expected, type);
 
     Foo<String> val = injector.getInstance(TypeReference.of(Foo.class, String.class));
-    System.out.println(val);
+    Assertions.assertNotNull(val);
   }
 
   public static class DynamicModule<T> implements Module {
@@ -37,14 +44,9 @@ public class GenericInjectionTest2 {
   }
 
   public interface Foo<T> {
-    T giveMeThis(T obj);
   }
 
   public static class FooImpl<T> implements Foo<T> {
-    @Override
-    public T giveMeThis(T obj) {
-      return obj;
-    }
   }
 
 }

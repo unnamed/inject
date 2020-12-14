@@ -12,6 +12,8 @@ import me.yushust.inject.util.Validate;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class InjectorImpl extends InternalInjector implements Injector {
@@ -62,6 +64,18 @@ public class InjectorImpl extends InternalInjector implements Injector {
     ) {
       @SuppressWarnings("unchecked")
       T value = (T) this;
+      return value;
+    }
+
+    if (rawType == TypeReference.class) {
+      Type ref = type.getType().getType();
+      if (!(ref instanceof ParameterizedType)) {
+        stack.attach("Cannot inject a non-specific TypeReference " + ref);
+        return null;
+      }
+      ParameterizedType parameterizedType = (ParameterizedType) ref;
+      @SuppressWarnings("unchecked")
+      T value = (T) TypeReference.of(parameterizedType.getActualTypeArguments()[0]);
       return value;
     }
 
