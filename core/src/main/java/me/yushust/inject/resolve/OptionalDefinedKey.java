@@ -7,17 +7,19 @@ import java.util.Objects;
 
 /**
  * An extension for {@link Key} (using composition over inheritance)
- * that adds a boolean state representing the requirement of the
- * injection of this key.
+ * that adds two boolean states representing the requirement of the
+ * injection of this key and if this key will be assisted or not.
  */
 public final class OptionalDefinedKey<T> {
 
   private final Key<T> key;
   private final boolean optional;
+  private final boolean assisted;
 
-  public OptionalDefinedKey(Key<T> key, boolean optional) {
+  public OptionalDefinedKey(Key<T> key, boolean optional, boolean assisted) {
     this.key = Validate.notNull(key, "key");
     this.optional = optional;
+    this.assisted = assisted;
   }
 
   public Key<T> getKey() {
@@ -26,6 +28,10 @@ public final class OptionalDefinedKey<T> {
 
   public boolean isOptional() {
     return optional;
+  }
+
+  public boolean isAssisted() {
+    return assisted;
   }
 
   @Override
@@ -40,11 +46,12 @@ public final class OptionalDefinedKey<T> {
     if (o == null || getClass() != o.getClass()) return false;
     OptionalDefinedKey<?> that = (OptionalDefinedKey<?>) o;
     return optional == that.optional
+        && assisted == that.assisted
         && key.equals(that.key);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(optional, key);
+    return Objects.hash(optional, assisted, key);
   }
 }

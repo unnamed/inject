@@ -1,8 +1,10 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Binder;
+import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.Providers;
 import me.yushust.inject.resolve.QualifierFactory;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
@@ -124,6 +126,11 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
+    public void toFactory(Class<? extends ValueFactory> factory) {
+
+    }
+
+    @Override
     public Binder.CollectionMultiBindingBuilder<E> toInstance(E instance) {
       return toProvider(Providers.instanceProvider(elementKey, instance));
     }
@@ -148,7 +155,7 @@ class MultiBindingBuilderImpl<T> implements
 
     /** Injects members of all element providers */
     @Override
-    void inject(ProvisionStack stack, InternalInjector injector) {
+    public void inject(ProvisionStack stack, InternalInjector injector) {
       for (Provider<? extends E> provider : delegates) {
         if (provider instanceof InjectedProvider) {
           ((InjectedProvider<?>) provider).inject(stack, injector);
@@ -164,7 +171,7 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
-    InjectedProvider<Collection<E>> withScope(Scope scope) {
+    public InjectedProvider<Collection<E>> withScope(Scope scope) {
       return new InjectedProvider<>(
           isInjected(),
           scope.scope(this)
@@ -172,7 +179,7 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
-    Provider<Collection<E>> getDelegate() {
+    public Provider<Collection<E>> getDelegate() {
       return this;
     }
 
@@ -267,6 +274,11 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
+    public void toFactory(Class<? extends ValueFactory> factory) {
+
+    }
+
+    @Override
     public Binder.MapMultiBindingBuilder<K, V> toInstance(V instance) {
       return toProvider(Providers.instanceProvider(key(), instance));
     }
@@ -284,7 +296,7 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
-    void inject(ProvisionStack stack, InternalInjector injector) {
+    public void inject(ProvisionStack stack, InternalInjector injector) {
       delegates.forEach((key, valueProvider) -> {
         if (valueProvider instanceof InjectedProvider) {
           ((InjectedProvider<?>) valueProvider).inject(stack, injector);
@@ -300,7 +312,7 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
-    InjectedProvider<Map<K, V>> withScope(Scope scope) {
+    public InjectedProvider<Map<K, V>> withScope(Scope scope) {
       Validate.notNull(scope, "scope");
       return new InjectedProvider<>(
           isInjected(),
@@ -309,7 +321,7 @@ class MultiBindingBuilderImpl<T> implements
     }
 
     @Override
-    Provider<Map<K, V>> getDelegate() {
+    public Provider<Map<K, V>> getDelegate() {
       return this;
     }
 

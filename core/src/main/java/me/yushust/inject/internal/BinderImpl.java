@@ -8,6 +8,7 @@ import me.yushust.inject.error.BindingException;
 import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.BindListener;
 import me.yushust.inject.resolve.InjectableMethod;
 import me.yushust.inject.resolve.MembersResolver;
 import me.yushust.inject.resolve.QualifierFactory;
@@ -38,6 +39,9 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   }
 
   <T> void bindTo(Key<T> key, Provider<? extends T> provider) {
+    if (provider instanceof BindListener) {
+      ((BindListener) provider).onBind(this, key);
+    }
     this.bindings.put(key, injected(provider));
   }
 
@@ -80,6 +84,10 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
       return;
     }
     throw new BindingException(formatMessages());
+  }
+
+  public MembersResolver getResolver() {
+    return membersResolver;
   }
 
   @Override

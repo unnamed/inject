@@ -1,8 +1,11 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Binder;
+import me.yushust.inject.assisted.ToFactoryProvider;
+import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.Providers;
 import me.yushust.inject.resolve.QualifierFactory;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
@@ -42,6 +45,13 @@ class BindingBuilderImpl<T> implements
     requireNotBound();
     binder.bindTo(key, provider);
     return this;
+  }
+
+  @Override
+  public void toFactory(Class<? extends ValueFactory> factory) {
+    Validate.notNull(factory, "factory");
+    requireNotBound();
+    binder.bindTo(key, new ToFactoryProvider<>(factory));
   }
 
   @Override

@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-class ProvisionStack extends ErrorAttachableImpl {
+public class ProvisionStack extends ErrorAttachableImpl {
 
   // Used to invoke an O(1) "get" method
   private final Map<Key<?>, Object> values =

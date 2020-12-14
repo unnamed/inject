@@ -2,6 +2,7 @@ package me.yushust.inject.error;
 
 import me.yushust.inject.util.Validate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class ErrorAttachableImpl implements ErrorAttachable {
    */
   @Override
   public List<String> getErrorMessages() {
-    return Collections.unmodifiableList(errorMessages);
+    return new ArrayList<>(errorMessages);
   }
 
   @Override

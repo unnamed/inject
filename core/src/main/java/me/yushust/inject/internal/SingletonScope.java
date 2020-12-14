@@ -59,7 +59,7 @@ public enum SingletonScope implements Scope {
     }
 
     @Override
-    InjectedProvider<T> withScope(Scope scope) {
+    public InjectedProvider<T> withScope(Scope scope) {
       if (scope == SingletonScope.INSTANCE) {
         return this;
       }

@@ -3,7 +3,9 @@ package me.yushust.inject.resolve;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 
+import javax.inject.Inject;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -25,7 +27,20 @@ public interface MembersResolver {
    * is found, the default/empty constructor is used (constructor
    * without parameters)</p>
    */
-  InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type);
+  default InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type) {
+    // TODO: Inline this
+    return getConstructor(errors, type, Inject.class);
+  }
+
+  /**
+   * @return Returns the first injectable constructor
+   * found for the specified {@code type}.
+   *
+   * <p>If no constructor annotated with the given {@code annotation}
+   * is found, the default/empty constructor is used (constructor
+   * without parameters)</p>
+   */
+  InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type, Class<? extends Annotation> annotation);
 
   /**
    * @return Returns all the injectable fields for
@@ -39,5 +54,12 @@ public interface MembersResolver {
    * can also be used to get the module provider methods
    */
   List<InjectableMethod> getMethods(TypeReference<?> type, Class<? extends Annotation> annotation);
+
+  /** @return Resolves the key of the given parameter set and its annotations */
+  List<OptionalDefinedKey<?>> keysOf(
+      TypeReference<?> declaringType,
+      Type[] parameterTypes,
+      Annotation[][] parameterAnnotations
+  );
 
 }

@@ -5,11 +5,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import java.lang.reflect.TypeVariable;
 
 public class GenericInjectionTest {
   
   @Test
   public void test() {
+
+    TestClass<String> c = new TestClass<>();
+    TypeReference<String> t = c.get();
+    System.out.println(((TypeVariable<?>) t.getType()).getGenericDeclaration());
+    System.out.println(t);
 
     Injector injector = Injector.create(binder ->
       binder.bind(String.class).toInstance("nefasto")
@@ -17,6 +23,12 @@ public class GenericInjectionTest {
 
     Baz<String> baz = injector.getInstance(new TypeReference<Baz<String>>() {});
     Assertions.assertEquals("nefasto", baz.q);
+  }
+
+  public static class TestClass<T> {
+    public TypeReference<T> get() {
+      return new TypeReference<T>() {};
+    }
   }
 
   public static class Baz<T> {
