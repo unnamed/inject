@@ -4,6 +4,7 @@ import me.yushust.inject.ProvidedBy;
 import me.yushust.inject.Targetted;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.Providers;
 import me.yushust.inject.scope.Scopes;
 
 import javax.inject.Provider;

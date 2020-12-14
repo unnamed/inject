@@ -16,7 +16,7 @@ import me.yushust.inject.key.TypeReference;
  * <p>This abstract class also adds methods for internal
  * usage</p>
  */
-abstract class InternalInjector implements Injector {
+public abstract class InternalInjector implements Injector {
 
   // The provision stack is a sensible part
   // of the library, you must take care while
@@ -93,7 +93,7 @@ abstract class InternalInjector implements Injector {
    * it in the thread local
    */
   @ThreadSensitive
-  protected ProvisionStack stackForThisThread() {
+  public ProvisionStack stackForThisThread() {
     ProvisionStack stack = provisionStackThreadLocal.get();
     // the stack doesn't exist, create a new stack
     // and set to the thread local
@@ -129,7 +129,7 @@ abstract class InternalInjector implements Injector {
    * @param instance The injected instance
    */
   @ThreadSensitive
-  protected abstract <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance);
+  public abstract <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance);
 
   /**
    * Constructs an instance of the specified type. If the method isn't
@@ -142,7 +142,7 @@ abstract class InternalInjector implements Injector {
    *                            instance, true by default
    */
   @ThreadSensitive
-  protected abstract <T> T getInstance(ProvisionStack stack,
+  public abstract <T> T getInstance(ProvisionStack stack,
                                        Key<T> type,
                                        boolean useExplicitBindings);
 

@@ -17,17 +17,21 @@ import javax.inject.Provider;
  *
  * <p>This class is handled by the injector binder</p>
  */
-class InjectedProvider<T> implements Provider<T> {
+public class InjectedProvider<T> implements Provider<T> {
 
   protected final Provider<T> delegate;
   private boolean injected;
 
-  InjectedProvider(boolean injected, Provider<T> delegate) {
+  public InjectedProvider(boolean injected, Provider<T> delegate) {
     this.injected = injected;
-    this.delegate = Validate.notNull(delegate);
+    this.delegate = Validate.notNull(delegate, "delegate");
   }
 
-  void inject(ProvisionStack stack, InternalInjector injector) {
+  public InjectedProvider(Provider<T> delegate) {
+    this(false, delegate);
+  }
+
+  public void inject(ProvisionStack stack, InternalInjector injector) {
     if (this.injected) {
       return;
     }
@@ -39,21 +43,21 @@ class InjectedProvider<T> implements Provider<T> {
     this.injected = true;
   }
 
-  InjectedProvider<T> withScope(Scope scope) {
+  public InjectedProvider<T> withScope(Scope scope) {
     return new InjectedProvider<>(injected, scope.scope(delegate));
   }
 
-  Provider<T> getDelegate() {
+  public Provider<T> getDelegate() {
     return delegate instanceof InjectedProvider ?
         ((InjectedProvider<T>) delegate).getDelegate()
         : delegate;
   }
 
-  boolean isInjected() {
+  public boolean isInjected() {
     return this.injected;
   }
 
-  void setInjected(boolean injected) {
+  public void setInjected(boolean injected) {
     this.injected = injected;
   }
 

@@ -1,5 +1,6 @@
 package me.yushust.inject;
 
+import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
@@ -99,6 +100,8 @@ public interface Binder extends ErrorAttachable {
 
     /** Links the key to a specific provider */
     R toProvider(Provider<? extends T> provider);
+
+    void toFactory(Class<? extends ValueFactory> factory);
 
     /** Links the key to a specific provider type */
     default <P extends Provider<? extends T>> R toProvider(Class<P> providerClass) {

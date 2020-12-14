@@ -35,7 +35,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
 
   @ThreadSensitive
   @Override
-  protected <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
+  public <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
     if (instance != null) {
       stack.push(type, instance);
     }
@@ -52,7 +52,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
 
   @ThreadSensitive
   @Override
-  protected <T> T getInstance(ProvisionStack stack, Key<T> type, boolean useExplicitBindings) {
+  public <T> T getInstance(ProvisionStack stack, Key<T> type, boolean useExplicitBindings) {
     Class<? super T> rawType = type.getType().getRawType();
     // Default injections
     if (

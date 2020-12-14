@@ -1,6 +1,6 @@
 package me.yushust.inject.resolve;
 
-import me.yushust.inject.Assist;
+import me.yushust.inject.assisted.Assist;
 import me.yushust.inject.Qualifiers;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.Key;
@@ -25,7 +25,7 @@ public class MembersResolverImpl implements MembersResolver {
   }
 
   @Override
-  public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type) {
+  public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type, Class<? extends Annotation> annotation) {
 
     Constructor<?> injectableConstructor = null;
     for (Constructor<?> constructor : type.getRawType().getDeclaredConstructors()) {
@@ -123,7 +123,8 @@ public class MembersResolverImpl implements MembersResolver {
     return methods;
   }
 
-  private List<OptionalDefinedKey<?>> keysOf(
+  @Override
+  public List<OptionalDefinedKey<?>> keysOf(
       TypeReference<?> declaringType,
       Type[] parameterTypes,
       Annotation[][] parameterAnnotations

@@ -3,6 +3,7 @@ package me.yushust.inject.internal;
 import me.yushust.inject.Binder;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.Providers;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Provider;

@@ -4,7 +4,9 @@ import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
+import javax.inject.Inject;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +28,12 @@ public class CachedMembersResolver implements MembersResolver {
     this.delegate = Validate.notNull(delegate, "delegate");
   }
 
-  public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type) {
+  public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type, Class<? extends Annotation> annotation) {
+    // Only cache when the annotation is the Inject annotation
+    // TODO: Always cache, using the annotation
+    if (annotation != Inject.class) {
+      return delegate.getConstructor(errors, type, annotation);
+    }
     Solution solution = solutions.get(type);
     // null constructor is valid and indicates that the constructor was
     // already resolved, the sentinel value indicates that the constructor
@@ -73,6 +80,11 @@ public class CachedMembersResolver implements MembersResolver {
       }
     }
     return solution.methods;
+  }
+
+  @Override
+  public List<OptionalDefinedKey<?>> keysOf(TypeReference<?> declaringType, Type[] parameterTypes, Annotation[][] parameterAnnotations) {
+    return delegate.keysOf(declaringType, parameterTypes, parameterAnnotations);
   }
 
   /** Represents an already resolved class */
