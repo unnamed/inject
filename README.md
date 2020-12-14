@@ -41,7 +41,7 @@ public class TeaFactory {
   private static final Object lock = new Object();
   private static Tea tea;
   
-  public Tea get() {
+  public static Tea get() {
     if (tea == null) {
       // thread-safety
       synchronized (lock) {
