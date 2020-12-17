@@ -3,27 +3,29 @@ package me.yushust.inject.assisted.provision;
 import me.yushust.inject.assisted.Assisted;
 import me.yushust.inject.assisted.FactoryException;
 import me.yushust.inject.assisted.ValueFactory;
-import me.yushust.inject.error.ErrorAttachable;
-import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.InternalInjector;
-import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.BindListener;
-import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.resolve.InjectableConstructor;
 import me.yushust.inject.resolve.OptionalDefinedKey;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
 
+/**
+ * Represents a provider of a factory. The keys aren't really
+ * bound to this provider. The provider is never put on the
+ * bindings map, instead of it, it binds the factory type to
+ * a {@link ProxiedFactoryProvider}
+ *
+ * @param <T> The bound key type
+ */
 public class ToFactoryProvider<T>
     extends StdProvider<T>
-    implements BindListener, InjectionListener {
+    implements BindListener {
 
   private final Class<? extends ValueFactory> factory;
 
@@ -34,27 +36,44 @@ public class ToFactoryProvider<T>
   @Override
   public boolean onBind(BinderImpl binder, Key<?> key) {
 
-    ErrorAttachable errors = new ErrorAttachableImpl();
     TypeReference<?> required = key.getType();
-    InjectableConstructor constructor = binder.getResolver().getConstructor(errors, required, Assisted.class);
+    InjectableConstructor constructor = binder.getResolver().getConstructor(binder, required, Assisted.class);
 
-    if (errors.hasErrors() || constructor == null) {
-      if (!errors.hasErrors()) {
-        errors.attach("Cannot resolve constructor annotated with @Assisted in type " + required);
-      }
-      throw new FactoryException(errors.formatMessages());
+    // check created object
+    if (constructor == null) {
+      binder.attach(
+          "Bad assisted object",
+          new FactoryException("Cannot resolve constructor annotated with @Assisted in type " + required)
+      );
+      return false;
     }
 
-    if (factory.getMethods().length != 1) {
-      throw new FactoryException("Factory " + factory.getName() + " has invalid method count");
+    // check factory class
+    if (!factory.isInterface()) {
+      binder.attach("Factory " + factory.getName()+ " must be an interface with one single method!");
+      return false;
+    }
+
+    int methodCount = factory.getMethods().length;
+    if (methodCount != 1) {
+      binder.attach(
+          "Bad factory method",
+          new FactoryException("Factory " + factory.getName()
+              + " has invalid method count (expected: 1, found: " + methodCount + ")")
+      );
+      return false;
     }
 
     Method method = factory.getMethods()[0];
 
-    TypeReference<?> given = TypeReference.of(method.getGenericReturnType());
-    if (!given.equals(required)) {
-      throw new FactoryException("Method " + method.getName() + " of factory "
-          + factory.getName() + " doesn't return " + given);
+    // check return type is equal to the bound key
+    if (!required.getType().equals(method.getGenericReturnType())) {
+      binder.attach(
+          "Bad factory method",
+          new FactoryException("Method " + method.getName() + " of factory "
+              + factory.getName() + " must return " + required)
+      );
+      return false;
     }
 
     List<OptionalDefinedKey<?>> keys = binder.getResolver().keysOf(
@@ -67,8 +86,12 @@ public class ToFactoryProvider<T>
 
     for (OptionalDefinedKey<?> parameterKey : keys) {
       if (!assists.add(parameterKey.getKey())) {
-        throw new FactoryException("Creator method has two equal assisted values! " +
-            "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")");
+        binder.attach(
+            "Duplicated factory assisted keys",
+            new FactoryException("Creator method has two equal assisted values! " +
+                "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")")
+        );
+        return false;
       }
     }
 
@@ -77,37 +100,47 @@ public class ToFactoryProvider<T>
     for (OptionalDefinedKey<?> parameterKey : constructor.getKeys()) {
       if (parameterKey.isAssisted()) {
         if (!assists.contains(parameterKey.getKey())) {
-          throw new FactoryException("Constructor requires assist for "
-              + parameterKey.getKey() + " and method doesn't give it!");
+          binder.attach(
+              "Unsatisfied Assisted Constructor",
+              new FactoryException("Constructor requires assist for "
+                  + parameterKey.getKey() + " and method doesn't give it!")
+          );
+          return false;
         } else if (!constructorAssists.add(parameterKey.getKey())) {
-          throw new FactoryException("Constructor has two equal assisted keys! " +
-              "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")");
+          binder.attach(
+              "Duplicated constructor assisted keys",
+              new FactoryException("Constructor has two equal assisted keys! " +
+                  "Consider using qualifiers to difference them (key " + parameterKey.getKey() + ")")
+          );
+          return false;
         }
       }
     }
 
     if (assists.size() != constructorAssists.size()) {
-      throw new FactoryException("Assists mismatch! Constructor has "
-          + constructorAssists.size() + " values and method " + assists.size() + " values.");
+      binder.attach(
+          "Assists mismatch, different assisted injections count",
+          new FactoryException("Assists mismatch! Constructor has "
+              + constructorAssists.size() + " values and method " + assists.size() + " values.")
+      );
+      return false;
     }
 
-    binder.$unsafeBind(Key.of(factory), new ProxiedInstanceProvider<T>(
+    @SuppressWarnings("unchecked")
+    Key<T> castedKey = (Key<T>) key;
+    binder.$unsafeBind(Key.of(factory), new ProxiedFactoryProvider<>(
         factory,
         method,
         keys,
         constructor,
-        key
+        castedKey
     ));
     return false;
   }
 
   @Override
   public T get() {
-    return null;
+    throw new IllegalStateException("The instance is bound to a Factory, you must get an instance of that factory!");
   }
 
-  @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
-    // no injects
-  }
 }

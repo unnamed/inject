@@ -33,6 +33,10 @@ public class InjectableConstructor {
     }
   }
 
+  public Constructor<?> getMember() {
+    return constructor;
+  }
+
   public List<OptionalDefinedKey<?>> getKeys() {
     return keys;
   }

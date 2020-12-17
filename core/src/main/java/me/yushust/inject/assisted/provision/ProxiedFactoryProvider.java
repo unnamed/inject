@@ -8,17 +8,17 @@ import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.resolve.InjectableConstructor;
-import me.yushust.inject.resolve.InjectableMethod;
 import me.yushust.inject.resolve.OptionalDefinedKey;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class ProxiedInstanceProvider<O>
-    extends StdProvider<O>
+public class ProxiedFactoryProvider<T>
+    extends StdProvider<T>
     implements InjectionListener {
 
   private final Class<? extends ValueFactory> factory;
@@ -26,9 +26,9 @@ class ProxiedInstanceProvider<O>
   private final List<OptionalDefinedKey<?>> keys;
   private final InjectableConstructor constructor;
   private final Key<?> key;
-  private Object factoryInstance;
+  private T factoryInstance;
 
-  ProxiedInstanceProvider(
+  ProxiedFactoryProvider(
       Class<? extends ValueFactory> factory,
       Method method,
       List<OptionalDefinedKey<?>> keys,
@@ -42,6 +42,23 @@ class ProxiedInstanceProvider<O>
     this.key = key;
   }
 
+  public Class<? extends ValueFactory> getFactory() {
+    return factory;
+  }
+
+  public Method getFactoryMethod() {
+    return method;
+  }
+
+  public Key<?> getBuildType() {
+    return key;
+  }
+
+  public Constructor<?> getTargetConstructor() {
+    return constructor.getMember();
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
   private Object createInstance(InternalInjector injector, Object[] extras) {
 
     Map<Key<?>, Object> values = new HashMap<>();
@@ -64,14 +81,16 @@ class ProxiedInstanceProvider<O>
       i++;
     }
 
+
     Object instance = constructor.createInstance(injector.stackForThisThread(), givenArgs);
     injector.injectMembers((TypeReference) key.getType(), instance);
     return instance;
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void onInject(ProvisionStack stack, InternalInjector injector) {
-    factoryInstance = Proxy.newProxyInstance(
+    factoryInstance = (T) Proxy.newProxyInstance(
         getClass().getClassLoader(),
         new Class[]{factory},
         (proxy, method, args) -> {
@@ -85,9 +104,7 @@ class ProxiedInstanceProvider<O>
   }
 
   @Override
-  public O get() {
-    @SuppressWarnings("unchecked")
-    O value = (O) factoryInstance;
-    return value;
+  public T get() {
+    return factoryInstance;
   }
 }
