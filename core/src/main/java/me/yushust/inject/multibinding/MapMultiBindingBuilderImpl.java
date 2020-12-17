@@ -65,7 +65,7 @@ class MapMultiBindingBuilderImpl<K, V> implements Binder.MapMultiBindingBuilder<
         binder.$unsafeBind(mapKey, mapProvider);
       }
 
-      Provider<? extends Map<K, V>> delegate = mapProvider;
+      Provider<? extends Map<K, V>> delegate = Providers.unwrap(mapProvider);
       if (!(delegate instanceof MapBoundProvider)) {
         throw new IllegalStateException("The key '" + mapKey
             + "' is already bound and it isn't a multibinding!");
