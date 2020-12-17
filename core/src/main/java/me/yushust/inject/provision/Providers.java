@@ -8,7 +8,6 @@ import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.provision.ioc.ScopeListener;
-import me.yushust.inject.provision.ioc.WrapperProvider;
 import me.yushust.inject.provision.std.InstanceProvider;
 import me.yushust.inject.provision.std.LinkedProvider;
 import me.yushust.inject.provision.std.ProviderTypeProvider;
@@ -26,9 +25,9 @@ public final class Providers {
     throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
-  public static <T> Provider<T> getDelegate(Provider<T> provider) {
-    if (provider instanceof WrapperProvider) {
-      return ((WrapperProvider<T>) provider).getDelegate();
+  public static <T> Provider<T> unwrap(Provider<T> provider) {
+    if (provider instanceof DelegatingStdProvider) {
+      return unwrap(((DelegatingStdProvider<T>) provider).getDelegate());
     } else {
       return provider;
     }

@@ -6,7 +6,6 @@ import me.yushust.inject.internal.LinkedBuilder;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -30,9 +29,9 @@ class MapMultiBindingBuilderImpl<K, V> implements Binder.MapMultiBindingBuilder<
   @Override
   public void in(Scope scope) {
     Validate.notNull(scope, "scope");
-    StdProvider<? extends Map<K, V>> provider = binder.getProvider(mapKey);
+    Provider<? extends Map<K, V>> provider = Providers.unwrap(binder.getProvider(mapKey));
     if (provider != null) {
-      binder.$unsafeBind(mapKey, ((ScopeListener<?>) provider).withScope(scope));
+      binder.$unsafeBind(mapKey, Providers.scope(provider, scope));
     }
   }
 

@@ -43,7 +43,7 @@ public enum SingletonScope implements Scope {
    * @param <T> The provided type
    */
   static class SingletonProvider<T>
-      extends StdProvider<T>
+      extends DelegatingStdProvider<T>
       implements ScopeListener<T> {
 
     private final Lock instanceLock = new ReentrantLock();
@@ -61,6 +61,7 @@ public enum SingletonScope implements Scope {
      * @param unscoped The unscoped provider
      */
     SingletonProvider(Provider<T> unscoped) {
+      super(unscoped);
       this.delegate = unscoped;
     }
 

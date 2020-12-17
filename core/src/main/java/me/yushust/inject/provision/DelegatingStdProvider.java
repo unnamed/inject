@@ -7,7 +7,6 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.provision.ioc.ScopeListener;
-import me.yushust.inject.provision.ioc.WrapperProvider;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -24,18 +23,21 @@ import java.util.Objects;
  */
 public class DelegatingStdProvider<T>
     extends StdProvider<T>
-    implements InjectionListener, ScopeListener<T>, BindListener, WrapperProvider<T> {
+    implements InjectionListener, ScopeListener<T>, BindListener {
 
   private final Provider<T> delegate;
 
   public DelegatingStdProvider(Provider<T> delegate) {
-    Validate.argument(!(delegate instanceof StdProvider), "Cannot wrap a StdProvider: " + delegate);
     this.delegate = Validate.notNull(delegate, "delegate");
   }
 
   public DelegatingStdProvider(boolean injected, Provider<T> delegate) {
     this(delegate);
     this.setInjected(injected);
+  }
+
+  public Provider<T> getDelegate() {
+    return delegate;
   }
 
   @Override
@@ -51,11 +53,6 @@ public class DelegatingStdProvider<T>
   @Override
   public Provider<T> withScope(Scope scope) {
     return Providers.scope(delegate, scope);
-  }
-
-  @Override
-  public Provider<T> getDelegate() {
-    return delegate;
   }
 
   @Override

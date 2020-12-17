@@ -1,7 +1,6 @@
 package me.yushust.inject.multibinding;
 
 import me.yushust.inject.Binder;
-import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.internal.BinderImpl;
 import me.yushust.inject.internal.LinkedBuilder;
 import me.yushust.inject.key.Key;
@@ -40,7 +39,7 @@ class CollectionMultiBindingBuilderImpl<E> implements
   @Override
   public void in(Scope scope) {
     Validate.notNull(scope, "scope");
-    StdProvider<? extends Collection<E>> provider = binder.getProvider(collectionKey);
+    Provider<? extends Collection<E>> provider = Providers.unwrap(binder.getProvider(collectionKey));
     if (provider != null) {
       binder.$unsafeBind(collectionKey, Providers.scope(provider, scope));
     }
@@ -62,7 +61,7 @@ class CollectionMultiBindingBuilderImpl<E> implements
       binder.$unsafeBind(collectionKey, collectionProvider);
     }
 
-    Provider<? extends Collection<E>> delegate = collectionProvider;
+    Provider<? extends Collection<E>> delegate = Providers.unwrap(collectionProvider);
     if (!(delegate instanceof CollectionBoundProvider)) {
       throw new IllegalStateException("The key '" + collectionKey
           + "' is already bound and it isn't a multibinding!");
@@ -72,11 +71,6 @@ class CollectionMultiBindingBuilderImpl<E> implements
         (CollectionBoundProvider<E>) delegate;
     collectionDelegate.getModifiableProviderCollection().add(provider);
     return this;
-  }
-
-  @Override
-  public void toFactory(Class<? extends ValueFactory> factory) {
-
   }
 
   @Override
