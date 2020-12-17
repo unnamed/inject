@@ -39,10 +39,7 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   }
 
   <T> void bindTo(Key<T> key, Provider<? extends T> provider) {
-    if (provider instanceof BindListener) {
-      ((BindListener) provider).onBind(this, key);
-    }
-    this.bindings.put(key, Providers.normalize(provider));
+    $unsafeBind(key, provider);
   }
 
   public <T> StdProvider<? extends T> getProvider(Key<T> key) {
@@ -58,6 +55,11 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   public void $unsafeBind(Key<?> key, Provider<?> provider) {
     Validate.notNull(key, "key");
     Validate.notNull(provider, "provider");
+    if (provider instanceof BindListener) {
+      if (!((BindListener) provider).onBind(this, key)) {
+        return;
+      }
+    }
     this.bindings.put(key, Providers.normalize(provider));
   }
 
