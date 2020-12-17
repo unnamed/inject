@@ -131,6 +131,15 @@ public abstract class InternalInjector implements Injector {
   @ThreadSensitive
   public abstract <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance);
 
+  @ThreadSensitive
+  public <T> T getInstance(Key<T> type, boolean useExplicitBindings) {
+    return getInstance(
+        stackForThisThread(),
+        type,
+        useExplicitBindings
+    );
+  }
+
   /**
    * Constructs an instance of the specified type. If the method isn't
    * called recursively, the {@code type} doesn't contain qualifiers.

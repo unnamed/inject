@@ -6,6 +6,8 @@ import me.yushust.inject.PropertyHolder;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.Providers;
+import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.resolve.*;
 import me.yushust.inject.util.Validate;
 
@@ -207,12 +209,12 @@ public class InjectorImpl extends InternalInjector implements Injector {
 
   private <T> Provider<T> getProviderAndInject(ProvisionStack stack, Key<T> key) {
     @SuppressWarnings("unchecked")
-    InjectedProvider<T> provider = (InjectedProvider<T>) binder.getProvider(key);
+    StdProvider<T> provider = (StdProvider<T>) binder.getProvider(key);
     if (provider == null) {
       return null;
     }
     if (!provider.isInjected()) {
-      provider.inject(stack, this);
+      Providers.inject(this, stack, provider);
     }
     return provider;
   }

@@ -5,6 +5,7 @@ import me.yushust.inject.Targetted;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
+import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.scope.Scopes;
 
 import javax.inject.Provider;
@@ -26,7 +27,7 @@ final class AnnotationScanner {
   static <T> void bind(TypeReference<T> keyType, BinderImpl binder) {
 
     Key<T> key = Key.of(keyType);
-    InjectedProvider<? extends T> provider = binder.getProvider(key);
+    StdProvider<? extends T> provider = binder.getProvider(key);
 
     // it's already explicit-bound
     if (provider != null) {
@@ -52,7 +53,7 @@ final class AnnotationScanner {
   static <T> void scope(TypeReference<T> keyType, BinderImpl binder) {
 
     Key<T> key = Key.of(keyType);
-    InjectedProvider<? extends T> provider = binder.getProvider(key);
+    StdProvider<? extends T> provider = binder.getProvider(key);
 
     Class<? super T> rawType = keyType.getRawType();
 
@@ -60,7 +61,7 @@ final class AnnotationScanner {
     if (provider == null && !rawType.isInterface()
         && !Modifier.isAbstract(rawType.getModifiers())) {
       // link to self
-      provider = binder.injected(Providers.link(key, key));
+      provider = Providers.normalize(Providers.link(key, key));
     }
 
     // if there's no a provider it cannot
@@ -70,7 +71,7 @@ final class AnnotationScanner {
     }
 
     if (rawType.isAnnotationPresent(Singleton.class)) {
-      binder.bindTo(key, provider.withScope(Scopes.SINGLETON));
+      binder.bindTo(key, Providers.scope(provider, Scopes.SINGLETON));
     }
   }
 

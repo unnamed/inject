@@ -1,7 +1,7 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Binder;
-import me.yushust.inject.assisted.ToFactoryProvider;
+import me.yushust.inject.assisted.provision.ToFactoryProvider;
 import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
@@ -33,9 +33,10 @@ class BindingBuilderImpl<T> implements
     selfBindingIfNotBound();
     binder.bindTo(
         key,
-        binder
-            .getProvider(key)
-            .withScope(scope)
+        Providers.scope(
+            binder.getProvider(key),
+            scope
+        )
     );
   }
 

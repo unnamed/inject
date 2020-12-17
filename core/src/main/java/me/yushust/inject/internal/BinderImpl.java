@@ -8,7 +8,10 @@ import me.yushust.inject.error.BindingException;
 import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.BindListener;
+import me.yushust.inject.multibinding.MultiBindingBuilderImpl;
+import me.yushust.inject.provision.Providers;
+import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.resolve.InjectableMethod;
 import me.yushust.inject.resolve.MembersResolver;
 import me.yushust.inject.resolve.QualifierFactory;
@@ -42,29 +45,23 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
     if (provider instanceof BindListener) {
       ((BindListener) provider).onBind(this, key);
     }
-    this.bindings.put(key, injected(provider));
+    this.bindings.put(key, Providers.normalize(provider));
   }
 
-  <T> InjectedProvider<? extends T> getProvider(Key<T> key) {
+  public <T> StdProvider<? extends T> getProvider(Key<T> key) {
     // it's safe, the providers are setted
     // after (provider -> injected provider) conversion
     @SuppressWarnings("unchecked")
-    InjectedProvider<? extends T> provider =
-        (InjectedProvider<? extends T>) this.bindings.get(key);
+    StdProvider<? extends T> provider =
+        (StdProvider<? extends T>) this.bindings.get(key);
     return provider;
-  }
-
-  <T> InjectedProvider<T> injected(Provider<T> provider) {
-    return provider instanceof InjectedProvider
-        ? (InjectedProvider<T>) provider
-        : new InjectedProvider<>(false, provider);
   }
 
   @Override
   public void $unsafeBind(Key<?> key, Provider<?> provider) {
     Validate.notNull(key, "key");
     Validate.notNull(provider, "provider");
-    this.bindings.put(key, injected(provider));
+    this.bindings.put(key, Providers.normalize(provider));
   }
 
   @Override

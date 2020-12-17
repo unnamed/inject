@@ -17,7 +17,7 @@ import java.util.Set;
  * like an abstract class (it's not an abstract class
  * because sometimes we need multiple "super-classes")
  */
-interface KeyBuilder<R, T> extends Binder.Qualified<R> {
+public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
 
   QualifierFactory factory();
 

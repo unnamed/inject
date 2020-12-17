@@ -11,7 +11,6 @@ public class InstanceBindingTest {
   public void test() {
 
     Baz baz = new Baz(); // not injected, the injector doesn't know about this instance
-    Assertions.assertNull(baz.boo);
 
     Injector injector = Injector.create(binder ->
         binder.bind(Baz.class).toInstance(baz)
@@ -19,16 +18,9 @@ public class InstanceBindingTest {
     Baz baz2 = injector.getInstance(Baz.class);
 
     Assertions.assertSame(baz, baz2);
-    Assertions.assertNotNull(baz.boo);
-    Assertions.assertSame(baz, baz.boo.baz);
   }
 
   public static class Baz {
-    @Inject private Boo boo;
-  }
-
-  public static class Boo {
-    @Inject private Baz baz;
   }
 
 }

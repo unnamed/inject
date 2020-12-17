@@ -1,14 +1,18 @@
-package me.yushust.inject.assisted;
+package me.yushust.inject.assisted.provision;
 
+import me.yushust.inject.assisted.Assisted;
+import me.yushust.inject.assisted.FactoryException;
+import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.InjectedProvider;
 import me.yushust.inject.internal.InternalInjector;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.BindListener;
+import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.ioc.BindListener;
+import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.resolve.InjectableConstructor;
 import me.yushust.inject.resolve.OptionalDefinedKey;
 import me.yushust.inject.util.Validate;
@@ -18,18 +22,17 @@ import java.lang.reflect.Proxy;
 import java.util.*;
 
 public class ToFactoryProvider<T>
-    extends InjectedProvider<T>
-    implements BindListener {
+    extends StdProvider<T>
+    implements BindListener, InjectionListener {
 
   private final Class<? extends ValueFactory> factory;
 
   public ToFactoryProvider(Class<? extends ValueFactory> factory) {
-    super(() -> null);
     this.factory = Validate.notNull(factory, "factory");
   }
 
   @Override
-  public void onBind(BinderImpl binder, Key<?> key) {
+  public boolean onBind(BinderImpl binder, Key<?> key) {
 
     ErrorAttachable errors = new ErrorAttachableImpl();
     TypeReference<?> required = key.getType();
@@ -88,62 +91,23 @@ public class ToFactoryProvider<T>
           + constructorAssists.size() + " values and method " + assists.size() + " values.");
     }
 
-    class ProxiedInstanceProvider<O> extends InjectedProvider<O> {
-
-      private Object factoryInstance;
-
-      public ProxiedInstanceProvider() {
-        super(() -> null);
-      }
-
-      @Override
-      public void inject(ProvisionStack stack, InternalInjector injector) {
-        factoryInstance = Proxy.newProxyInstance(
-            getClass().getClassLoader(),
-            new Class[] {factory},
-            (proxy, method, args) -> {
-              if (method.getName().equals(method.getName())) {
-                Object[] givenArgs = new Object[constructor.getKeys().size()];
-                Map<Key<?>, Object> values = new HashMap<>();
-                for (int i = 0; i < args.length; i++) {
-                  Key<?> valueKey = keys.get(i).getKey();
-                  Object value = args[i];
-                  values.put(valueKey, value);
-                }
-                int i = 0;
-                for (OptionalDefinedKey<?> injection : constructor.getKeys()) {
-                  if (injection.isAssisted()) {
-                    givenArgs[i] = values.get(injection.getKey());
-                  } else {
-                    Object val = injector.getInstance(injector.stackForThisThread(), injection.getKey(), true);
-                    givenArgs[i] = val;
-                  }
-                  i++;
-                }
-
-                Object instance = constructor.createInstance(injector.stackForThisThread(), givenArgs);
-                injector.injectMembers((TypeReference<Object>) key.getType(), instance);
-                return instance;
-              }
-              return null;
-            }
-        );
-      }
-
-      @Override
-      public O get() {
-        @SuppressWarnings("unchecked")
-        O value = (O) factoryInstance;
-        return value;
-      }
-    }
-
-    binder.$unsafeBind(Key.of(factory), new ProxiedInstanceProvider<>());
+    binder.$unsafeBind(Key.of(factory), new ProxiedInstanceProvider<T>(
+        factory,
+        method,
+        keys,
+        constructor,
+        key
+    ));
+    return false;
   }
 
   @Override
-  public void inject(ProvisionStack stack, InternalInjector injector) {
-
+  public T get() {
+    return null;
   }
 
+  @Override
+  public void onInject(ProvisionStack stack, InternalInjector injector) {
+    // no injects
+  }
 }

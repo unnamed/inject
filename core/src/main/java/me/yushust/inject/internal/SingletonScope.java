@@ -1,5 +1,8 @@
 package me.yushust.inject.internal;
 
+import me.yushust.inject.provision.DelegatingStdProvider;
+import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 
 import javax.inject.Provider;
@@ -33,13 +36,15 @@ public enum SingletonScope implements Scope {
    * <p>The singleton provider wrapper executes the delegated
    * provider once, then, returns the same saved instance.</p>
    *
-   * <p>The singleton provider extends to {@link InjectedProvider}
+   * <p>The singleton provider extends to {@link StdProvider}
    * only for optimization, the injection is never invoked in
    * the SingletonProvider, it's invoked in the delegate.</p>
    *
    * @param <T> The provided type
    */
-  static class SingletonProvider<T> extends InjectedProvider<T> implements Provider<T> {
+  static class SingletonProvider<T>
+      extends StdProvider<T>
+      implements ScopeListener<T> {
 
     private final Lock instanceLock = new ReentrantLock();
 
@@ -48,6 +53,7 @@ public enum SingletonScope implements Scope {
      * we double-check if the instance is null
      */
     private volatile T instance;
+    private final Provider<T> delegate;
 
     /**
      * Constructs a new Singleton Provider wrapper
@@ -55,16 +61,16 @@ public enum SingletonScope implements Scope {
      * @param unscoped The unscoped provider
      */
     SingletonProvider(Provider<T> unscoped) {
-      super(false, unscoped);
+      this.delegate = unscoped;
     }
 
     @Override
-    public InjectedProvider<T> withScope(Scope scope) {
+    public Provider<T> withScope(Scope scope) {
       if (scope == SingletonScope.INSTANCE) {
         return this;
       }
       // scope the already scoped provider
-      return new InjectedProvider<>(
+      return new DelegatingStdProvider<>(
           isInjected(), scope.scope(this)
       );
     }

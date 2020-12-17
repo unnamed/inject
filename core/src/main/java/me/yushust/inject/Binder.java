@@ -4,12 +4,14 @@ import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.multibinding.CollectionCreator;
+import me.yushust.inject.multibinding.MapCreator;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
 
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
+import java.util.*;
 
 // TODO: Add the EDSL specification
 public interface Binder extends ErrorAttachable {
@@ -134,18 +136,40 @@ public interface Binder extends ErrorAttachable {
   interface MultiBindingBuilder<T> extends Qualified<MultiBindingBuilder<T>> {
 
     /** Starts linking and scoping the element type as a Set */
-    CollectionMultiBindingBuilder<T> asSet();
+    default CollectionMultiBindingBuilder<T> asSet() {
+      return asCollection(Set.class, HashSet::new);
+    }
 
     /** Starts linking and scoping the element type as a List */
-    CollectionMultiBindingBuilder<T> asList();
+    default CollectionMultiBindingBuilder<T> asList() {
+      return asCollection(List.class, ArrayList::new);
+    }
+
+    /** Starts linking and scoping the element type using the collection creator returned instances */
+    default CollectionMultiBindingBuilder<T> asCollection(CollectionCreator collectionCreator) {
+      return asCollection(Collection.class, collectionCreator);
+    }
+
+    /** Starts linking and scoping the element type using the collection creator returned instances */
+    CollectionMultiBindingBuilder<T> asCollection(Class<?> baseType, CollectionCreator collectionCreator);
 
     /** Starts linking and scoping the element type as a Map with the specified key type */
     default <K> MapMultiBindingBuilder<K, T> asMap(Class<K> keyClass) {
-      return asMap(TypeReference.of(keyClass));
+      return asMap(keyClass, HashMap::new);
+    }
+
+    /** Starts linking and scoping the element type as a Map with the specified key type and map creator */
+    default <K> MapMultiBindingBuilder<K, T> asMap(Class<K> keyClass, MapCreator mapCreator) {
+      return asMap(TypeReference.of(keyClass) , mapCreator);
     }
 
     /** Starts linking and scoping the element type as a Map with the specified key type */
-    <K> MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference);
+    default <K> MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference) {
+      return asMap(keyReference, HashMap::new);
+    }
+
+    /** Starts linking and scoping the element type as a Map with the specified key type and map creator */
+    <K> MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference, MapCreator mapCreator);
 
   }
 

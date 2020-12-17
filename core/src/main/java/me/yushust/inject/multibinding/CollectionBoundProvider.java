@@ -1,0 +1,84 @@
+package me.yushust.inject.multibinding;
+
+import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.ProvisionStack;
+import me.yushust.inject.key.Key;
+import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.DelegatingStdProvider;
+import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.ioc.InjectionListener;
+import me.yushust.inject.provision.ioc.ScopeListener;
+import me.yushust.inject.scope.Scope;
+
+import javax.inject.Provider;
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * Represents a Collection provider that delegates all the
+ * injection to the element providers.
+ *
+ * @param <E> The element type
+ */
+class CollectionBoundProvider<E>
+    extends StdProvider<Collection<E>>
+    implements InjectionListener, ScopeListener<Collection<E>> {
+
+  private final Collection<Provider<? extends E>> delegates;
+  private final CollectionCreator collectionCreator;
+
+  CollectionBoundProvider(CollectionCreator collectionCreator) {
+    this.collectionCreator = collectionCreator;
+    this.delegates = collectionCreator.create();
+  }
+
+  /**
+   * Injects members of all element providers
+   */
+  @Override
+  public void onInject(ProvisionStack stack, InternalInjector injector) {
+    for (Provider<? extends E> provider : delegates) {
+      if (provider instanceof InjectionListener) {
+        ((InjectionListener) provider).onInject(stack, injector);
+      } else {
+        injector.injectMembers(
+            stack,
+            Key.of(TypeReference.of(provider.getClass())),
+            provider
+        );
+      }
+    }
+    setInjected(true);
+  }
+
+  @Override
+  public Provider<Collection<E>> withScope(Scope scope) {
+    return new DelegatingStdProvider<>(
+        isInjected(),
+        scope.scope(this)
+    );
+  }
+
+  @Override
+  public Collection<E> get() {
+    Collection<E> collection = collectionCreator.create();
+    for (Provider<? extends E> delegate : delegates) {
+      collection.add(delegate.get());
+    }
+    return collection;
+  }
+
+  public Collection<Provider<? extends E>> getProviders() {
+    return Collections.unmodifiableCollection(delegates);
+  }
+
+  /** Internal method for getting the providers without wrapping the collection */
+  Collection<Provider<? extends E>> getModifiableProviderCollection() {
+    return delegates;
+  }
+
+  @Override
+  public String toString() {
+    return "CollectionMultiBound(" + delegates + ")";
+  }
+}

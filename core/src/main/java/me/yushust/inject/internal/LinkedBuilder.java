@@ -1,6 +1,8 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Binder;
+import me.yushust.inject.assisted.ValueFactory;
+import me.yushust.inject.assisted.provision.ToFactoryProvider;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
@@ -11,6 +13,12 @@ import javax.inject.Provider;
 public interface LinkedBuilder<R,T> extends Binder.Linked<R, T> {
 
   Key<T> key();
+
+  @Override
+  default void toFactory(Class<? extends ValueFactory> factory) {
+    Validate.notNull(factory, "factory");
+    toProvider(new ToFactoryProvider<>(factory));
+  }
 
   @Override
   default R to(TypeReference<? extends T> targetType) {
