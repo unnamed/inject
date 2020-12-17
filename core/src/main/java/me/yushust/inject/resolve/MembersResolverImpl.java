@@ -5,7 +5,6 @@ import me.yushust.inject.Qualifiers;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.util.Validate;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
@@ -17,12 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MembersResolverImpl implements MembersResolver {
-
-  private final QualifierFactory qualifierFactory;
-
-  public MembersResolverImpl(QualifierFactory qualifierFactory) {
-    this.qualifierFactory = Validate.notNull(qualifierFactory, "qualifierFactory");
-  }
 
   @Override
   public InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type, Class<? extends Annotation> annotation) {
@@ -157,7 +150,7 @@ public class MembersResolverImpl implements MembersResolver {
       }
     }
     @SuppressWarnings({"rawtypes"})
-    Key key = Key.of(type, Qualifiers.getQualifiers(qualifierFactory, annotations));
+    Key key = Key.of(type, Qualifiers.getQualifiers(annotations));
     @SuppressWarnings("unchecked")
     OptionalDefinedKey<?> optionalDefinedKey =
         new OptionalDefinedKey<Object>(key, optional, assisted);

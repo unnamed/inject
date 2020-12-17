@@ -4,7 +4,6 @@ import me.yushust.inject.Binder;
 import me.yushust.inject.internal.*;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.resolve.QualifierFactory;
 
 import java.util.*;
 
@@ -12,12 +11,10 @@ public class MultiBindingBuilderImpl<T> implements
     Binder.MultiBindingBuilder<T>,
     KeyBuilder<Binder.MultiBindingBuilder<T>, T> {
 
-  private final QualifierFactory qualifierFactory;
   private Key<T> key;
   private final BinderImpl binder;
 
-  public MultiBindingBuilderImpl(QualifierFactory qualifierFactory, BinderImpl binder, TypeReference<T> key) {
-    this.qualifierFactory = qualifierFactory;
+  public MultiBindingBuilderImpl(BinderImpl binder, TypeReference<T> key) {
     this.key = Key.of(key);
     this.binder = binder;
   }
@@ -33,11 +30,6 @@ public class MultiBindingBuilderImpl<T> implements
   public <K> Binder.MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference, MapCreator mapCreator) {
     Key<Map<K, T>> mapKey = Key.of(TypeReference.mapTypeOf(keyReference, key.getType()));
     return new MapMultiBindingBuilderImpl<>(binder, mapCreator, mapKey, key);
-  }
-
-  @Override
-  public QualifierFactory factory() {
-    return qualifierFactory;
   }
 
   @Override

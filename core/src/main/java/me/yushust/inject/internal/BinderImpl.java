@@ -14,7 +14,6 @@ import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.resolve.InjectableMethod;
 import me.yushust.inject.resolve.MembersResolver;
-import me.yushust.inject.resolve.QualifierFactory;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
 import me.yushust.inject.util.Validate;
@@ -33,11 +32,9 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   private final Map<Key<?>, Provider<?>> bindings =
       new HashMap<>();
 
-  private final QualifierFactory qualifierFactory;
   private final MembersResolver membersResolver;
 
-  public BinderImpl(QualifierFactory qualifierFactory, MembersResolver membersResolver) {
-    this.qualifierFactory = qualifierFactory;
+  public BinderImpl(MembersResolver membersResolver) {
     this.membersResolver = membersResolver;
   }
 
@@ -66,12 +63,12 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
 
   @Override
   public <T> QualifiedBindingBuilder<T> bind(TypeReference<T> keyType) {
-    return new BindingBuilderImpl<>(qualifierFactory, this, keyType);
+    return new BindingBuilderImpl<>(this, keyType);
   }
 
   @Override
   public <T> Binder.MultiBindingBuilder<T> multibind(TypeReference<T> keyType) {
-    return new MultiBindingBuilderImpl<>(qualifierFactory, this, keyType);
+    return new MultiBindingBuilderImpl<>(this, keyType);
   }
 
   /** Throws the errors attached to this attachable */
@@ -104,7 +101,7 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
             ? Scopes.SINGLETON : Scopes.NONE;
 
         bindTo(
-            Key.of(key, Qualifiers.getQualifiers(qualifierFactory, method.getAnnotations())),
+            Key.of(key, Qualifiers.getQualifiers(method.getAnnotations())),
             scope.scope(
                 new MethodAsProvider<>(
                     Modifier.isStatic(method.getModifiers())

@@ -1,13 +1,11 @@
 package me.yushust.inject;
 
 import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.DefaultQualifierFactory;
 import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.resolve.CachedMembersResolver;
 import me.yushust.inject.resolve.MembersResolver;
 import me.yushust.inject.resolve.MembersResolverImpl;
-import me.yushust.inject.resolve.QualifierFactory;
 
 import javax.inject.Provider;
 import java.util.Arrays;
@@ -75,11 +73,8 @@ public interface Injector {
   }
 
   static Injector create(Iterable<? extends Module> modules) {
-    QualifierFactory qualifierFactory = DefaultQualifierFactory.INSTANCE;
-    MembersResolver membersResolver = CachedMembersResolver.wrap(
-        new MembersResolverImpl(qualifierFactory)
-    );
-    BinderImpl binder = new BinderImpl(qualifierFactory, membersResolver);
+    MembersResolver membersResolver = CachedMembersResolver.wrap(new MembersResolverImpl());
+    BinderImpl binder = new BinderImpl(membersResolver);
     binder.install(modules);
     if (binder.hasErrors()) {
       binder.reportAttachedErrors();

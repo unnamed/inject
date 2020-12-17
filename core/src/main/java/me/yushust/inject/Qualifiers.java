@@ -101,16 +101,13 @@ public final class Qualifiers {
    * annotations to a real {@link Qualifier}
    * @return The collection of valid found qualifiers
    */
-  public static Set<Qualifier> getQualifiers(QualifierFactory factory, Annotation[] annotations) {
+  public static Set<Qualifier> getQualifiers(Annotation[] annotations) {
     Set<Qualifier> qualifiers = new HashSet<>();
     for (Annotation annotation : annotations) {
       if (!annotation.annotationType().isAnnotationPresent(javax.inject.Qualifier.class)) {
         continue;
       }
-      Qualifier qualifier = factory.getQualifier(annotation);
-      if (qualifier == null) {
-        continue;
-      }
+      Qualifier qualifier = QualifierFactory.getQualifier(annotation);
       qualifiers.add(qualifier);
     }
     return qualifiers;

@@ -19,8 +19,6 @@ import java.util.Set;
  */
 public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
 
-  QualifierFactory factory();
-
   Key<T> key();
 
   void setKey(Key<T> key);
@@ -28,14 +26,14 @@ public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
   @Override
   default R markedWith(Class<? extends Annotation> qualifierType) {
     Validate.notNull(qualifierType, "qualifierType");
-    qualified(factory().getQualifier(qualifierType));
+    qualified(QualifierFactory.getQualifier(qualifierType));
     return getReturnValue();
   }
 
   @Override
   default R qualified(Annotation annotation) {
     Validate.notNull(annotation, "annotation");
-    qualified(factory().getQualifier(annotation));
+    qualified(QualifierFactory.getQualifier(annotation));
     return getReturnValue();
   }
 

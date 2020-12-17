@@ -6,7 +6,6 @@ import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
-import me.yushust.inject.resolve.QualifierFactory;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -17,12 +16,10 @@ class BindingBuilderImpl<T> implements
     KeyBuilder<Binder.QualifiedBindingBuilder<T>, T>,
     LinkedBuilder<Binder.Scoped,T> {
 
-  private final QualifierFactory qualifierFactory;
   private Key<T> key;
   private final BinderImpl binder;
 
-  protected BindingBuilderImpl(QualifierFactory factory, BinderImpl binder, TypeReference<T> key) {
-    this.qualifierFactory = factory;
+  protected BindingBuilderImpl(BinderImpl binder, TypeReference<T> key) {
     this.key = Key.of(key);
     this.binder = binder;
   }
@@ -71,11 +68,6 @@ class BindingBuilderImpl<T> implements
     if (binder.getProvider(key) == null) {
       toProvider(Providers.link(key, key));
     }
-  }
-
-  @Override
-  public QualifierFactory factory() {
-    return qualifierFactory;
   }
 
   @Override
