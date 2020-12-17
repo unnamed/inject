@@ -3,7 +3,6 @@ package me.yushust.inject.resolve;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.TypeReference;
 
-import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -18,19 +17,6 @@ import java.util.List;
  * resolved members are returned</p>
  */
 public interface MembersResolver {
-
-  /**
-   * @return Returns the first injectable constructor
-   * found for the specified {@code type}.
-   *
-   * <p>If no constructor annotated with {@link javax.inject.Inject}
-   * is found, the default/empty constructor is used (constructor
-   * without parameters)</p>
-   */
-  default InjectableConstructor getConstructor(ErrorAttachable errors, TypeReference<?> type) {
-    // TODO: Inline this
-    return getConstructor(errors, type, Inject.class);
-  }
 
   /**
    * @return Returns the first injectable constructor

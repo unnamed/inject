@@ -43,7 +43,7 @@ public class CachedMembersResolver implements MembersResolver {
         solution = new Solution();
         solutions.put(type, solution);
       }
-      solution.constructor = delegate.getConstructor(errors, type);
+      solution.constructor = delegate.getConstructor(errors, type, Inject.class);
     }
     // so it's null or an instance of injectable constructor
     return (InjectableConstructor) solution.constructor;

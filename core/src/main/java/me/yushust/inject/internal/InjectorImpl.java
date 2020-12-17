@@ -137,7 +137,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
       }
     }
 
-    InjectableConstructor constructor = membersResolver.getConstructor(stack, type.getType());
+    InjectableConstructor constructor = membersResolver.getConstructor(stack, type.getType(), Inject.class);
     if (constructor == null) { // the errors are thrown by the caller
       return null;
     }
