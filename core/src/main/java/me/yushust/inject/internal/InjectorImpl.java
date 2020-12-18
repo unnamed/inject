@@ -8,6 +8,7 @@ import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.std.ToGenericProvider;
 import me.yushust.inject.resolve.*;
 import me.yushust.inject.util.Validate;
 
@@ -133,7 +134,11 @@ public class InjectorImpl extends InternalInjector implements Injector {
     if (useExplicitBindings) {
       Provider<T> provider = getProviderAndInject(stack, type);
       if (provider != null) {
-        return provider.get();
+        if (provider instanceof ToGenericProvider) {
+          return ((ToGenericProvider<T>) provider).get(type);
+        } else {
+          return provider.get();
+        }
       }
     }
 
@@ -211,7 +216,18 @@ public class InjectorImpl extends InternalInjector implements Injector {
     @SuppressWarnings("unchecked")
     StdProvider<T> provider = (StdProvider<T>) binder.getProvider(key);
     if (provider == null) {
-      return null;
+      Class<?> rawType = key.getType().getRawType();
+      if (key.getType().getType() != rawType) {
+        @SuppressWarnings("unchecked")
+        StdProvider<T> rawTypeProvider = (StdProvider<T>) binder.getProvider(Key.of(rawType));
+        if (rawTypeProvider instanceof ToGenericProvider) {
+          provider = rawTypeProvider;
+        } else {
+          return null;
+        }
+      } else {
+        return null;
+      }
     }
     if (!provider.isInjected()) {
       Providers.inject(this, stack, provider);
