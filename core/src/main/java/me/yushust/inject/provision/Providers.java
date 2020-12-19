@@ -11,6 +11,7 @@ import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.provision.std.InstanceProvider;
 import me.yushust.inject.provision.std.LinkedProvider;
 import me.yushust.inject.provision.std.ProviderTypeProvider;
+import me.yushust.inject.provision.std.ScopedProvider;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -28,6 +29,8 @@ public final class Providers {
   public static <T> Provider<T> unwrap(Provider<T> provider) {
     if (provider instanceof DelegatingStdProvider) {
       return unwrap(((DelegatingStdProvider<T>) provider).getDelegate());
+    } else if (provider instanceof ScopedProvider) {
+      return unwrap(((ScopedProvider<T>) provider).getUnscoped());
     } else {
       return provider;
     }
@@ -45,7 +48,9 @@ public final class Providers {
     if (provider instanceof ScopeListener) {
       return ((ScopeListener<T>) provider).withScope(scope);
     } else {
-      return scope.scope(provider);
+      StdProvider<T> scopedProvider = new ScopedProvider<>(provider, scope);
+      scopedProvider.setInjected(provider instanceof StdProvider && ((StdProvider<T>) provider).isInjected());
+      return scopedProvider;
     }
   }
 

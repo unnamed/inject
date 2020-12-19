@@ -4,12 +4,8 @@ import me.yushust.inject.internal.InternalInjector;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.DelegatingStdProvider;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.InjectionListener;
-import me.yushust.inject.provision.ioc.ScopeListener;
-import me.yushust.inject.scope.Scope;
-import me.yushust.inject.util.Validate;
 
 import javax.inject.Provider;
 import java.util.Collections;
@@ -17,7 +13,7 @@ import java.util.Map;
 
 class MapBoundProvider<K, V>
     extends StdProvider<Map<K, V>>
-    implements InjectionListener, ScopeListener<Map<K, V>> {
+    implements InjectionListener {
 
   private final Map<K, Provider<? extends V>> delegates;
   private final MapCreator mapCreator;
@@ -41,15 +37,6 @@ class MapBoundProvider<K, V>
       }
     });
     setInjected(true);
-  }
-
-  @Override
-  public Provider<Map<K, V>> withScope(Scope scope) {
-    Validate.notNull(scope, "scope");
-    return new DelegatingStdProvider<>(
-        isInjected(),
-        scope.scope(this)
-    );
   }
 
   @Override

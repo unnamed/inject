@@ -8,6 +8,7 @@ import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.ioc.MatchListener;
 import me.yushust.inject.provision.std.ToGenericProvider;
 import me.yushust.inject.resolve.*;
 import me.yushust.inject.util.Validate;
@@ -134,8 +135,8 @@ public class InjectorImpl extends InternalInjector implements Injector {
     if (useExplicitBindings) {
       Provider<T> provider = getProviderAndInject(stack, type);
       if (provider != null) {
-        if (provider instanceof ToGenericProvider) {
-          return ((ToGenericProvider<T>) provider).get(type);
+        if (provider instanceof MatchListener) {
+          return ((MatchListener<T>) provider).get(type);
         } else {
           return provider.get();
         }

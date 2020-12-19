@@ -6,6 +6,7 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.BindListener;
+import me.yushust.inject.provision.ioc.MatchListener;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.ParameterizedType;
@@ -13,7 +14,7 @@ import java.lang.reflect.Type;
 
 public class ToGenericProvider<T>
     extends StdProvider<T>
-    implements BindListener {
+    implements BindListener, MatchListener<T> {
 
   private final GenericProvider<T> provider;
 
@@ -41,6 +42,7 @@ public class ToGenericProvider<T>
   }
 
   /** Special injector case for keys bound to generic providers */
+  @Override
   public T get(Key<?> bound) {
     if (bound.getType().getType() == bound.getType().getRawType()) {
       get(); // throws an exception

@@ -9,20 +9,27 @@ import javax.inject.Inject;
 public class ToGenericProviderTest {
 
   @Inject private Foo<String> stringFoo;
+  @Inject private Foo<String> stringFoo2;
+
   @Inject private Foo<Integer> intFoo;
+  @Inject private Foo<Integer> intFoo2;
+
   @Inject private Foo<Double> doubleFoo;
 
   @Test
   public void test() {
 
     Injector injector = Injector.create(binder ->
-      binder.bind(Foo.class).toGenericProvider(new FooGenericProvider()));
+      binder.bind(Foo.class).toGenericProvider(new FooGenericProvider()).singleton());
 
     injector.injectMembers(this);
 
     Assertions.assertEquals("brutal", stringFoo.give());
     Assertions.assertEquals(777, intFoo.give());
     Assertions.assertEquals(123.456, doubleFoo.give());
+
+    Assertions.assertSame(stringFoo, stringFoo2);
+    Assertions.assertSame(intFoo, intFoo2);
   }
 
   public static class FooGenericProvider implements GenericProvider<Foo<?>> {

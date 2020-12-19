@@ -1,7 +1,5 @@
 package me.yushust.inject.scope;
 
-import me.yushust.inject.internal.SingletonScope;
-
 import javax.inject.Provider;
 
 /**

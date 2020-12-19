@@ -35,7 +35,11 @@ public final class Validate {
    */
   public static <T> T notNull(T object, String message, Object... parameters) {
     if (object == null) {
-      throw new NullPointerException(String.format(message, parameters));
+      if (message == null) {
+        throw new NullPointerException();
+      } else {
+        throw new NullPointerException(String.format(message, parameters));
+      }
     } else {
       return object;
     }

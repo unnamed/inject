@@ -4,11 +4,8 @@ import me.yushust.inject.internal.InternalInjector;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.DelegatingStdProvider;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.InjectionListener;
-import me.yushust.inject.provision.ioc.ScopeListener;
-import me.yushust.inject.scope.Scope;
 
 import javax.inject.Provider;
 import java.util.Collection;
@@ -22,7 +19,7 @@ import java.util.Collections;
  */
 class CollectionBoundProvider<E>
     extends StdProvider<Collection<E>>
-    implements InjectionListener, ScopeListener<Collection<E>> {
+    implements InjectionListener {
 
   private final Collection<Provider<? extends E>> delegates;
   private final CollectionCreator collectionCreator;
@@ -49,14 +46,6 @@ class CollectionBoundProvider<E>
       }
     }
     setInjected(true);
-  }
-
-  @Override
-  public Provider<Collection<E>> withScope(Scope scope) {
-    return new DelegatingStdProvider<>(
-        isInjected(),
-        scope.scope(this)
-    );
   }
 
   @Override
