@@ -1,6 +1,8 @@
-package me.yushust.inject.resolve;
+package me.yushust.inject.resolve.solution;
 
+import me.yushust.inject.error.ElementFormatter;
 import me.yushust.inject.error.ErrorAttachable;
+import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
@@ -18,19 +20,19 @@ import java.util.List;
 public class InjectableMethod implements InjectableMember {
 
   private final TypeReference<?> declaringType;
-  private final List<OptionalDefinedKey<?>> keys;
+  private final List<InjectedKey<?>> keys;
   private final Method method;
 
   public InjectableMethod(
       TypeReference<?> declaringType,
-      List<OptionalDefinedKey<?>> keys,
+      List<InjectedKey<?>> keys,
       Method method
   ) {
     this.declaringType = Validate.notNull(declaringType);
     this.keys = Collections.unmodifiableList(keys);
     this.method = Validate.notNull(method);
 
-    for (OptionalDefinedKey<?> key : keys) {
+    for (InjectedKey<?> key : keys) {
       Validate.doesntRequiresContext(key.getKey());
     }
     this.method.setAccessible(true);
@@ -44,7 +46,7 @@ public class InjectableMethod implements InjectableMember {
     return method;
   }
 
-  public List<OptionalDefinedKey<?>> getKeys() {
+  public List<InjectedKey<?>> getKeys() {
     return keys;
   }
 

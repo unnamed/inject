@@ -1,6 +1,6 @@
 package me.yushust.inject.multibinding;
 
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
@@ -24,7 +24,7 @@ class MapBoundProvider<K, V>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     delegates.forEach((key, valueProvider) -> {
       if (valueProvider instanceof InjectionListener) {
         ((InjectionListener) valueProvider).onInject(stack, injector);

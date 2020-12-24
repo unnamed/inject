@@ -1,12 +1,11 @@
 package me.yushust.inject.provision.std;
 
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.InjectionListener;
-import me.yushust.inject.provision.ioc.MatchListener;
 import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
@@ -21,9 +20,9 @@ import javax.inject.Provider;
  * <p>The providers cannot be re-scoped</p>
  * @param <T> The provider return type
  */
-public final class ScopedProvider<T>
+public class ScopedProvider<T>
     extends StdProvider<T>
-    implements ScopeListener<T>, InjectionListener, MatchListener<T> {
+    implements ScopeListener<T>, InjectionListener {
 
   private final Provider<T> unscoped;
   private final Provider<T> scoped;
@@ -35,13 +34,19 @@ public final class ScopedProvider<T>
     this.scoped = scope.scope(provider);
   }
 
+  protected ScopedProvider() {
+    this.unscoped = null;
+    this.scoped = null;
+    this.scope = null;
+  }
+
   @Override
-  public Provider<T> withScope(Scope scope) {
+  public Provider<T> withScope(Key<?> match, Scope scope) {
     throw new UnsupportedOperationException("Cannot scope the provider again!");
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     Providers.inject(injector, stack, unscoped);
     Providers.inject(injector, stack, scoped); // some scopes requires injections
   }
@@ -63,12 +68,8 @@ public final class ScopedProvider<T>
     return scope;
   }
 
-  @Override
-  public T get(Key<?> match) {
-    if (scoped instanceof MatchListener) {
-      return ((MatchListener<T>) scoped).get(match);
-    } else {
-      return scoped.get();
-    }
+  public boolean requiresJitScoping() {
+    return false;
   }
+
 }

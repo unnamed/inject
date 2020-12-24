@@ -1,6 +1,8 @@
-package me.yushust.inject.resolve;
+package me.yushust.inject.resolve.solution;
 
+import me.yushust.inject.error.ElementFormatter;
 import me.yushust.inject.error.ErrorAttachable;
+import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
@@ -17,11 +19,11 @@ import java.util.List;
 public class InjectableField implements InjectableMember {
 
   private final TypeReference<?> declaringType;
-  private final OptionalDefinedKey<?> key;
+  private final InjectedKey<?> key;
   private final Field field;
 
   public InjectableField(TypeReference<?> declaringType,
-                         OptionalDefinedKey<?> key,
+                         InjectedKey<?> key,
                          Field field) {
     this.declaringType = Validate.notNull(declaringType, "declaringType");
     this.key = Validate.notNull(key, "key");
@@ -39,7 +41,7 @@ public class InjectableField implements InjectableMember {
     return field;
   }
 
-  public List<OptionalDefinedKey<?>> getKeys() {
+  public List<InjectedKey<?>> getKeys() {
     return Collections.singletonList(key);
   }
 

@@ -1,4 +1,4 @@
-package me.yushust.inject;
+package me.yushust.inject.property;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;

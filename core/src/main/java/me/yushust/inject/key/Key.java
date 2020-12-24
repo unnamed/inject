@@ -46,6 +46,11 @@ public final class Key<T> implements CompositeType, Serializable {
     this.toString = computeToString();
   }
 
+  /** Determines if the {@link Key} represented by this is a raw-type */
+  public boolean isPureRawType() {
+    return type.isPureRawType();
+  }
+
   /** Checks if the wrapped type requires context or not */
   public boolean requiresContext() {
     // delegate functionality to TypeReference

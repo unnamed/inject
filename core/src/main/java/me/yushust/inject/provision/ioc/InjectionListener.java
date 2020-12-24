@@ -1,7 +1,7 @@
 package me.yushust.inject.provision.ioc;
 
 import me.yushust.inject.Injector;
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 
 /**
@@ -27,6 +27,6 @@ public interface InjectionListener {
    *                 by the injector)
    * @param injector The injector used to inject this provider
    */
-  void onInject(ProvisionStack stack, InternalInjector injector);
+  void onInject(ProvisionStack stack, InjectorImpl injector);
 
 }

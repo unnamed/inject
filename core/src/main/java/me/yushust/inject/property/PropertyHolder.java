@@ -1,4 +1,4 @@
-package me.yushust.inject;
+package me.yushust.inject.property;
 
 /**
  * Represents a property source, can be a loaded

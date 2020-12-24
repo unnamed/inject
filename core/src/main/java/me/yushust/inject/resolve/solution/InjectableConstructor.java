@@ -1,6 +1,8 @@
-package me.yushust.inject.resolve;
+package me.yushust.inject.resolve.solution;
 
+import me.yushust.inject.error.ElementFormatter;
 import me.yushust.inject.error.ErrorAttachable;
+import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Constructor;
@@ -15,17 +17,17 @@ import java.util.List;
  */
 public class InjectableConstructor {
 
-  private final List<OptionalDefinedKey<?>> keys;
+  private final List<InjectedKey<?>> keys;
   private final Constructor<?> constructor;
 
   public InjectableConstructor(
-      List<OptionalDefinedKey<?>> keys,
+      List<InjectedKey<?>> keys,
       Constructor<?> constructor
   ) {
     this.keys = Collections.unmodifiableList(keys);
     this.constructor = constructor;
 
-    for (OptionalDefinedKey<?> key : keys) {
+    for (InjectedKey<?> key : keys) {
       Validate.doesntRequiresContext(key.getKey());
     }
     if (constructor != null) {
@@ -37,7 +39,7 @@ public class InjectableConstructor {
     return constructor;
   }
 
-  public List<OptionalDefinedKey<?>> getKeys() {
+  public List<InjectedKey<?>> getKeys() {
     return keys;
   }
 

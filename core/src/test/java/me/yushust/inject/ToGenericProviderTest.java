@@ -15,6 +15,7 @@ public class ToGenericProviderTest {
   @Inject private Foo<Integer> intFoo2;
 
   @Inject private Foo<Double> doubleFoo;
+  @Inject private Foo<Double> doubleFoo2;
 
   @Test
   public void test() {
@@ -24,12 +25,9 @@ public class ToGenericProviderTest {
 
     injector.injectMembers(this);
 
-    Assertions.assertEquals("brutal", stringFoo.give());
-    Assertions.assertEquals(777, intFoo.give());
-    Assertions.assertEquals(123.456, doubleFoo.give());
-
     Assertions.assertSame(stringFoo, stringFoo2);
     Assertions.assertSame(intFoo, intFoo2);
+    Assertions.assertSame(doubleFoo, doubleFoo2);
   }
 
   public static class FooGenericProvider implements GenericProvider<Foo<?>> {
@@ -38,16 +36,37 @@ public class ToGenericProviderTest {
     public Foo<?> get(Class<?> rawType, TypeReference<?>[] parameters) {
 
       Class<?> rawParameterType = parameters[0].getRawType();
-      Foo<Object> foo = null;
+      Foo<?> foo = null;
 
       if (rawParameterType == String.class) {
-        foo = () -> "brutal";
+        foo = new StringFoo();
       } else if (rawParameterType == Integer.class) {
-        foo = () -> 777;
+        foo = new IntegerFoo();
       } else if (rawParameterType == Double.class) {
-        foo = () -> 123.456;
+        foo = new DoubleFoo();
       }
       return foo;
+    }
+  }
+
+  private static class DoubleFoo implements Foo<Double> {
+    @Override
+    public Double give() {
+      return (double) System.nanoTime();
+    }
+  }
+
+  private static class IntegerFoo implements Foo<Integer> {
+    @Override
+    public Integer give() {
+      return (int) System.nanoTime();
+    }
+  }
+
+  private static class StringFoo implements Foo<String> {
+    @Override
+    public String give() {
+      return System.nanoTime() + "";
     }
   }
 

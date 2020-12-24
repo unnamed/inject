@@ -1,8 +1,6 @@
 package me.yushust.inject.scope;
 
-import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.MatchListener;
 
 import javax.inject.Provider;
 import java.util.concurrent.locks.Lock;
@@ -43,7 +41,7 @@ public enum SingletonScope implements Scope {
    * @param <T> The provided type
    */
   static class SingletonProvider<T>
-      implements Provider<T>, MatchListener<T> {
+      implements Provider<T> {
 
     private final Lock instanceLock = new ReentrantLock();
 
@@ -65,22 +63,12 @@ public enum SingletonScope implements Scope {
 
     @Override
     public T get() {
-      return get(null);
-    }
-
-    @Override
-    public T get(Key<?> match) {
-
       // non-synchronized check
       if (instance == null) {
         instanceLock.lock();
         try {
           if (instance == null) { // synchronized check
-            if (match != null && delegate instanceof MatchListener) {
-              instance = ((MatchListener<T>) delegate).get(match);
-            } else {
-              instance = delegate.get();
-            }
+            instance = delegate.get();
           }
         } finally { // important to release the lock in a finally block
           instanceLock.unlock();

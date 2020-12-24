@@ -1,7 +1,7 @@
 package me.yushust.inject.provision;
 
 import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.ioc.BindListener;
@@ -41,7 +41,7 @@ public class DelegatingStdProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     Providers.inject(injector, stack, delegate);
   }
 
@@ -51,8 +51,8 @@ public class DelegatingStdProvider<T>
   }
 
   @Override
-  public Provider<T> withScope(Scope scope) {
-    return Providers.scope(delegate, scope);
+  public Provider<T> withScope(Key<?> match, Scope scope) {
+    return Providers.scope(match, delegate, scope);
   }
 
   @Override

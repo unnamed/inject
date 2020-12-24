@@ -1,6 +1,6 @@
 package me.yushust.inject.provision.std;
 
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.ioc.InjectionListener;
@@ -32,7 +32,7 @@ public class LinkedProvider<T>
   private final Key<? extends T> target;
   private final boolean autoBound;
 
-  private InternalInjector injector;
+  private InjectorImpl injector;
 
   public LinkedProvider(Key<T> key, Key<? extends T> target) {
     this.key = key;
@@ -41,7 +41,7 @@ public class LinkedProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     // Sets the injector, used to get an instance of the target type
     this.injector = injector;
   }

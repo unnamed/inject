@@ -1,5 +1,7 @@
 package me.yushust.inject;
 
+import me.yushust.inject.property.Property;
+import me.yushust.inject.property.PropertyHolder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

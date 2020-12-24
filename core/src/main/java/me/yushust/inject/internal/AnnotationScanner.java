@@ -41,11 +41,11 @@ final class AnnotationScanner {
 
     if (target != null) {
       Key<? extends T> linkedKey = Key.of(TypeReference.of(target.value()));
-      binder.bindTo(key, Providers.link(key, linkedKey));;
+      binder.$unsafeBind(key, Providers.link(key, linkedKey));
     } else if (providedBy != null) {
       TypeReference<? extends Provider<? extends T>> linkedProvider =
-          TypeReference.of(providedBy.value());;
-      binder.bindTo(key, Providers.providerTypeProvider(linkedProvider));
+          TypeReference.of(providedBy.value());
+      binder.$unsafeBind(key, Providers.providerTypeProvider(linkedProvider));
     }
   }
 
@@ -71,7 +71,7 @@ final class AnnotationScanner {
     }
 
     if (rawType.isAnnotationPresent(Singleton.class)) {
-      binder.bindTo(key, Providers.scope(provider, Scopes.SINGLETON));
+      binder.$unsafeBind(key, Providers.scope(key, provider, Scopes.SINGLETON));
     }
   }
 

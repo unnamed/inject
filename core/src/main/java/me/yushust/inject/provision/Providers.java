@@ -1,7 +1,7 @@
 package me.yushust.inject.provision;
 
 import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
@@ -44,9 +44,9 @@ public final class Providers {
     }
   }
 
-  public static <T> Provider<T> scope(Provider<T> provider, Scope scope) {
+  public static <T> Provider<T> scope(Key<?> match, Provider<T> provider, Scope scope) {
     if (provider instanceof ScopeListener) {
-      return ((ScopeListener<T>) provider).withScope(scope);
+      return ((ScopeListener<T>) provider).withScope(match, scope);
     } else {
       StdProvider<T> scopedProvider = new ScopedProvider<>(provider, scope);
       scopedProvider.setInjected(provider instanceof StdProvider && ((StdProvider<T>) provider).isInjected());
@@ -62,11 +62,11 @@ public final class Providers {
     }
   }
 
-  public static void inject(InternalInjector injector, Provider<?> provider) {
+  public static void inject(InjectorImpl injector, Provider<?> provider) {
     inject(injector, injector.stackForThisThread(), provider);
   }
 
-  public static void inject(InternalInjector injector, ProvisionStack stack, Provider<?> provider) {
+  public static void inject(InjectorImpl injector, ProvisionStack stack, Provider<?> provider) {
     if (provider instanceof StdProvider) {
       ((StdProvider<?>) provider).setInjected(true);
     }

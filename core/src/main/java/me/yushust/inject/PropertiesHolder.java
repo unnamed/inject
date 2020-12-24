@@ -1,5 +1,7 @@
 package me.yushust.inject;
 
+import me.yushust.inject.property.PropertyHolder;
+
 import javax.inject.Inject;
 import java.util.Properties;
 

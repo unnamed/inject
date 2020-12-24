@@ -3,9 +3,6 @@ package me.yushust.inject;
 import me.yushust.inject.internal.BinderImpl;
 import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.resolve.CachedMembersResolver;
-import me.yushust.inject.resolve.MembersResolver;
-import me.yushust.inject.resolve.MembersResolverImpl;
 
 import javax.inject.Provider;
 import java.util.Arrays;
@@ -73,13 +70,12 @@ public interface Injector {
   }
 
   static Injector create(Iterable<? extends Module> modules) {
-    MembersResolver membersResolver = CachedMembersResolver.wrap(new MembersResolverImpl());
-    BinderImpl binder = new BinderImpl(membersResolver);
+    BinderImpl binder = new BinderImpl();
     binder.install(modules);
     if (binder.hasErrors()) {
       binder.reportAttachedErrors();
     }
-    return new InjectorImpl(membersResolver, binder);
+    return new InjectorImpl(binder);
   }
 
 }

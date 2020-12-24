@@ -1,15 +1,16 @@
 package me.yushust.inject.assisted.provision;
 
 import me.yushust.inject.assisted.Assisted;
-import me.yushust.inject.assisted.FactoryException;
+import me.yushust.inject.error.FactoryException;
 import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.internal.BinderImpl;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.BindListener;
-import me.yushust.inject.resolve.InjectableConstructor;
-import me.yushust.inject.resolve.OptionalDefinedKey;
+import me.yushust.inject.resolve.ComponentResolver;
+import me.yushust.inject.resolve.solution.InjectableConstructor;
+import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Method;
@@ -37,7 +38,9 @@ public class ToFactoryProvider<T>
   public boolean onBind(BinderImpl binder, Key<?> key) {
 
     TypeReference<?> required = key.getType();
-    InjectableConstructor constructor = binder.getResolver().getConstructor(binder, required, Assisted.class);
+    InjectableConstructor constructor = ComponentResolver
+        .constructor()
+        .resolve(binder, required, Assisted.class);
 
     // check created object
     if (constructor == null) {
@@ -76,15 +79,14 @@ public class ToFactoryProvider<T>
       return false;
     }
 
-    List<OptionalDefinedKey<?>> keys = binder.getResolver().keysOf(
+    List<InjectedKey<?>> keys = ComponentResolver.keys().keysOf(
         TypeReference.of(factory),
-        method.getGenericParameterTypes(),
-        method.getParameterAnnotations()
+        method.getParameters()
     );
 
     Set<Key<?>> assists = new HashSet<>();
 
-    for (OptionalDefinedKey<?> parameterKey : keys) {
+    for (InjectedKey<?> parameterKey : keys) {
       if (!assists.add(parameterKey.getKey())) {
         binder.attach(
             "Duplicated factory assisted keys",
@@ -97,7 +99,7 @@ public class ToFactoryProvider<T>
 
     Set<Key<?>> constructorAssists = new HashSet<>();
 
-    for (OptionalDefinedKey<?> parameterKey : constructor.getKeys()) {
+    for (InjectedKey<?> parameterKey : constructor.getKeys()) {
       if (parameterKey.isAssisted()) {
         if (!assists.contains(parameterKey.getKey())) {
           binder.attach(

@@ -31,7 +31,7 @@ class MapMultiBindingBuilderImpl<K, V> implements Binder.MapMultiBindingBuilder<
     Validate.notNull(scope, "scope");
     Provider<? extends Map<K, V>> provider = Providers.unwrap(binder.getProvider(mapKey));
     if (provider != null) {
-      binder.$unsafeBind(mapKey, Providers.scope(provider, scope));
+      binder.$unsafeBind(mapKey, Providers.scope(mapKey, provider, scope));
     }
   }
 

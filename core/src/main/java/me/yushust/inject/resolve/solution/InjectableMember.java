@@ -1,6 +1,7 @@
-package me.yushust.inject.resolve;
+package me.yushust.inject.resolve.solution;
 
 import me.yushust.inject.error.ErrorAttachable;
+import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;
 
 import java.lang.reflect.Member;
@@ -32,7 +33,7 @@ public interface InjectableMember {
    * and it cannot be injected, results in an error.
    * Order in keys is important!
    */
-  List<OptionalDefinedKey<?>> getKeys();
+  List<InjectedKey<?>> getKeys();
 
   /**
    * Injects the values to this member in the specified {@code target}

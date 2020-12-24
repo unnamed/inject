@@ -41,7 +41,7 @@ class CollectionMultiBindingBuilderImpl<E> implements
     Validate.notNull(scope, "scope");
     Provider<? extends Collection<E>> provider = Providers.unwrap(binder.getProvider(collectionKey));
     if (provider != null) {
-      binder.$unsafeBind(collectionKey, Providers.scope(provider, scope));
+      binder.$unsafeBind(collectionKey, Providers.scope(collectionKey, provider, scope));
     }
   }
 

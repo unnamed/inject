@@ -1,14 +1,14 @@
 package me.yushust.inject.assisted.provision;
 
 import me.yushust.inject.assisted.ValueFactory;
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.InjectionListener;
-import me.yushust.inject.resolve.InjectableConstructor;
-import me.yushust.inject.resolve.OptionalDefinedKey;
+import me.yushust.inject.resolve.solution.InjectableConstructor;
+import me.yushust.inject.key.InjectedKey;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -23,7 +23,7 @@ public class ProxiedFactoryProvider<T>
 
   private final Class<? extends ValueFactory> factory;
   private final Method method;
-  private final List<OptionalDefinedKey<?>> keys;
+  private final List<InjectedKey<?>> keys;
   private final InjectableConstructor constructor;
   private final Key<?> key;
   private T factoryInstance;
@@ -31,7 +31,7 @@ public class ProxiedFactoryProvider<T>
   ProxiedFactoryProvider(
       Class<? extends ValueFactory> factory,
       Method method,
-      List<OptionalDefinedKey<?>> keys,
+      List<InjectedKey<?>> keys,
       InjectableConstructor constructor,
       Key<?> key
   ) {
@@ -59,7 +59,7 @@ public class ProxiedFactoryProvider<T>
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private Object createInstance(InternalInjector injector, Object[] extras) {
+  private Object createInstance(InjectorImpl injector, Object[] extras) {
 
     Map<Key<?>, Object> values = new HashMap<>();
     for (int i = 0; i < extras.length; i++) {
@@ -71,7 +71,7 @@ public class ProxiedFactoryProvider<T>
     Object[] givenArgs = new Object[constructor.getKeys().size()];
 
     int i = 0;
-    for (OptionalDefinedKey<?> injection : constructor.getKeys()) {
+    for (InjectedKey<?> injection : constructor.getKeys()) {
       if (injection.isAssisted()) {
         givenArgs[i] = values.get(injection.getKey());
       } else {
@@ -89,7 +89,7 @@ public class ProxiedFactoryProvider<T>
 
   @Override
   @SuppressWarnings("unchecked")
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     factoryInstance = (T) Proxy.newProxyInstance(
         getClass().getClassLoader(),
         new Class[]{factory},

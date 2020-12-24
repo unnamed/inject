@@ -2,8 +2,6 @@ package me.yushust.inject.internal;
 
 import me.yushust.inject.Binder;
 import me.yushust.inject.Module;
-import me.yushust.inject.Provides;
-import me.yushust.inject.Qualifiers;
 import me.yushust.inject.error.BindingException;
 import me.yushust.inject.error.ErrorAttachableImpl;
 import me.yushust.inject.key.Key;
@@ -11,20 +9,13 @@ import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.multibinding.MultiBindingBuilderImpl;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.provision.impl.TypeReferenceGenericProvider;
 import me.yushust.inject.provision.ioc.BindListener;
-import me.yushust.inject.resolve.InjectableMethod;
-import me.yushust.inject.resolve.MembersResolver;
-import me.yushust.inject.scope.Scope;
-import me.yushust.inject.scope.Scopes;
+import me.yushust.inject.provision.std.MethodAsProvider;
 import me.yushust.inject.util.Validate;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BinderImpl extends ErrorAttachableImpl implements Binder {
@@ -32,22 +23,17 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   private final Map<Key<?>, Provider<?>> bindings =
       new HashMap<>();
 
-  private final MembersResolver membersResolver;
-
-  public BinderImpl(MembersResolver membersResolver) {
-    this.membersResolver = membersResolver;
+  public BinderImpl() {
+    // soft
+    bind(TypeReference.class).toGenericProvider(new TypeReferenceGenericProvider()).singleton();
   }
 
-  <T> void bindTo(Key<T> key, Provider<? extends T> provider) {
-    $unsafeBind(key, provider);
-  }
-
-  public <T> StdProvider<? extends T> getProvider(Key<T> key) {
+  public <T> StdProvider<T> getProvider(Key<T> key) {
     // it's safe, the providers are setted
     // after (provider -> injected provider) conversion
     @SuppressWarnings("unchecked")
-    StdProvider<? extends T> provider =
-        (StdProvider<? extends T>) this.bindings.get(key);
+    StdProvider<T> provider =
+        (StdProvider<T>) this.bindings.get(key);
     return provider;
   }
 
@@ -76,14 +62,9 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   /** Throws the errors attached to this attachable */
   @Override
   public void reportAttachedErrors() {
-    if (!hasErrors()) {
-      return;
+    if (hasErrors()) {
+      throw new BindingException(formatMessages());
     }
-    throw new BindingException(formatMessages());
-  }
-
-  public MembersResolver getResolver() {
-    return membersResolver;
   }
 
   @Override
@@ -93,53 +74,11 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
       module.configure(this);
 
       // resolve the provider methods
-      List<InjectableMethod> methods = membersResolver
-          .getMethods(TypeReference.of(module.getClass()), Provides.class);
-      for (InjectableMethod injectableMethod : methods) {
-        Method method = injectableMethod.getMember();
-        TypeReference<?> key = injectableMethod.getDeclaringType()
-            .resolve(method.getGenericReturnType());
-        Scope scope = method.isAnnotationPresent(Singleton.class)
-            ? Scopes.SINGLETON : Scopes.NONE;
-
-        bindTo(
-            Key.of(key, Qualifiers.getQualifiers(method.getAnnotations())),
-            scope.scope(
-                new MethodAsProvider<>(
-                    Modifier.isStatic(method.getModifiers())
-                        ? null
-                        : module,
-                    injectableMethod
-                )
-            )
-        );
-      }
-    }
-  }
-
-  /**
-   * Represents a binding to a method, the method is used like a provider,
-   * passing the dependencies as parameters and getting an instance with
-   * the return value
-   */
-  private static class MethodAsProvider<T> implements Provider<T> {
-
-    private final Object moduleInstance;
-    private final InjectableMethod method;
-    @Inject private InjectorImpl injector;
-
-    private MethodAsProvider(Object moduleInstance, InjectableMethod method) {
-      this.moduleInstance = moduleInstance;
-      this.method = method;
-    }
-
-    @Override
-    public T get() {
-      @SuppressWarnings("unchecked")
-      T value = (T) injector.injectToMember( // supports static provider methods
-          injector.stackForThisThread(), moduleInstance, method
-      );
-      return value;
+      MethodAsProvider.resolveMethodProviders(
+          this,
+          TypeReference.of(module.getClass()),
+          module
+      ).forEach(this::$unsafeBind);
     }
   }
 

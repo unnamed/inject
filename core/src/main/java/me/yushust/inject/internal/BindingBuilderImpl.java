@@ -28,9 +28,10 @@ class BindingBuilderImpl<T> implements
   public void in(Scope scope) {
     Validate.notNull(scope, "scope");
     selfBindingIfNotBound();
-    binder.bindTo(
+    binder.$unsafeBind(
         key,
         Providers.scope(
+            key,
             binder.getProvider(key),
             scope
         )
@@ -41,7 +42,7 @@ class BindingBuilderImpl<T> implements
   public Binder.Scoped toProvider(Provider<? extends T> provider) {
     Validate.notNull(provider, "provider");
     requireNotBound();
-    binder.bindTo(key, provider);
+    binder.$unsafeBind(key, provider);
     return this;
   }
 
@@ -49,7 +50,7 @@ class BindingBuilderImpl<T> implements
   public void toFactory(Class<? extends ValueFactory> factory) {
     Validate.notNull(factory, "factory");
     requireNotBound();
-    binder.bindTo(key, new ToFactoryProvider<>(factory));
+    binder.$unsafeBind(key, new ToFactoryProvider<>(factory));
   }
 
   @Override

@@ -1,6 +1,6 @@
 package me.yushust.inject.multibinding;
 
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
@@ -33,7 +33,7 @@ class CollectionBoundProvider<E>
    * Injects members of all element providers
    */
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     for (Provider<? extends E> provider : delegates) {
       if (provider instanceof InjectionListener) {
         ((InjectionListener) provider).onInject(stack, injector);

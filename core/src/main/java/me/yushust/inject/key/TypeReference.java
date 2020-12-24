@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class TypeReference<T> extends AbstractTypeWrapper implements CompositeType {
 
-  private final Class<? super T> rawType;
+  private final Class<T> rawType;
   private final Type type;
 
   @SuppressWarnings("unchecked")
@@ -25,7 +25,7 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
     ParameterizedType parameterized = (ParameterizedType) superClass;
 
     this.type = Types.compose(parameterized.getActualTypeArguments()[0]);
-    this.rawType = (Class<? super T>) Types.getRawType(type);
+    this.rawType = (Class<T>) Types.getRawType(type);
     super.components.add(this.type);
   }
 
@@ -33,7 +33,7 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
   TypeReference(Type type) {
     Validate.notNull(type);
     this.type = Types.compose(type);
-    this.rawType = (Class<? super T>) Types.getRawType(this.type);
+    this.rawType = (Class<T>) Types.getRawType(this.type);
     super.components.add(this.type);
   }
 
@@ -42,8 +42,13 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
     Validate.notNull(type, "type");
     Validate.notNull(rawType, "rawType");
     this.type = Types.compose(type);
-    this.rawType = (Class<? super T>) Types.getRawType(rawType); // convert primitives to wrapper types
+    this.rawType = (Class<T>) Types.getRawType(rawType); // convert primitives to wrapper types
     super.components.add(this.type);
+  }
+
+  /** Determines if the {@link TypeReference} represented by this is a raw-type */
+  public final boolean isPureRawType() {
+    return type == rawType;
   }
 
   public final TypeReference<?> getFieldType(Field field) {
@@ -72,7 +77,7 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
     return new TypeReference<>(type);
   }
 
-  public final Class<? super T> getRawType() {
+  public final Class<T> getRawType() {
     return rawType;
   }
 

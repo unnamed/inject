@@ -1,5 +1,6 @@
 package me.yushust.inject.provision.ioc;
 
+import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.std.InstanceProvider;
 import me.yushust.inject.scope.Scope;
 
@@ -25,6 +26,6 @@ public interface ScopeListener<T> extends Provider<T> {
    * are externally immutable, so this shouldn't modify the
    * real provider and returns another provider or the same provider
    */
-  Provider<T> withScope(Scope scope);
+  Provider<T> withScope(Key<?> match, Scope scope);
 
 }

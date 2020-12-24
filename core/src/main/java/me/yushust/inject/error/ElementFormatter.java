@@ -1,5 +1,6 @@
-package me.yushust.inject.resolve;
+package me.yushust.inject.error;
 
+import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Constructor;
@@ -12,13 +13,13 @@ import java.util.List;
  * Helper class for formatting elements
  * like fields, methods, annotations, etc.
  */
-final class ElementFormatter {
+public final class ElementFormatter {
 
   private ElementFormatter() {
     throw new UnsupportedOperationException("This utility class should not be instantiated!");
   }
 
-  static String formatField(Field field, OptionalDefinedKey<?> key) {
+  public static String formatField(Field field, InjectedKey<?> key) {
     StringBuilder builder = new StringBuilder();
     if (key.isOptional()) {
       builder.append("@Nullable ");
@@ -29,13 +30,13 @@ final class ElementFormatter {
     return builder.toString();
   }
 
-  static String formatConstructor(Constructor<?> constructor, List<OptionalDefinedKey<?>> keys) {
+  public static String formatConstructor(Constructor<?> constructor, List<InjectedKey<?>> keys) {
     Validate.notNull(constructor, "constructor");
     return constructor.getDeclaringClass().getName() + '('
         + formatParameters(constructor.getParameters(), keys) + ')';
   }
 
-  private static String formatParameters(Parameter[] parameters, List<OptionalDefinedKey<?>> keys) {
+  private static String formatParameters(Parameter[] parameters, List<InjectedKey<?>> keys) {
 
     Validate.notNull(parameters, "parameters");
     Validate.notNull(keys, "keys");
@@ -46,7 +47,7 @@ final class ElementFormatter {
 
     for (int i = 0; i < parameters.length; i++) {
       Parameter parameter = parameters[i];
-      OptionalDefinedKey<?> key = keys.get(i);
+      InjectedKey<?> key = keys.get(i);
 
       if (key.isOptional()) {
         builder.append("@Nullable ");
@@ -67,7 +68,7 @@ final class ElementFormatter {
    * Formats a method to a human-friendly format like
    * <pre>MyClass#someMethod(@Nullable String, Object)</pre>
    */
-  static String formatMethod(Method method, List<OptionalDefinedKey<?>> keys) {
+  public static String formatMethod(Method method, List<InjectedKey<?>> keys) {
     return method.getDeclaringClass().getName() + '#' + method.getName() + '('
         + formatParameters(method.getParameters(), keys) + ')';
   }

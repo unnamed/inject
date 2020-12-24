@@ -1,6 +1,6 @@
 package me.yushust.inject.provision.std;
 
-import me.yushust.inject.internal.InternalInjector;
+import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.ioc.InjectionListener;
@@ -50,7 +50,7 @@ public class ProviderTypeProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
     provider = injector.getInstance(providerClass);
   }
 

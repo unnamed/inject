@@ -1,8 +1,6 @@
 package me.yushust.inject.provision.std;
 
-import me.yushust.inject.internal.InternalInjector;
-import me.yushust.inject.internal.ProvisionStack;
-import me.yushust.inject.provision.ioc.InjectionListener;
+import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.scope.Scope;
@@ -30,7 +28,7 @@ import javax.inject.Provider;
  */
 public class InstanceProvider<T>
     extends StdProvider<T>
-    implements InjectionListener, ScopeListener<T> {
+    implements ScopeListener<T> {
 
   private final T instance;
 
@@ -40,14 +38,7 @@ public class InstanceProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InternalInjector injector) {
-    // TODO: Inject the instance
-    // This class also implements the injection listener
-    // to ignore the injection and save some resources
-  }
-
-  @Override
-  public Provider<T> withScope(Scope scope) {
+  public Provider<T> withScope(Key<?> match, Scope scope) {
     throw new UnsupportedOperationException("Instance providers cannot be scoped!");
   }
 

@@ -1,33 +1,135 @@
 package me.yushust.inject.internal;
 
 import me.yushust.inject.Injector;
-import me.yushust.inject.Property;
-import me.yushust.inject.PropertyHolder;
+import me.yushust.inject.error.InjectionException;
 import me.yushust.inject.key.Key;
-import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.Providers;
-import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.property.PropertyRequestHandle;
 import me.yushust.inject.provision.ioc.MatchListener;
-import me.yushust.inject.provision.std.ToGenericProvider;
 import me.yushust.inject.resolve.*;
+import me.yushust.inject.resolve.solution.InjectableConstructor;
+import me.yushust.inject.resolve.solution.InjectableMember;
 import me.yushust.inject.util.Validate;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
 
-public class InjectorImpl extends InternalInjector implements Injector {
+public class InjectorImpl implements Injector {
 
-  private final MembersResolver membersResolver;
+  // The provision stack is a sensible part
+  // of the library, you must take care while
+  // handling a ProvisionStack, you can cause
+  // a StackOverflowError if the stack is
+  // accidentally removed from the thread
+  protected final ThreadLocal<ProvisionStack> provisionStackThreadLocal =
+      new ThreadLocal<>();
+
+  private final ProvisionHandle provisionHandle;
+  private final InjectionHandle injectionHandle;
+
   private final BinderImpl binder;
 
-  public InjectorImpl(MembersResolver membersResolver, BinderImpl binder) {
-    this.membersResolver = Validate.notNull(membersResolver);
+  public InjectorImpl(BinderImpl binder) {
     this.binder = Validate.notNull(binder);
+    this.provisionHandle = new ProvisionHandle(this, binder);
+    this.injectionHandle = new InjectionHandle(this);
+  }
+
+  public InjectionHandle getInjectionHandle() {
+    return injectionHandle;
+  }
+
+  /**
+   * Delegates the functionality to the overloaded method
+   * {@link Injector#getInstance(TypeReference)} passing a
+   * raw-TypeReference
+   */
+  public <T> T getInstance(Class<T> type) {
+    return getInstance(TypeReference.of(type));
+  }
+
+  /**
+   * Invokes the overloaded method
+   * {@link InjectorImpl#getInstance(ProvisionStack, Key, boolean)}
+   * passing an empty provision stack
+   */
+  public <T> T getInstance(TypeReference<T> type) {
+    boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
+    // The creation of a new provision stack indicates
+    // the manual call of getInstance() or injectMembers(),
+    // the type cannot be a key. Keys are used for injectable
+    // members, not for manually call a inject method
+    T value = getInstance(stackForThisThread(), Key.of(type), true);
+    // We need to clear the stack
+    // after a manual injection,
+    // the stack is only cleared if initially
+    // it was null, if not, it is possibly
+    // being used
+    if (stackWasNotPresent) {
+      removeStackFromThisThread();
+    }
+    return value;
+  }
+
+  /**
+   * Delegates the functionality to {@link Injector#injectMembers(TypeReference, Object)}
+   */
+  public void injectMembers(Object object) {
+    injectMembers(TypeReference.of(object.getClass()), object);
+  }
+
+  /**
+   * Delegates the functionality to the abstract method
+   * {@link InjectorImpl#injectMembers(ProvisionStack, Key, Object)}
+   * passing an empty provision stack
+   */
+  public <T> void injectMembers(TypeReference<T> type, T instance) {
+    boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
+    // The creation of a new provision stack indicates
+    // the manual call of getInstance() or injectMembers(),
+    // the type cannot be a key. Keys are used for injectable
+    // members, not for manually call a inject method
+    injectMembers(stackForThisThread(), Key.of(type), instance);
+    // We need to clear the stack
+    // after a manual injection,
+    // the stack is only cleared if initially
+    // it was null, if not, it is possibly
+    // being used
+    if (stackWasNotPresent) {
+      removeStackFromThisThread();
+    }
+  }
+
+  /**
+   * @return The provision stack in the thread local, if
+   * not present, creates a provision stack and stores
+   * it in the thread local
+   */
+  @ThreadSensitive
+  public ProvisionStack stackForThisThread() {
+    ProvisionStack stack = provisionStackThreadLocal.get();
+    // the stack doesn't exist, create a new stack
+    // and set to the thread local
+    if (stack == null) {
+      stack = new ProvisionStack();
+      provisionStackThreadLocal.set(stack);
+    }
+    return stack;
+  }
+
+  /**
+   * Sets the provision stack in this thread to null,
+   * so it should be re-started with {@link InjectorImpl#stackForThisThread}.
+   *
+   * <p>Simple explanation: There's one {@link ProvisionStack}
+   * per thread. This is handled using a {@link ThreadLocal}</p>
+   */
+  @ThreadSensitive
+  protected void removeStackFromThisThread() {
+    ProvisionStack stack = provisionStackThreadLocal.get();
+    provisionStackThreadLocal.set(null);
+    if (stack != null && stack.hasErrors()) {
+      throw new InjectionException(stack.formatMessages());
+    }
   }
 
   @Override
@@ -45,30 +147,31 @@ public class InjectorImpl extends InternalInjector implements Injector {
   }
 
   @ThreadSensitive
-  @Override
   public <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
     if (instance != null) {
       stack.push(type, instance);
     }
-    for (InjectableMember member : membersResolver.getFields(type.getType())) {
-      injectToMember(stack, instance, member);
+    for (InjectableMember member : ComponentResolver.fields().get(type.getType())) {
+      injectionHandle.injectToMember(stack, instance, member);
     }
-    for (InjectableMember member : membersResolver.getMethods(type.getType(), Inject.class)) {
-      injectToMember(stack, instance, member);
+    for (InjectableMember member : ComponentResolver.methods().get(type.getType())) {
+      injectionHandle.injectToMember(stack, instance, member);
     }
     if (instance != null) {
       stack.pop();
     }
   }
 
+  public <T> T getInstance(Key<T> type, boolean useExplicitBindings) {
+    return getInstance(stackForThisThread(), type, useExplicitBindings);
+  }
+
   @ThreadSensitive
-  @Override
   public <T> T getInstance(ProvisionStack stack, Key<T> type, boolean useExplicitBindings) {
     Class<? super T> rawType = type.getType().getRawType();
     // Default injections
     if (
         rawType == Injector.class
-        || rawType == InternalInjector.class
         || rawType == InjectorImpl.class
     ) {
       @SuppressWarnings("unchecked")
@@ -76,49 +179,9 @@ public class InjectorImpl extends InternalInjector implements Injector {
       return value;
     }
 
-    if (rawType == TypeReference.class) {
-      Type ref = type.getType().getType();
-      if (!(ref instanceof ParameterizedType)) {
-        stack.attach("Cannot inject a non-specific TypeReference " + ref);
-        return null;
-      }
-      ParameterizedType parameterizedType = (ParameterizedType) ref;
-      @SuppressWarnings("unchecked")
-      T value = (T) TypeReference.of(parameterizedType.getActualTypeArguments()[0]);
-      return value;
-    }
-
-    String path = getPropertyPath(type);
+    String path = PropertyRequestHandle.getPropertyPath(type);
     if (path != null) {
-      // We know the type and there's no necessity to invoke
-      // getInstance(...) again, because it's an interface
-      // (it cannot be instantiated), the unique way to get
-      // an instance of PropertyHolder is with an explicit binding
-      Provider<PropertyHolder> provider =
-          getProviderAndInject(stack, Key.of(PropertyHolder.class));
-
-      PropertyHolder propertyHolder;
-
-      // An injection request for properties has been made and there's
-      // no a properties source!
-      if (provider == null ||
-          (propertyHolder = provider.get()) == null) {
-        stack.attach("There's no a PropertyHolder bound and a" +
-            " member annotated with @Property exists! " + type);
-        return null;
-      }
-
-      Object propertyValue = tryConvert(rawType, propertyHolder.get(path));
-      // Incompatible types!
-      if (!rawType.isInstance(propertyValue)) {
-        stack.attach("The property value in '" + path
-            + "' obtained isn't an instance of " + type.getType() + ".");
-        return null;
-      }
-
-      @SuppressWarnings("unchecked")
-      T value = (T) propertyValue;
-      return value;
+      return PropertyRequestHandle.getProperty(path, type.getType(), provisionHandle, stack);
     }
 
     // If the stack isn't empty, it's a recursive call.
@@ -133,7 +196,7 @@ public class InjectorImpl extends InternalInjector implements Injector {
     AnnotationScanner.bind(type.getType(), binder);
     AnnotationScanner.scope(type.getType(), binder);
     if (useExplicitBindings) {
-      Provider<T> provider = getProviderAndInject(stack, type);
+      Provider<T> provider = provisionHandle.getProviderAndInject(stack, type);
       if (provider != null) {
         if (provider instanceof MatchListener) {
           return ((MatchListener<T>) provider).get(type);
@@ -143,14 +206,14 @@ public class InjectorImpl extends InternalInjector implements Injector {
       }
     }
 
-    InjectableConstructor constructor = membersResolver.getConstructor(stack, type.getType(), Inject.class);
+    InjectableConstructor constructor = ComponentResolver.constructor().get(stack, type.getType());
     if (constructor == null) { // the errors are thrown by the caller
       return null;
     }
 
     Object instance = constructor.createInstance(
         stack,
-        getValuesForKeys(
+        injectionHandle.getValuesForKeys(
             constructor.getKeys(),
             constructor,
             stack
@@ -165,100 +228,6 @@ public class InjectorImpl extends InternalInjector implements Injector {
     }
 
     return value;
-  }
-
-  Object injectToMember(ProvisionStack stack,
-                              Object instance,
-                              InjectableMember member) {
-    boolean isStatic = Modifier.isStatic(member.getMember().getModifiers());
-    if (
-        (instance == null && isStatic)
-        || (instance != null && !isStatic)
-    ) {
-      List<OptionalDefinedKey<?>> keys = member.getKeys();
-      Object[] values = getValuesForKeys(keys, member, stack);
-      return member.inject(stack, instance, values);
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Gets the property path for the specified key,
-   * if the key isn't qualified with &#64;Property,
-   * returns null.
-   */
-  private String getPropertyPath(Key<?> key) {
-    for (Qualifier qualifier : key.getQualifiers()) {
-      if (qualifier.raw() instanceof Property) {
-        return ((Property) qualifier.raw()).value();
-      }
-    }
-    return null;
-  }
-
-  private Object tryConvert(Class<?> requiredType, Object object) {
-    if (object == null) {
-      return null;
-    } else if (requiredType == String.class) {
-      return String.valueOf(object);
-    } else if (requiredType == Boolean.class) {
-      String value = String.valueOf(object);
-      if (value.equalsIgnoreCase("true")) {
-        return true;
-      } else if (value.equalsIgnoreCase("false")) {
-        return false;
-      }
-    }
-    return object;
-  }
-
-  private <T> Provider<T> getProviderAndInject(ProvisionStack stack, Key<T> key) {
-    @SuppressWarnings("unchecked")
-    StdProvider<T> provider = (StdProvider<T>) binder.getProvider(key);
-    if (provider == null) {
-      Class<?> rawType = key.getType().getRawType();
-      if (key.getType().getType() != rawType) {
-        @SuppressWarnings("unchecked")
-        StdProvider<T> rawTypeProvider = (StdProvider<T>) binder.getProvider(Key.of(rawType));
-        if (rawTypeProvider instanceof ToGenericProvider) {
-          provider = rawTypeProvider;
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    }
-    if (!provider.isInjected()) {
-      Providers.inject(this, stack, provider);
-    }
-    return provider;
-  }
-
-  private Object[] getValuesForKeys(List<OptionalDefinedKey<?>> keys, Object member, ProvisionStack stack) {
-    Object[] values = new Object[keys.size()];
-    for (int i = 0; i < keys.size(); i++) {
-      OptionalDefinedKey<?> key = keys.get(i);
-      // We don't need to clone the stack,
-      // the type-instance relations are
-      // removes automatically when ended
-      // with the injection
-      List<String> snapshot = stack.getErrorMessages();
-      Object value = getInstance(stack, key.getKey(), true);
-      if (value == null && !key.isOptional()) {
-        stack.attach("Cannot inject " + member + ":\n"
-            + "    Reason: Cannot get an instance for key, and injection isn't optional\n"
-            + "    Key: " + key.getKey());
-      } else if (key.isOptional()) {
-        // remove errors because the injection
-        // is optional and we don't need a report
-        // of fails that can be valid
-        stack.applySnapshot(snapshot);
-      }
-      values[i] = value;
-    }
-    return values;
   }
 
 }
