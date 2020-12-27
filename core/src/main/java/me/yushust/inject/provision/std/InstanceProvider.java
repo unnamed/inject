@@ -4,6 +4,7 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.scope.Scope;
+import me.yushust.inject.scope.Scopes;
 
 import javax.inject.Provider;
 
@@ -39,6 +40,9 @@ public class InstanceProvider<T>
 
   @Override
   public Provider<T> withScope(Key<?> match, Scope scope) {
+    if (scope == Scopes.SINGLETON) {
+      return this;
+    }
     throw new UnsupportedOperationException("Instance providers cannot be scoped!");
   }
 

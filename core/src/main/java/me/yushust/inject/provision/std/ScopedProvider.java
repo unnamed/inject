@@ -42,7 +42,13 @@ public class ScopedProvider<T>
 
   @Override
   public Provider<T> withScope(Key<?> match, Scope scope) {
-    throw new UnsupportedOperationException("Cannot scope the provider again!");
+    if (this.scope == scope) {
+      return this;
+    }
+    throw new UnsupportedOperationException(
+        "Cannot scope the provider again! Scope: " + scope.getClass().getSimpleName()
+            + ". Provider: " + unscoped
+    );
   }
 
   @Override

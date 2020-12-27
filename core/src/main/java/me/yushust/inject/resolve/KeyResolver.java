@@ -44,9 +44,8 @@ public final class KeyResolver {
   ) {
     List<InjectedKey<?>> keys =
         new ArrayList<>(parameters.length);
-    for (int i = 0; i < parameters.length; i++) {
-      Parameter parameter = parameters[i];
-      Type type = parameter.getType();
+    for (Parameter parameter : parameters) {
+      Type type = parameter.getParameterizedType();
       Annotation[] annotations = parameter.getAnnotations();
       TypeReference<?> parameterType = declaringType.resolve(type);
       keys.add(keyOf(parameterType, annotations));

@@ -2,6 +2,8 @@ package me.yushust.inject.provision.std;
 
 import me.yushust.inject.GenericProvider;
 import me.yushust.inject.internal.BinderImpl;
+import me.yushust.inject.internal.InjectorImpl;
+import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
@@ -24,6 +26,11 @@ public class ToGenericProvider<T>
 
   public ToGenericProvider(GenericProvider<T> provider) {
     this.provider = Validate.notNull(provider, "provider");
+  }
+
+  @Override
+  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+    // don't inject null references
   }
 
   @Override
