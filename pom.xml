@@ -7,7 +7,7 @@
     <groupId>me.yushust.inject</groupId>
     <artifactId>trew-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.3.1-beta</version>
+    <version>0.3.2-beta</version>
 
     <modules>
         <module>core</module>
