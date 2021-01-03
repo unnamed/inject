@@ -8,7 +8,6 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.BindListener;
-import me.yushust.inject.provision.ioc.MatchListener;
 import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
@@ -19,7 +18,7 @@ import java.lang.reflect.Type;
 
 public class ToGenericProvider<T>
     extends ScopedProvider<T>
-    implements BindListener, MatchListener<T>, ScopeListener<T> {
+    implements BindListener, ScopeListener<T> {
 
   private final GenericProvider<T> provider;
   private Scope scope;

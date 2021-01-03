@@ -10,7 +10,6 @@ import me.yushust.inject.multibinding.MultiBindingBuilderImpl;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.impl.TypeReferenceGenericProvider;
-import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.provision.std.MethodAsProvider;
 import me.yushust.inject.util.Validate;
 
@@ -41,12 +40,9 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   public void $unsafeBind(Key<?> key, Provider<?> provider) {
     Validate.notNull(key, "key");
     Validate.notNull(provider, "provider");
-    if (provider instanceof BindListener) {
-      if (!((BindListener) provider).onBind(this, key)) {
-        return;
-      }
+    if (!Providers.onBind(this, key, provider)) {
+      this.bindings.put(key, Providers.normalize(provider));
     }
-    this.bindings.put(key, Providers.normalize(provider));
   }
 
   @Override

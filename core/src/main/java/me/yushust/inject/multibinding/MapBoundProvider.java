@@ -4,6 +4,7 @@ import me.yushust.inject.internal.InjectorImpl;
 import me.yushust.inject.internal.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.InjectionListener;
 
@@ -25,17 +26,7 @@ class MapBoundProvider<K, V>
 
   @Override
   public void onInject(ProvisionStack stack, InjectorImpl injector) {
-    delegates.forEach((key, valueProvider) -> {
-      if (valueProvider instanceof InjectionListener) {
-        ((InjectionListener) valueProvider).onInject(stack, injector);
-      } else {
-        injector.injectMembers(
-            stack,
-            Key.of(TypeReference.of(valueProvider.getClass())),
-            valueProvider
-        );
-      }
-    });
+    delegates.forEach((key, valueProvider) -> Providers.inject(injector, stack, valueProvider));
     setInjected(true);
   }
 
