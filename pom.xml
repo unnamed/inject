@@ -9,6 +9,9 @@
     <packaging>pom</packaging>
     <version>0.3.2-beta</version>
 
+    <name>Trew D.I.</name>
+    <description>Lightweight and fast dependency injection library</description>
+
     <modules>
         <module>core</module>
     </modules>
