@@ -40,7 +40,7 @@ public class BinderImpl extends ErrorAttachableImpl implements Binder {
   public void $unsafeBind(Key<?> key, Provider<?> provider) {
     Validate.notNull(key, "key");
     Validate.notNull(provider, "provider");
-    if (!Providers.onBind(this, key, provider)) {
+    if (Providers.onBind(this, key, provider)) {
       this.bindings.put(key, Providers.normalize(provider));
     }
   }
