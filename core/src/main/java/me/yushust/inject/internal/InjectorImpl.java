@@ -5,7 +5,7 @@ import me.yushust.inject.error.InjectionException;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.property.PropertyRequestHandle;
-import me.yushust.inject.provision.ioc.MatchListener;
+import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.resolve.*;
 import me.yushust.inject.resolve.solution.InjectableConstructor;
 import me.yushust.inject.resolve.solution.InjectableMember;
@@ -196,13 +196,9 @@ public class InjectorImpl implements Injector {
     AnnotationScanner.bind(type.getType(), binder);
     AnnotationScanner.scope(type.getType(), binder);
     if (useExplicitBindings) {
-      Provider<T> provider = provisionHandle.getProviderAndInject(stack, type);
+      StdProvider<T> provider = provisionHandle.getProviderAndInject(stack, type);
       if (provider != null) {
-        if (provider instanceof MatchListener) {
-          return ((MatchListener<T>) provider).get(type);
-        } else {
-          return provider.get();
-        }
+        return provider.get(type);
       }
     }
 

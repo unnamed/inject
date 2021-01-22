@@ -16,6 +16,11 @@ public abstract class StdProvider<T> implements Provider<T> {
     return injected;
   }
 
+  @Override
+  public T get() {
+    return null;
+  }
+
   public T get(Key<?> match) {
     return get();
   }

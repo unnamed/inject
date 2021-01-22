@@ -27,7 +27,7 @@ public interface Module {
    * is called before checking for methods annotated with {@literal @}{@link Provides}
    * to create method-based providers.
    *
-   * <p>Don't invoke this method to configure binders. Instead use {@link Binder#install(Module)}
+   * <p>Don't invoke this method to configure binders. Instead use {@link Binder#install}
    * to check all the methods annotated with {@literal @}{@link Provides}</p>
    *
    * @param binder The configuring binder, attached to an specific injector

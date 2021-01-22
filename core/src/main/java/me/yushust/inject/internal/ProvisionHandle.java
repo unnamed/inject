@@ -6,8 +6,6 @@ import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.std.ScopedProvider;
 import me.yushust.inject.provision.std.ToGenericProvider;
 
-import javax.inject.Provider;
-
 public class ProvisionHandle {
 
   private final InjectorImpl injector;
@@ -43,7 +41,7 @@ public class ProvisionHandle {
     }
   }
 
-  public <T> Provider<T> getProviderAndInject(ProvisionStack stack, Key<T> key) {
+  public <T> StdProvider<T> getProviderAndInject(ProvisionStack stack, Key<T> key) {
     StdProvider<T> provider = binder.getProvider(key);
     if (provider == null) {
       Class<T> rawType = key.getType().getRawType();
