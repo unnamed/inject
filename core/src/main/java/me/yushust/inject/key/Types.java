@@ -183,7 +183,7 @@ public final class Types {
   }
 
   /** Static factory method to create {@link ParameterizedType}s */
-  static ParameterizedType parameterizedTypeOf(Type ownerType, Class<?> rawType, Type... parameterTypes) {
+  public static ParameterizedType parameterizedTypeOf(Type ownerType, Class<?> rawType, Type... parameterTypes) {
     ownerType = compose(ownerType);
     parameterTypes = parameterTypes.clone();
     for (int i = 0; i < parameterTypes.length; i++) {
