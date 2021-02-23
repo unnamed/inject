@@ -23,7 +23,6 @@ import javax.inject.Provider;
 public final class Providers {
 
   private Providers() {
-    throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
   public static <T> Provider<T> unwrap(Provider<T> provider) {

@@ -32,7 +32,6 @@ public final class Types {
   }
 
   private Types() {
-    throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
   /** Adds the specified {@code packageName} to the list of omitted packages */

@@ -16,7 +16,6 @@ import java.util.List;
 public final class ElementFormatter {
 
   private ElementFormatter() {
-    throw new UnsupportedOperationException("This utility class should not be instantiated!");
   }
 
   public static String formatField(Field field, InjectedKey<?> key) {

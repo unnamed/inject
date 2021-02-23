@@ -20,7 +20,6 @@ import java.lang.reflect.Modifier;
 final class AnnotationScanner {
 
   private AnnotationScanner() {
-    throw new UnsupportedOperationException("This util class shouldn't be instantiated!");
   }
 
   /** Scans the specified type if it's not bound. It binds the type its annotations*/

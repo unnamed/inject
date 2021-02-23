@@ -17,8 +17,6 @@ import java.util.*;
 public final class Qualifiers {
 
   private Qualifiers() {
-    // Don't try to construct an util class!
-    throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
   public static boolean containsOnlyDefaultValues(Annotation annotation) {

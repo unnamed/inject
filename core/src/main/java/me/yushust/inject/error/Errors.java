@@ -20,7 +20,6 @@ import java.util.List;
 final class Errors {
 
   private Errors() {
-    throw new UnsupportedOperationException("Don't instantiate this class!");
   }
 
   /**

@@ -11,7 +11,6 @@ public final class Scopes {
   public static final Scope NONE = EmptyScope.INSTANCE;
 
   private Scopes() {
-    throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
   /**

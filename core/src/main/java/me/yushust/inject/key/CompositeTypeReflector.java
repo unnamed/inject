@@ -22,7 +22,6 @@ final class CompositeTypeReflector {
   }
 
   private CompositeTypeReflector() {
-    throw new UnsupportedOperationException("This class couldn't be instantiated!");
   }
 
   private static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {

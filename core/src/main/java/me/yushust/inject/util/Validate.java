@@ -15,8 +15,6 @@ import me.yushust.inject.key.Key;
 public final class Validate {
 
   private Validate() {
-    // the class shouldn't be instantiated
-    throw new UnsupportedOperationException();
   }
 
   /**
