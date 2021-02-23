@@ -104,7 +104,6 @@ public class InjectorImpl implements Injector {
    * not present, creates a provision stack and stores
    * it in the thread local
    */
-  @ThreadSensitive
   public ProvisionStack stackForThisThread() {
     ProvisionStack stack = provisionStackThreadLocal.get();
     // the stack doesn't exist, create a new stack
@@ -123,7 +122,6 @@ public class InjectorImpl implements Injector {
    * <p>Simple explanation: There's one {@link ProvisionStack}
    * per thread. This is handled using a {@link ThreadLocal}</p>
    */
-  @ThreadSensitive
   protected void removeStackFromThisThread() {
     ProvisionStack stack = provisionStackThreadLocal.get();
     provisionStackThreadLocal.set(null);
@@ -146,7 +144,6 @@ public class InjectorImpl implements Injector {
     }
   }
 
-  @ThreadSensitive
   public <T> void injectMembers(ProvisionStack stack, Key<T> type, T instance) {
     if (instance != null) {
       stack.push(type, instance);
@@ -166,7 +163,6 @@ public class InjectorImpl implements Injector {
     return getInstance(stackForThisThread(), type, useExplicitBindings);
   }
 
-  @ThreadSensitive
   public <T> T getInstance(ProvisionStack stack, Key<T> type, boolean useExplicitBindings) {
     Class<? super T> rawType = type.getType().getRawType();
     // Default injections
