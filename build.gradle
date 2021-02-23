@@ -1,0 +1,45 @@
+subprojects {
+
+  apply plugin: 'java'
+  apply plugin: 'maven-publish'
+
+  group 'me.yushust.inject'
+  version '0.3.3-beta'
+
+  publishing {
+    repositories {
+      maven {
+        def snapshot = version.toString().endsWith("-SNAPSHOT")
+        def typeName = snapshot ? 'snapshots' : 'releases'
+        def repoUrl = 'https://repo.unnamed.team/repository/unnamed-' + typeName
+
+        name = 'unnamed-' + (snapshot ? 'snapshots' : 'releases')
+        url = repoUrl
+
+        credentials {
+          username = System.getenv('REPO_USER')
+          password = System.getenv('REPO_PASSWORD')
+        }
+      }
+    }
+    publications {
+      trew(MavenPublication) {
+        from components.java
+      }
+    }
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+  }
+
+  test {
+    useJUnitPlatform()
+  }
+
+}
