@@ -1,4 +1,4 @@
-package me.yushust.inject.internal;
+package me.yushust.inject.impl;
 
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;

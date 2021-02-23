@@ -1,7 +1,7 @@
 package me.yushust.inject.multibinding;
 
 import me.yushust.inject.Binder;
-import me.yushust.inject.internal.*;
+import me.yushust.inject.impl.*;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 

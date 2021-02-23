@@ -1,4 +1,4 @@
-package me.yushust.inject.internal;
+package me.yushust.inject.impl;
 
 import me.yushust.inject.Binder;
 import me.yushust.inject.assisted.provision.ToFactoryProvider;

@@ -1,8 +1,8 @@
 package me.yushust.inject.assisted.provision;
 
 import me.yushust.inject.assisted.ValueFactory;
-import me.yushust.inject.internal.InjectorImpl;
-import me.yushust.inject.internal.ProvisionStack;
+import me.yushust.inject.impl.InjectorImpl;
+import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;

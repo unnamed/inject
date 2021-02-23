@@ -1,4 +1,4 @@
-package me.yushust.inject.internal;
+package me.yushust.inject.impl;
 
 import me.yushust.inject.Injector;
 import me.yushust.inject.error.InjectionException;

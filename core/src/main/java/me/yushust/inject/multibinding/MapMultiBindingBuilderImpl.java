@@ -1,8 +1,8 @@
 package me.yushust.inject.multibinding;
 
 import me.yushust.inject.Binder;
-import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.LinkedBuilder;
+import me.yushust.inject.impl.BinderImpl;
+import me.yushust.inject.impl.LinkedBuilder;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;

@@ -1,7 +1,7 @@
 package me.yushust.inject.provision.ioc;
 
 import me.yushust.inject.assisted.provision.ToFactoryProvider;
-import me.yushust.inject.internal.BinderImpl;
+import me.yushust.inject.impl.BinderImpl;
 import me.yushust.inject.key.Key;
 
 /**

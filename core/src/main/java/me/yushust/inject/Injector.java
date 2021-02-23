@@ -1,7 +1,7 @@
 package me.yushust.inject;
 
-import me.yushust.inject.internal.BinderImpl;
-import me.yushust.inject.internal.InjectorImpl;
+import me.yushust.inject.impl.BinderImpl;
+import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.key.TypeReference;
 
 import javax.inject.Provider;

@@ -1,7 +1,7 @@
 package me.yushust.inject.property;
 
-import me.yushust.inject.internal.ProvisionHandle;
-import me.yushust.inject.internal.ProvisionStack;
+import me.yushust.inject.impl.ProvisionHandle;
+import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;

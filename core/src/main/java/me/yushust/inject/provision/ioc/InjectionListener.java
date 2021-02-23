@@ -1,8 +1,8 @@
 package me.yushust.inject.provision.ioc;
 
 import me.yushust.inject.Injector;
-import me.yushust.inject.internal.InjectorImpl;
-import me.yushust.inject.internal.ProvisionStack;
+import me.yushust.inject.impl.InjectorImpl;
+import me.yushust.inject.impl.ProvisionStack;
 
 /**
  * Replaces the reflect-based injection of

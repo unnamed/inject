@@ -1,7 +1,7 @@
 package me.yushust.inject.provision.std;
 
-import me.yushust.inject.internal.InjectorImpl;
-import me.yushust.inject.internal.ProvisionStack;
+import me.yushust.inject.impl.InjectorImpl;
+import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;

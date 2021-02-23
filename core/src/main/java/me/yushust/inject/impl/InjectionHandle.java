@@ -1,4 +1,4 @@
-package me.yushust.inject.internal;
+package me.yushust.inject.impl;
 
 import me.yushust.inject.resolve.solution.InjectableMember;
 import me.yushust.inject.key.InjectedKey;

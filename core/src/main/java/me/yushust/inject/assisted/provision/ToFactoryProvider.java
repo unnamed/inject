@@ -3,7 +3,7 @@ package me.yushust.inject.assisted.provision;
 import me.yushust.inject.assisted.Assisted;
 import me.yushust.inject.error.FactoryException;
 import me.yushust.inject.assisted.ValueFactory;
-import me.yushust.inject.internal.BinderImpl;
+import me.yushust.inject.impl.BinderImpl;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
