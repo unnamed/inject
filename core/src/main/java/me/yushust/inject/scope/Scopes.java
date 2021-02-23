@@ -23,8 +23,14 @@ public final class Scopes {
   private enum EmptyScope implements Scope {
     INSTANCE;
 
+    @Override
     public <T> Provider<T> scope(Provider<T> unscoped) {
       return unscoped;
+    }
+
+    @Override
+    public String toString() {
+      return "EmptỳScope";
     }
   }
 
