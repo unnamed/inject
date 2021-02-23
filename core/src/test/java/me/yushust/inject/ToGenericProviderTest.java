@@ -1,11 +1,14 @@
 package me.yushust.inject;
 
+import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.std.generic.GenericProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public class ToGenericProviderTest {
 
@@ -34,16 +37,17 @@ public class ToGenericProviderTest {
   public static class FooGenericProvider implements GenericProvider<Foo<?>> {
 
     @Override
-    public Foo<?> get(Class<?> rawType, TypeReference<?>[] parameters) {
+    public Foo<?> get(Key<?> match) {
 
-      Class<?> rawParameterType = parameters[0].getRawType();
+      Type parameterType = ((ParameterizedType) match.getType().getType())
+          .getActualTypeArguments()[0];
       Foo<?> foo = null;
 
-      if (rawParameterType == String.class) {
+      if (parameterType == String.class) {
         foo = new StringFoo();
-      } else if (rawParameterType == Integer.class) {
+      } else if (parameterType == Integer.class) {
         foo = new IntegerFoo();
-      } else if (rawParameterType == Double.class) {
+      } else if (parameterType == Double.class) {
         foo = new DoubleFoo();
       }
       return foo;
