@@ -9,7 +9,7 @@ import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.multibinding.MultiBindingBuilderImpl;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.impl.TypeReferenceGenericProvider;
+import me.yushust.inject.provision.std.generic.impl.TypeReferenceGenericProvider;
 import me.yushust.inject.provision.std.MethodAsProvider;
 import me.yushust.inject.util.Validate;
 

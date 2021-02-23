@@ -1,4 +1,4 @@
-package me.yushust.inject.provision.impl;
+package me.yushust.inject.provision.std.generic.impl;
 
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
