@@ -13,7 +13,7 @@ public interface Scope {
    * @param unscoped The unscoped provider
    * @param <T>      The key type
    * @return The wrapped provider
-   * @see SingletonScope
+   * @see LazySingletonScope
    * @see Scopes
    */
   <T> Provider<T> scope(Provider<T> unscoped);

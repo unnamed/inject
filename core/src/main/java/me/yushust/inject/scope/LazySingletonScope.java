@@ -6,24 +6,19 @@ import javax.inject.Provider;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * A singleton provider wrapper. The implementation is
- * an enum to let the JVM make sure only one instance exists
- */
-public enum SingletonScope implements Scope {
-
-  /** The singleton instance */
-  INSTANCE;
+/** An eager singleton provider wrapper. */
+public final class LazySingletonScope
+    implements Scope {
 
   @Override
   public <T> Provider<T> scope(Provider<T> unscoped) {
 
     // the provider is already scoped
-    if (unscoped instanceof SingletonProvider) {
+    if (unscoped instanceof LazySingletonProvider) {
       return unscoped;
     }
 
-    return new SingletonProvider<>(unscoped);
+    return new LazySingletonProvider<>(unscoped);
   }
 
   /**
@@ -40,7 +35,7 @@ public enum SingletonScope implements Scope {
    *
    * @param <T> The provided type
    */
-  static class SingletonProvider<T>
+  static class LazySingletonProvider<T>
       implements Provider<T> {
 
     private final Lock instanceLock = new ReentrantLock();
@@ -57,7 +52,7 @@ public enum SingletonScope implements Scope {
      *
      * @param unscoped The unscoped provider
      */
-    SingletonProvider(Provider<T> unscoped) {
+    LazySingletonProvider(Provider<T> unscoped) {
       this.delegate = unscoped;
     }
 
@@ -80,7 +75,7 @@ public enum SingletonScope implements Scope {
 
     @Override
     public String toString() {
-      return "Singleton(" + delegate.toString() + ")";
+      return "LazySingleton(" + delegate.toString() + ")";
     }
   }
 

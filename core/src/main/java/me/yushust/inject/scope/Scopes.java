@@ -7,7 +7,9 @@ import javax.inject.Provider;
  */
 public final class Scopes {
 
-  public static final Scope SINGLETON = SingletonScope.INSTANCE;
+  public static final Scope SINGLETON
+      = new LazySingletonScope();
+
   public static final Scope NONE = EmptyScope.INSTANCE;
 
   private Scopes() {
