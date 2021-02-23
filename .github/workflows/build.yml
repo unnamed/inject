@@ -14,8 +14,8 @@ jobs:
           java-version: 1.8
       - name: 'gradle build'
         run: './gradlew build'
-      - name: 'gradle publish'
-        run: './gradlew publish'
-        env:
-          REPO_USER: '${{ secrets.REPO_USER }}'
-          REPO_PASSWORD: '${{ secrets.REPO_PASSWORD }}'
+      # - name: 'gradle publish'
+      #  run: './gradlew publish'
+      #  env:
+      #    REPO_USER: '${{ secrets.REPO_USER }}'
+      #    REPO_PASSWORD: '${{ secrets.REPO_PASSWORD }}'
