@@ -1,3 +1,10 @@
+# ide files
 *.iml
-target
 .idea
+
+# gradle files
+/.gradle/
+
+# build dirs
+/build/
+/core/build/
