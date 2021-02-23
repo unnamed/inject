@@ -6,7 +6,7 @@ import javax.inject.Provider;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/** An eager singleton provider wrapper. */
+/** A lazy singleton provider wrapper. */
 public final class LazySingletonScope
     implements Scope {
 
