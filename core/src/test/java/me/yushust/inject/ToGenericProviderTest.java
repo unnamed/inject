@@ -1,6 +1,7 @@
 package me.yushust.inject;
 
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.std.generic.GenericProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

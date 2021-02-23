@@ -6,6 +6,7 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.multibinding.CollectionCreator;
 import me.yushust.inject.multibinding.MapCreator;
+import me.yushust.inject.provision.std.generic.GenericProvider;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
 

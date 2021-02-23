@@ -1,13 +1,13 @@
 package me.yushust.inject.impl;
 
 import me.yushust.inject.Binder;
-import me.yushust.inject.GenericProvider;
+import me.yushust.inject.provision.std.generic.GenericProvider;
 import me.yushust.inject.assisted.ValueFactory;
 import me.yushust.inject.assisted.provision.ToFactoryProvider;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
-import me.yushust.inject.provision.std.ToGenericProvider;
+import me.yushust.inject.provision.std.generic.ToGenericProvider;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Provider;

@@ -4,7 +4,7 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.std.ScopedProvider;
-import me.yushust.inject.provision.std.ToGenericProvider;
+import me.yushust.inject.provision.std.generic.ToGenericProvider;
 
 public class ProvisionHandle {
 

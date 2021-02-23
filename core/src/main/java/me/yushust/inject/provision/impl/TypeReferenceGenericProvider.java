@@ -1,21 +1,31 @@
 package me.yushust.inject.provision.impl;
 
-import me.yushust.inject.GenericProvider;
-import me.yushust.inject.error.InjectionException;
+import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
+import me.yushust.inject.provision.std.generic.GenericProvider;
+import me.yushust.inject.util.Validate;
 
-public class TypeReferenceGenericProvider implements GenericProvider<TypeReference<?>> {
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
+public class TypeReferenceGenericProvider
+  implements GenericProvider<TypeReference<?>> {
 
   @Override
-  public TypeReference<?> get(
-      Class<?> rawType,
-      TypeReference<?>[] parameters
-  ) {
-    if (parameters.length != 1) {
-      throw new InjectionException("Cannot inject a non-specific TypeReference " + rawType);
-    } else {
-      return parameters[0];
-    }
+  public TypeReference<?> get(Key<?> match) {
+    TypeReference<?> typeMirror = match.getType();
+    Type type = typeMirror.getType();
+
+    Validate.state(
+        type instanceof ParameterizedType,
+        "Unsupported type '" + type + "'. The type must be "
+        + "a parameterized type."
+    );
+
+    return TypeReference.of(
+        ((ParameterizedType) type)
+            .getActualTypeArguments()[0]
+    );
   }
 
 }
