@@ -28,7 +28,9 @@ public interface Injector {
    */
   void injectStaticMembers(Class<?> clazz);
 
-  void injectMembers(Object object);
+  default void injectMembers(Object object) {
+    injectMembers(TypeReference.of(object.getClass()), object);
+  }
 
   /**
    * Lowest Level function of {@link Injector}, resolves the specified type
@@ -53,7 +55,9 @@ public interface Injector {
    * @return The instance, or null if the specified class
    * isn't injectable
    */
-  <T> T getInstance(Class<T> type);
+  default <T> T getInstance(Class<T> type) {
+    return getInstance(TypeReference.of(type));
+  }
 
   /**
    * Lowest-level method of {@link Injector} for instantiating

@@ -39,15 +39,6 @@ public class InjectorImpl implements Injector {
   }
 
   /**
-   * Delegates the functionality to the overloaded method
-   * {@link Injector#getInstance(TypeReference)} passing a
-   * raw-TypeReference
-   */
-  public <T> T getInstance(Class<T> type) {
-    return getInstance(TypeReference.of(type));
-  }
-
-  /**
    * Invokes the overloaded method
    * {@link InjectorImpl#getInstance(ProvisionStack, Key, boolean)}
    * passing an empty provision stack
@@ -71,17 +62,11 @@ public class InjectorImpl implements Injector {
   }
 
   /**
-   * Delegates the functionality to {@link Injector#injectMembers(TypeReference, Object)}
-   */
-  public void injectMembers(Object object) {
-    injectMembers(TypeReference.of(object.getClass()), object);
-  }
-
-  /**
    * Delegates the functionality to the abstract method
    * {@link InjectorImpl#injectMembers(ProvisionStack, Key, Object)}
    * passing an empty provision stack
    */
+  @Override
   public <T> void injectMembers(TypeReference<T> type, T instance) {
     boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
     // The creation of a new provision stack indicates
