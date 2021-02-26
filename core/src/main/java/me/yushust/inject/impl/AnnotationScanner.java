@@ -6,6 +6,7 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
+import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
 
 import javax.inject.Provider;
@@ -69,8 +70,9 @@ final class AnnotationScanner {
       return;
     }
 
-    if (rawType.isAnnotationPresent(Singleton.class)) {
-      binder.$unsafeBind(key, Providers.scope(key, provider, Scopes.SINGLETON));
+    Scope scope = Scopes.getScanner().scan(rawType);
+    if (scope != Scopes.NONE) {
+      binder.$unsafeBind(key, Providers.scope(key, provider, scope));
     }
   }
 

@@ -17,7 +17,6 @@ import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
 
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,8 +68,7 @@ public class MethodAsProvider<T>
           Qualifiers.getQualifiers(method.getAnnotations())
       );
 
-      Scope scope = method.isAnnotationPresent(Singleton.class)
-          ? Scopes.SINGLETON : Scopes.NONE;
+      Scope scope = Scopes.getScanner().scan(method);
 
       Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod);
       provider = Providers.scope(key, provider, scope);

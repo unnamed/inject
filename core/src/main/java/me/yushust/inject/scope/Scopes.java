@@ -10,9 +10,18 @@ public final class Scopes {
   public static final Scope SINGLETON
       = new LazySingletonScope();
 
-  public static final Scope NONE = EmptyScope.INSTANCE;
+  public static final Scope NONE
+      = EmptyScope.INSTANCE;
+
+  private static final ScopeScanner SCANNER
+      = new ScopeScanner();
 
   private Scopes() {
+  }
+
+  /** Returns the scope scanner instance */
+  public static ScopeScanner getScanner() {
+    return SCANNER;
   }
 
   /**
