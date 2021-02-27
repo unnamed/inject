@@ -1,7 +1,6 @@
 package me.yushust.inject.provision.std;
 
 import me.yushust.inject.Provides;
-import me.yushust.inject.Qualifiers;
 import me.yushust.inject.error.BindingException;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.impl.InjectorImpl;
@@ -63,10 +62,11 @@ public class MethodAsProvider<T>
 
     for (InjectableMethod injectableMethod : ComponentResolver.methods().resolve(type, Provides.class)) {
       Method method = injectableMethod.getMember();
-      Key<?> key = Key.of(
+      // TODO: Replace this shit
+      Key<?> key = ComponentResolver.keys().keyOf(
           injectableMethod.getDeclaringType().resolve(method.getGenericReturnType()),
-          Qualifiers.getQualifiers(method.getAnnotations())
-      );
+          method.getAnnotations()
+      ).getKey();
 
       Scope scope = Scopes.getScanner().scan(method);
 

@@ -1,14 +1,11 @@
 package me.yushust.inject;
 
-import me.yushust.inject.key.Qualifier;
-import me.yushust.inject.resolve.QualifierFactory;
 import me.yushust.inject.util.Validate;
 
 import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
 
 /**
  * Collection of factory static methods and other util
@@ -91,24 +88,6 @@ public final class Qualifiers {
 
     builder.append(")");
     return builder.toString();
-  }
-
-  /**
-   * Checks for annotations annotated with {@link javax.inject.Qualifier} and passes
-   * the valid qualifiers to the qualifier factory, to convert the
-   * annotations to a real {@link Qualifier}
-   * @return The collection of valid found qualifiers
-   */
-  public static Set<Qualifier> getQualifiers(Annotation[] annotations) {
-    Set<Qualifier> qualifiers = new HashSet<>();
-    for (Annotation annotation : annotations) {
-      if (!annotation.annotationType().isAnnotationPresent(javax.inject.Qualifier.class)) {
-        continue;
-      }
-      Qualifier qualifier = QualifierFactory.getQualifier(annotation);
-      qualifiers.add(qualifier);
-    }
-    return qualifiers;
   }
 
   /**

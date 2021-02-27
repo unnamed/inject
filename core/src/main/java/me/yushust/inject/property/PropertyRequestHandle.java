@@ -3,10 +3,10 @@ package me.yushust.inject.property;
 import me.yushust.inject.impl.ProvisionHandle;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
-import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
 
 import javax.inject.Provider;
+import java.lang.annotation.Annotation;
 
 public class PropertyRequestHandle {
 
@@ -57,10 +57,9 @@ public class PropertyRequestHandle {
    * returns null.
    */
   public static String getPropertyPath(Key<?> key) {
-    for (Qualifier qualifier : key.getQualifiers()) {
-      if (qualifier.raw() instanceof Property) {
-        return ((Property) qualifier.raw()).value();
-      }
+    Annotation qualifier = key.getQualifier();
+    if (qualifier instanceof Property) {
+      return ((Property) qualifier).value();
     }
     return null;
   }

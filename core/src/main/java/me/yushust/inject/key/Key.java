@@ -1,11 +1,12 @@
 package me.yushust.inject.key;
 
+import me.yushust.inject.Qualifiers;
 import me.yushust.inject.util.Validate;
 import me.yushust.inject.key.Types.CompositeType;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashSet;
+import java.lang.annotation.Annotation;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -25,25 +26,36 @@ public final class Key<T> implements CompositeType, Serializable {
 
   // The generic or raw type reference
   private final TypeReference<T> type;
-  // The unmodifiable set of qualifiers,
-  // never null. It's an empty set if no
-  // qualifiers are required
-  private final Set<Qualifier> qualifiers;
+
+  // The qualifier type, used when
+  // classes are used as qualifiers,
+  // its value can be null
+  private final Class<? extends Annotation> qualifierType;
+
+  // The qualifier instance, used
+  // when instances are used as qualifiers,
+  // its value can be null
+  private final Annotation qualifier;
 
   // This class is an immutable class, so
   // we can cache the hashcode and optimize
   // a bit the hashCode() method
   private final int hashCode;
-  // Same for toString() method
-  private final String toString;
 
-  public Key(TypeReference<T> type, Set<Qualifier> qualifiers) {
+  public Key(
+      TypeReference<T> type,
+      Class<? extends Annotation> qualifierType,
+      Annotation qualifier
+  ) {
     Validate.notNull(type, "type");
-    Validate.notNull(qualifiers, "qualifiers");
+    Validate.argument(
+        !(qualifierType != null && qualifier != null),
+        "Cannot use both qualifierType and qualifier qualifiers!"
+    );
     this.type = type.canonicalize();
-    this.qualifiers = Collections.unmodifiableSet(qualifiers);
+    this.qualifierType = qualifierType;
+    this.qualifier = qualifier;
     this.hashCode = computeHashCode();
-    this.toString = computeToString();
   }
 
   /** Determines if the {@link Key} represented by this is a raw-type */
@@ -65,56 +77,49 @@ public final class Key<T> implements CompositeType, Serializable {
   }
 
   /**
-   * @return An immutable set that contains
-   * all the qualifiers of this key
+   * Returns the qualifier instance attached
+   * to this type key
    */
-  public Set<Qualifier> getQualifiers() {
-    return qualifiers;
+  public Annotation getQualifier() {
+    return qualifier;
   }
 
   /**
-   * @return A key with the same type but
-   * with no qualifiers
+   * Returns the qualifier type attached
+   * to this type key
    */
-  public Key<T> withNoQualifiers() {
-    return new Key<>(type, Collections.emptySet());
+  public Class<? extends Annotation> getQualifierType() {
+    return qualifierType;
+  }
+
+  /** Returns a new {@link Key} with the given {@code qualifier} */
+  public Key<T> withQualifier(Annotation qualifier) {
+    return new Key<>(type, null, qualifier);
+  }
+
+  /** Returns a new {@link Key} with the given {@code qualifierType} */
+  public Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
+    return new Key<>(type, qualifierType, null);
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Key)) {
-      return false;
-    }
+    if (this == o) return true;
+    if (!(o instanceof Key)) return false;
     Key<?> key = (Key<?>) o;
     return hashCode == key.hashCode &&
         type.equals(key.type) &&
-        qualifiers.equals(key.qualifiers);
+        Objects.equals(qualifier, key.qualifier) &&
+        Objects.equals(qualifierType, key.qualifierType);
   }
 
   private int computeHashCode() {
-    // hashCode following the hashCode contracts
-    int result = 1;
-    result = 31 * result + type.hashCode();
-    result = 31 * result + qualifiers.hashCode();
-    return result;
+    return Objects.hash(type, qualifier, qualifierType);
   }
 
   @Override
   public int hashCode() {
     return hashCode;
-  }
-
-  private String computeToString() {
-    StringBuilder builder = new StringBuilder(type.toString());
-    for (Qualifier qualifier : qualifiers) {
-      builder.append("\n");
-      builder.append("    ");
-      builder.append(qualifier);
-    }
-    return builder.toString();
   }
 
   /**
@@ -132,7 +137,15 @@ public final class Key<T> implements CompositeType, Serializable {
    */
   @Override
   public String toString() {
-    return toString;
+    StringBuilder builder = new StringBuilder(type.toString());
+    if (qualifierType != null) {
+      builder.append(" marked with @")
+          .append(qualifierType.getSimpleName());
+    } else if (qualifier != null) {
+      builder.append(" annotated with ")
+          .append(Qualifiers.annotationToString(qualifier));
+    }
+    return builder.toString();
   }
 
   public static <T> Key<T> of(Class<T> type) {
@@ -140,15 +153,15 @@ public final class Key<T> implements CompositeType, Serializable {
   }
 
   public static <T> Key<T> of(TypeReference<T> type) {
-    return new Key<>(type, Collections.emptySet());
+    return new Key<>(type, null, null);
   }
 
-  public static <T> Key<T> of(TypeReference<T> type, Iterable<? extends Qualifier> qualifiers) {
-    Set<Qualifier> qualifierSet = new HashSet<>();
-    for (Qualifier qualifier : qualifiers) {
-      qualifierSet.add(qualifier);
-    }
-    return new Key<>(type, qualifierSet);
+  public static <T> Key<T> of(
+      TypeReference<T> type,
+      Class<? extends Annotation> qualifierType,
+      Annotation qualifier
+  ) {
+    return new Key<>(type, qualifierType, qualifier);
   }
 
 }

@@ -3,13 +3,9 @@ package me.yushust.inject.impl;
 import me.yushust.inject.Binder;
 import me.yushust.inject.Qualifiers;
 import me.yushust.inject.key.Key;
-import me.yushust.inject.key.Qualifier;
-import me.yushust.inject.resolve.QualifierFactory;
 import me.yushust.inject.util.Validate;
 
 import java.lang.annotation.Annotation;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Removes the responsibility to the implementer class
@@ -26,14 +22,14 @@ public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
   @Override
   default R markedWith(Class<? extends Annotation> qualifierType) {
     Validate.notNull(qualifierType, "qualifierType");
-    qualified(QualifierFactory.getQualifier(qualifierType));
+    setKey(key().withQualifier(qualifierType));
     return getReturnValue();
   }
 
   @Override
   default R qualified(Annotation annotation) {
     Validate.notNull(annotation, "annotation");
-    qualified(QualifierFactory.getQualifier(annotation));
+    setKey(key().withQualifier(annotation));
     return getReturnValue();
   }
 
@@ -41,15 +37,6 @@ public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
   default R named(String name) {
     Validate.notNull(name, "name");
     return qualified(Qualifiers.createNamed(name));
-  }
-
-  default void qualified(Qualifier qualifier) {
-    Validate.notNull(qualifier, "qualifier");
-    Set<Qualifier> qualifiers = new HashSet<>(
-        key().getQualifiers()
-    );
-    qualifiers.add(qualifier);
-    setKey(new Key<>(key().getType(), qualifiers));
   }
 
   R getReturnValue();

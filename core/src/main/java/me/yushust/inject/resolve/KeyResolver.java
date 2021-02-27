@@ -1,40 +1,21 @@
 package me.yushust.inject.resolve;
 
+import me.yushust.inject.Qualifiers;
 import me.yushust.inject.assisted.Assist;
 import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.Key;
-import me.yushust.inject.key.Qualifier;
 import me.yushust.inject.key.TypeReference;
 
+import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public final class KeyResolver {
 
   KeyResolver() {
-  }
-
-  /**
-   * Checks for annotations annotated with {@link javax.inject.Qualifier} and passes
-   * the valid qualifiers to the qualifier factory, to convert the
-   * annotations to a real {@link Qualifier}
-   * @return The collection of valid found qualifiers
-   */
-  public Set<Qualifier> getQualifiers(Annotation[] annotations) {
-    Set<Qualifier> qualifiers = new HashSet<>();
-    for (Annotation annotation : annotations) {
-      if (!annotation.annotationType().isAnnotationPresent(javax.inject.Qualifier.class)) {
-        continue;
-      }
-      Qualifier qualifier = QualifierFactory.getQualifier(annotation);
-      qualifiers.add(qualifier);
-    }
-    return qualifiers;
   }
 
   /** @return Resolves the key of the given parameter set and its annotations */
@@ -59,6 +40,8 @@ public final class KeyResolver {
   ) {
     boolean optional = false;
     boolean assisted = false;
+    Class<? extends Annotation> qualifierType = null;
+    Annotation qualifier = null;
 
     for (Annotation annotation : annotations) {
       Class<? extends Annotation> annotationType = annotation.annotationType();
@@ -73,9 +56,20 @@ public final class KeyResolver {
       if (!assisted && annotationType == Assist.class) {
         assisted = true;
       }
+      if (
+          qualifierType == null
+              && qualifier == null
+              && annotationType.isAnnotationPresent(Qualifier.class)
+      ) {
+        if (Qualifiers.containsOnlyDefaultValues(annotation)) {
+          qualifierType = annotationType;
+        } else {
+          qualifier = annotation;
+        }
+      }
     }
 
-    Key<T> key = Key.of(type, getQualifiers(annotations));
+    Key<T> key = Key.of(type, qualifierType, qualifier);
     return new InjectedKey<>(key, optional, assisted);
   }
 
