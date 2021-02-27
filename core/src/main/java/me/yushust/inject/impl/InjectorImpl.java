@@ -4,7 +4,6 @@ import me.yushust.inject.Injector;
 import me.yushust.inject.error.InjectionException;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.property.PropertyRequestHandle;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.resolve.*;
 import me.yushust.inject.resolve.solution.InjectableConstructor;
@@ -161,10 +160,10 @@ public class InjectorImpl implements Injector {
       return value;
     }
 
-    String path = PropertyRequestHandle.getPropertyPath(type);
-    if (path != null) {
-      return PropertyRequestHandle.getProperty(path, type.getType(), provisionHandle, stack);
-    }
+    //String path = PropertyRequestHandle.getPropertyPath(type);
+    //if (path != null) {
+    //  return PropertyRequestHandle.getProperty(path, type.getType(), provisionHandle, stack);
+    //}
 
     // If the stack isn't empty, it's a recursive call.
     // If the key is present in the provision stack,
