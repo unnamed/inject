@@ -43,6 +43,7 @@ public class InjectorImpl implements Injector {
    * {@link InjectorImpl#getInstance(ProvisionStack, Key, boolean)}
    * passing an empty provision stack
    */
+  @Override
   public <T> T getInstance(TypeReference<T> type) {
     boolean stackWasNotPresent = provisionStackThreadLocal.get() == null;
     // The creation of a new provision stack indicates
