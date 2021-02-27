@@ -1,6 +1,4 @@
-package me.yushust.inject;
-
-import me.yushust.inject.property.PropertyHolder;
+package me.yushust.inject.property;
 
 import javax.inject.Inject;
 import java.util.Properties;
