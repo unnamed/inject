@@ -1,4 +1,4 @@
-package me.yushust.inject;
+package me.yushust.inject.impl;
 
 import me.yushust.inject.util.Validate;
 
@@ -11,9 +11,9 @@ import java.lang.reflect.Method;
  * Collection of factory static methods and other util
  * methods for ease the handling of qualifiers
  */
-public final class Qualifiers {
+public final class Annotations {
 
-  private Qualifiers() {
+  private Annotations() {
   }
 
   public static boolean containsOnlyDefaultValues(Annotation annotation) {

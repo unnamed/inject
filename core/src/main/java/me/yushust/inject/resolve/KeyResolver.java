@@ -1,6 +1,6 @@
 package me.yushust.inject.resolve;
 
-import me.yushust.inject.Qualifiers;
+import me.yushust.inject.impl.Annotations;
 import me.yushust.inject.assisted.Assist;
 import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.Key;
@@ -61,7 +61,7 @@ public final class KeyResolver {
               && qualifier == null
               && annotationType.isAnnotationPresent(Qualifier.class)
       ) {
-        if (Qualifiers.containsOnlyDefaultValues(annotation)) {
+        if (Annotations.containsOnlyDefaultValues(annotation)) {
           qualifierType = annotationType;
         } else {
           qualifier = annotation;

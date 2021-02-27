@@ -1,7 +1,6 @@
 package me.yushust.inject.impl;
 
 import me.yushust.inject.Binder;
-import me.yushust.inject.Qualifiers;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.util.Validate;
 
@@ -36,7 +35,7 @@ public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
   @Override
   default R named(String name) {
     Validate.notNull(name, "name");
-    return qualified(Qualifiers.createNamed(name));
+    return qualified(Annotations.createNamed(name));
   }
 
   R getReturnValue();
