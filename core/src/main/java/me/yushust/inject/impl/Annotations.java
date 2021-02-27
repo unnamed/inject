@@ -41,56 +41,6 @@ public final class Annotations {
   }
 
   /**
-   * Converts the provided {@code annotationValues} to a string with
-   * an annotation format using the specified {@code annotationType}
-   *
-   * <p>
-   * The returned string be like:
-   *   {@literal @}Annotation(value = "hello", year = 2020)
-   *   {@literal @}Named("hello")
-   *   {@literal @}Example(hello = "Hello", world = "World")
-   * </p>
-   */
-  public static String annotationToString(Annotation annotation) {
-    StringBuilder builder = new StringBuilder("@");
-    builder.append(annotation.annotationType().getSimpleName());
-    builder.append("(");
-    Method[] methods = annotation.annotationType().getDeclaredMethods();
-
-    for (int i = 0; i < methods.length; i++) {
-      Method method = methods[i];
-      String methodName = method.getName();
-      Object value = "<non accessible>";
-
-      try {
-        value = method.invoke(annotation);
-      } catch (IllegalAccessException | InvocationTargetException ignored) {
-      }
-      // Annotations with methodName value doesn't require
-      // name specification
-      if (!methodName.equals("value") || methods.length != 1) {
-        builder.append(methodName);
-        builder.append(" = ");
-      }
-      // special case that contains " at the start and end
-      if (value instanceof String) {
-        builder.append("\"");
-        builder.append(value);
-        builder.append("\"");
-      } else {
-        // Just append the value
-        builder.append(value);
-      }
-      if (i != methods.length - 1) {
-        builder.append(", ");
-      }
-    }
-
-    builder.append(")");
-    return builder.toString();
-  }
-
-  /**
    * Creates an instance of {@link Named} with
    * the specified {@code name} as value for
    * this annotation.
@@ -105,6 +55,7 @@ public final class Annotations {
     return new NamedImpl(name);
   }
 
+  @SuppressWarnings("ClassExplicitlyAnnotation")
   private static class NamedImpl implements Named {
 
     private final String name;

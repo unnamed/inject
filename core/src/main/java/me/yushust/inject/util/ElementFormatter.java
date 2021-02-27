@@ -1,10 +1,11 @@
-package me.yushust.inject.error;
+package me.yushust.inject.util;
 
 import me.yushust.inject.key.InjectedKey;
-import me.yushust.inject.util.Validate;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.List;
@@ -72,4 +73,53 @@ public final class ElementFormatter {
         + formatParameters(method.getParameters(), keys) + ')';
   }
 
+  /**
+   * Converts the provided {@code annotationValues} to a string with
+   * an annotation format using the specified {@code annotationType}
+   *
+   * <p>
+   * The returned string be like:
+   *   {@literal @}Annotation(value = "hello", year = 2020)
+   *   {@literal @}Named("hello")
+   *   {@literal @}Example(hello = "Hello", world = "World")
+   * </p>
+   */
+  public static String annotationToString(Annotation annotation) {
+    StringBuilder builder = new StringBuilder("@");
+    builder.append(annotation.annotationType().getSimpleName());
+    builder.append("(");
+    Method[] methods = annotation.annotationType().getDeclaredMethods();
+
+    for (int i = 0; i < methods.length; i++) {
+      Method method = methods[i];
+      String methodName = method.getName();
+      Object value = "<non accessible>";
+
+      try {
+        value = method.invoke(annotation);
+      } catch (IllegalAccessException | InvocationTargetException ignored) {
+      }
+      // Annotations with methodName value doesn't require
+      // name specification
+      if (!methodName.equals("value") || methods.length != 1) {
+        builder.append(methodName);
+        builder.append(" = ");
+      }
+      // special case that contains " at the start and end
+      if (value instanceof String) {
+        builder.append("\"");
+        builder.append(value);
+        builder.append("\"");
+      } else {
+        // Just append the value
+        builder.append(value);
+      }
+      if (i != methods.length - 1) {
+        builder.append(", ");
+      }
+    }
+
+    builder.append(")");
+    return builder.toString();
+  }
 }

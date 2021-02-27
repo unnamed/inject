@@ -1,6 +1,6 @@
 package me.yushust.inject.resolve.solution;
 
-import me.yushust.inject.error.ElementFormatter;
+import me.yushust.inject.util.ElementFormatter;
 import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;

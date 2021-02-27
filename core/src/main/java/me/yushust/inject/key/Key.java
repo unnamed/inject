@@ -1,6 +1,6 @@
 package me.yushust.inject.key;
 
-import me.yushust.inject.impl.Annotations;
+import me.yushust.inject.util.ElementFormatter;
 import me.yushust.inject.util.Validate;
 import me.yushust.inject.key.Types.CompositeType;
 
@@ -143,7 +143,7 @@ public final class Key<T> implements CompositeType, Serializable {
           .append(qualifierType.getSimpleName());
     } else if (qualifier != null) {
       builder.append(" annotated with ")
-          .append(Annotations.annotationToString(qualifier));
+          .append(ElementFormatter.annotationToString(qualifier));
     }
     return builder.toString();
   }
