@@ -62,19 +62,18 @@ public final class Annotations {
     // the object will never change,
     // the hashCode can be cached
     private final int hashCode;
-    // same for the toString() method
-    private final String toString;
 
     private NamedImpl(String name) {
       this.name = name;
       this.hashCode = (127 * "value".hashCode()) ^ name.hashCode();
-      this.toString = "@Named(\"" + name + "\")";
     }
 
+    @Override
     public Class<? extends Annotation> annotationType() {
       return Named.class;
     }
 
+    @Override
     public String value() {
       return name;
     }
@@ -93,7 +92,7 @@ public final class Annotations {
 
     @Override
     public String toString() {
-      return toString;
+      return "@Named(\"" + name + "\")";
     }
   }
 
