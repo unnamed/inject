@@ -13,5 +13,4 @@ import java.lang.reflect.Field;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface InjectIgnore {
-}
+public @interface InjectIgnore {}
