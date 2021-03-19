@@ -1,5 +1,7 @@
 package me.yushust.inject.resolve;
 
+import me.yushust.inject.InjectAll;
+import me.yushust.inject.InjectIgnore;
 import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.resolve.solution.InjectableField;
@@ -49,10 +51,23 @@ public final class FieldResolver {
       // iterate all fields, including private fields
       // exclude fields that aren't annotated with
       // javax.inject.Inject
+      if (checking.isAnnotationPresent(InjectAll.class)) {
+        for (Field field : checking.getDeclaredFields()) {
+          if (field.isAnnotationPresent(InjectIgnore.class)) {
+            continue;
+          }
+
+          TypeReference<?> fieldType = type.getFieldType(field);
+          InjectedKey<?> key = ComponentResolver.KEY_RESOLVER.keyOf(fieldType, field.getAnnotations());
+          fields.add(new InjectableField(type, key, field));
+        }
+      }
+
       for (Field field : checking.getDeclaredFields()) {
         if (!field.isAnnotationPresent(Inject.class)) {
           continue;
         }
+
         TypeReference<?> fieldType = type.getFieldType(field);
         InjectedKey<?> key = ComponentResolver.KEY_RESOLVER.keyOf(fieldType, field.getAnnotations());
         fields.add(new InjectableField(type, key, field));
