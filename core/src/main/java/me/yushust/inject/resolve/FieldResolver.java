@@ -16,7 +16,9 @@ public final class FieldResolver {
   FieldResolver() {
   }
 
-  /** Cached alternative method for {@link FieldResolver#resolve}*/
+  /**
+   * Cached alternative method for {@link FieldResolver#resolve}
+   */
   public List<InjectableField> get(TypeReference<?> type) {
     Solution solution = ComponentResolver.SOLUTIONS.get(type);
     if (solution == null || solution.fields == null) {
@@ -51,30 +53,44 @@ public final class FieldResolver {
       // iterate all fields, including private fields
       // exclude fields that aren't annotated with
       // javax.inject.Inject
-      if (checking.isAnnotationPresent(InjectAll.class)) {
-        for (Field field : checking.getDeclaredFields()) {
-          if (field.isAnnotationPresent(InjectIgnore.class)) {
-            continue;
-          }
 
-          TypeReference<?> fieldType = type.getFieldType(field);
-          InjectedKey<?> key = ComponentResolver.KEY_RESOLVER.keyOf(fieldType, field.getAnnotations());
-          fields.add(new InjectableField(type, key, field));
-        }
-      }
-
+      boolean injectAll = checking.isAnnotationPresent(InjectAll.class);
       for (Field field : checking.getDeclaredFields()) {
-        if (!field.isAnnotationPresent(Inject.class)) {
+        if (field.isSynthetic()) {
           continue;
         }
 
         TypeReference<?> fieldType = type.getFieldType(field);
         InjectedKey<?> key = ComponentResolver.KEY_RESOLVER.keyOf(fieldType, field.getAnnotations());
+
+        if (injectAll) {
+          if (field.isAnnotationPresent(InjectIgnore.class)) {
+            continue;
+          }
+        } else {
+          if (!field.isAnnotationPresent(Inject.class)) {
+            continue;
+          }
+        }
+
         fields.add(new InjectableField(type, key, field));
       }
+
     }
 
     return fields;
+  }
+
+  private InjectableField getInjectableField(
+      TypeReference<?> fieldType,
+      InjectedKey<?> key,
+      Field field
+  ) {
+    return new InjectableField(
+        fieldType,
+        key,
+        field
+    );
   }
 
 }

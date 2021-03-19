@@ -3,6 +3,7 @@ package me.yushust.inject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 public class InjectAllTest {
@@ -21,6 +22,8 @@ public class InjectAllTest {
     Foo foo = injector.getInstance(Foo.class);
     Assertions.assertEquals(foo.cola, "Cola.");
     Assertions.assertEquals(foo.one, 1);
+    System.out.println(foo.cola);
+    System.out.println(foo.one);
   }
 
   @InjectAll
