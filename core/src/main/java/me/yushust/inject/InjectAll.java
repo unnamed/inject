@@ -14,5 +14,4 @@ import java.lang.reflect.Field;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface InjectAll {
-}
+public @interface InjectAll {}
