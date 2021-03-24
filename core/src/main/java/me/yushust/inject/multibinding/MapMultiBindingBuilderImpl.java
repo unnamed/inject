@@ -27,11 +27,18 @@ class MapMultiBindingBuilderImpl<K, V> implements Binder.MapMultiBindingBuilder<
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void in(Scope scope) {
     Validate.notNull(scope, "scope");
     Provider<? extends Map<K, V>> provider = Providers.unwrap(binder.getProvider(mapKey));
     if (provider != null) {
-      binder.$unsafeBind(mapKey, Providers.scope(mapKey, provider, scope));
+      if (provider instanceof StdProvider) {
+        provider = ((StdProvider<? extends Map<K, V>>) provider)
+            .withScope(mapKey, scope);
+      } else {
+        provider = scope.scope(provider);
+      }
+      binder.$unsafeBind(mapKey, provider);
     }
   }
 

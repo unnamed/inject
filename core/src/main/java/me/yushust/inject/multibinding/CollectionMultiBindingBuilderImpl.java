@@ -37,11 +37,18 @@ class CollectionMultiBindingBuilderImpl<E> implements
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void in(Scope scope) {
     Validate.notNull(scope, "scope");
     Provider<? extends Collection<E>> provider = Providers.unwrap(binder.getProvider(collectionKey));
     if (provider != null) {
-      binder.$unsafeBind(collectionKey, Providers.scope(collectionKey, provider, scope));
+      if (provider instanceof StdProvider) {
+        provider = ((StdProvider<? extends Collection<E>>) provider)
+            .withScope(collectionKey, scope);
+      } else {
+        provider = scope.scope(provider);
+      }
+      binder.$unsafeBind(collectionKey, provider);
     }
   }
 

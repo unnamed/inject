@@ -1,5 +1,8 @@
 package me.yushust.inject.provision;
 
+import me.yushust.inject.Injector;
+import me.yushust.inject.impl.InjectorImpl;
+import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.std.InstanceProvider;
@@ -16,6 +19,14 @@ import javax.inject.Provider;
 public final class Providers {
 
   private Providers() {
+  }
+
+  public static void inject(ProvisionStack stack, InjectorImpl injector, Provider<?> provider) {
+    if (provider instanceof StdProvider) {
+      ((StdProvider<?>) provider).inject(stack, injector);
+    } else {
+      injector.injectMembers(stack, Key.of(TypeReference.of(provider.getClass())), provider);
+    }
   }
 
   public static <T> Provider<T> unwrap(Provider<T> provider) {

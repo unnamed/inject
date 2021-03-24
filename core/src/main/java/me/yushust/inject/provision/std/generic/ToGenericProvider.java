@@ -6,7 +6,6 @@ import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -14,7 +13,7 @@ import javax.inject.Provider;
 
 public class ToGenericProvider<T>
     extends ScopedProvider<T>
-    implements BindListener, Provider<T> {
+    implements Provider<T> {
 
   private final GenericProvider<T> provider;
   private Scope scope;
@@ -24,8 +23,9 @@ public class ToGenericProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
     // don't inject null references
+    injected = true;
   }
 
   @Override

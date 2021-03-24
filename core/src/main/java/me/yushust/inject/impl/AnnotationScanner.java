@@ -72,7 +72,7 @@ final class AnnotationScanner {
 
     Scope scope = Scopes.getScanner().scan(rawType);
     if (scope != Scopes.NONE) {
-      binder.$unsafeBind(key, Providers.scope(key, provider, scope));
+      binder.$unsafeBind(key, provider.withScope(key, scope));
     }
   }
 

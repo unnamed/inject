@@ -1,6 +1,5 @@
 package me.yushust.inject.provision;
 
-import me.yushust.inject.Injector;
 import me.yushust.inject.assisted.provision.ToFactoryProvider;
 import me.yushust.inject.impl.BinderImpl;
 import me.yushust.inject.impl.InjectorImpl;
@@ -13,7 +12,7 @@ import javax.inject.Provider;
 
 public abstract class StdProvider<T> implements Provider<T> {
 
-  private boolean injected; // TODO: Make this atomic
+  protected boolean injected; // TODO: Make this atomic
 
   public void setInjected(boolean injected) {
     this.injected = injected;

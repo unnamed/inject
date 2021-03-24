@@ -17,8 +17,7 @@ import java.util.Collections;
  * @param <E> The element type
  */
 class CollectionBoundProvider<E>
-    extends StdProvider<Collection<E>>
-    implements InjectionListener {
+    extends StdProvider<Collection<E>> {
 
   private final Collection<Provider<? extends E>> delegates;
   private final CollectionCreator collectionCreator;
@@ -32,10 +31,10 @@ class CollectionBoundProvider<E>
    * Injects members of all element providers
    */
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
     for (Provider<? extends E> provider : delegates) {
-      if (provider instanceof InjectionListener) {
-        ((InjectionListener) provider).onInject(stack, injector);
+      if (provider instanceof StdProvider) {
+        ((StdProvider<?>) provider).inject(stack, injector);
       } else {
         injector.injectMembers(
             stack,
@@ -44,7 +43,7 @@ class CollectionBoundProvider<E>
         );
       }
     }
-    setInjected(true);
+    injected = true;
   }
 
   @Override

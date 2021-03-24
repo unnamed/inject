@@ -39,7 +39,7 @@ import javax.inject.Provider;
  */
 public class ProviderTypeProvider<T>
     extends StdProvider<T>
-    implements Provider<T>, InjectionListener {
+    implements Provider<T> {
 
   private final TypeReference<? extends Provider<? extends T>> providerClass;
   private volatile Provider<? extends T> provider;
@@ -49,8 +49,9 @@ public class ProviderTypeProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
     provider = injector.getInstance(providerClass);
+    injected = true;
   }
 
   @Override

@@ -7,7 +7,6 @@ import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.resolve.solution.InjectableMethod;
 import me.yushust.inject.resolve.ComponentResolver;
@@ -25,8 +24,7 @@ import java.util.Map;
  * the return value
  */
 public class MethodAsProvider<T>
-    extends StdProvider<T>
-    implements InjectionListener {
+    extends StdProvider<T> {
 
   private final Object moduleInstance;
   private final InjectableMethod method;
@@ -38,8 +36,9 @@ public class MethodAsProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
     this.injector = injector;
+    this.injected = true;
   }
 
   @Override
@@ -69,8 +68,8 @@ public class MethodAsProvider<T>
 
       Scope scope = Scopes.getScanner().scan(method);
 
-      Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod);
-      provider = Providers.scope(key, provider, scope);
+      Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod)
+          .withScope(key, scope);
 
       if (providers.putIfAbsent(key, provider) != null) {
         errors.attach(

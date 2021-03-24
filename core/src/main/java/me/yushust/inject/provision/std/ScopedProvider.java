@@ -20,7 +20,7 @@ import javax.inject.Provider;
  */
 public class ScopedProvider<T>
     extends StdProvider<T>
-    implements InjectionListener, Provider<T> {
+    implements Provider<T> {
 
   private final Provider<T> unscoped;
   private final Provider<T> scoped;
@@ -50,9 +50,10 @@ public class ScopedProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
-    Providers.inject(injector, stack, unscoped);
-    Providers.inject(injector, stack, scoped); // some scopes requires injections
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
+    Providers.inject(stack, injector, unscoped);
+    Providers.inject(stack, injector, scoped);
+    injected = true;
   }
 
   @Override

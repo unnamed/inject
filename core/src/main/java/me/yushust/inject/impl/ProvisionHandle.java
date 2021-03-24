@@ -54,7 +54,7 @@ public class ProvisionHandle {
       }
     }
     if (!provider.isInjected()) {
-      Providers.inject(injector, stack, provider);
+      Providers.inject(stack, injector, provider);
     }
     return provider;
   }

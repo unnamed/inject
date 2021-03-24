@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ProxiedFactoryProvider<T>
-    extends StdProvider<T>
-    implements InjectionListener {
+    extends StdProvider<T> {
 
   private final Class<? extends ValueFactory> factory;
   private final Method method;
@@ -88,7 +87,7 @@ public class ProxiedFactoryProvider<T>
 
   @Override
   @SuppressWarnings("unchecked")
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
     factoryInstance = (T) Proxy.newProxyInstance(
         getClass().getClassLoader(),
         new Class[]{factory},
@@ -100,6 +99,7 @@ public class ProxiedFactoryProvider<T>
           }
         }
     );
+    injected = true;
   }
 
   @Override

@@ -10,8 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 
 class MapBoundProvider<K, V>
-    extends StdProvider<Map<K, V>>
-    implements InjectionListener {
+    extends StdProvider<Map<K, V>> {
 
   private final Map<K, Provider<? extends V>> delegates;
   private final MapCreator mapCreator;
@@ -22,9 +21,9 @@ class MapBoundProvider<K, V>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
-    delegates.forEach((key, valueProvider) -> Providers.inject(injector, stack, valueProvider));
-    setInjected(true);
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
+    delegates.forEach((key, valueProvider) -> Providers.inject(stack, injector, valueProvider));
+    injected = true;
   }
 
   @Override

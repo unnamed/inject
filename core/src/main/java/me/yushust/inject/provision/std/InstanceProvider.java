@@ -41,8 +41,9 @@ public class InstanceProvider<T>
   public Provider<T> withScope(Key<?> match, Scope scope) {
     if (scope == Scopes.SINGLETON) {
       return this;
+    } else {
+      throw new UnsupportedOperationException("Instance providers cannot be scoped!");
     }
-    throw new UnsupportedOperationException("Instance providers cannot be scoped!");
   }
 
   @Override

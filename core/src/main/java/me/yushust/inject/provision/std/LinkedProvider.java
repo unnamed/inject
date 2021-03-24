@@ -24,8 +24,7 @@ import me.yushust.inject.provision.StdProvider;
  * {@code bind(Foo.class).to(Bar.class);}
  */
 public class LinkedProvider<T>
-    extends StdProvider<T>
-    implements InjectionListener {
+    extends StdProvider<T> {
 
   private final Key<T> key;
   private final Key<? extends T> target;
@@ -40,9 +39,10 @@ public class LinkedProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
     // Sets the injector, used to get an instance of the target type
     this.injector = injector;
+    this.injected = true;
   }
 
   @Override

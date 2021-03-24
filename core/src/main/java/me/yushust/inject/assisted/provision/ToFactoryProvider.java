@@ -7,7 +7,6 @@ import me.yushust.inject.impl.BinderImpl;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.resolve.ComponentResolver;
 import me.yushust.inject.resolve.solution.InjectableConstructor;
 import me.yushust.inject.key.InjectedKey;
@@ -25,8 +24,7 @@ import java.util.*;
  * @param <T> The bound key type
  */
 public class ToFactoryProvider<T>
-    extends StdProvider<T>
-    implements BindListener {
+    extends StdProvider<T> {
 
   private final Class<? extends ValueFactory> factory;
 

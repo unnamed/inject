@@ -4,7 +4,6 @@ import me.yushust.inject.impl.BinderImpl;
 import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
-import me.yushust.inject.provision.ioc.BindListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -21,7 +20,7 @@ import java.util.Objects;
  */
 public class DelegatingStdProvider<T>
     extends StdProvider<T>
-    implements InjectionListener, BindListener, Provider<T> {
+    implements Provider<T> {
 
   private final Provider<T> delegate;
 
@@ -39,18 +38,27 @@ public class DelegatingStdProvider<T>
   }
 
   @Override
-  public void onInject(ProvisionStack stack, InjectorImpl injector) {
-    Providers.inject(injector, stack, delegate);
+  public void inject(ProvisionStack stack, InjectorImpl injector) {
+    Providers.inject(stack, injector, delegate);
+    injected = true;
   }
 
   @Override
   public boolean onBind(BinderImpl binder, Key<?> key) {
-    return Providers.onBind(binder, key, delegate);
+    if (delegate instanceof StdProvider) {
+      return ((StdProvider<?>) delegate).onBind(binder, key);
+    } else {
+      return true;
+    }
   }
 
   @Override
   public Provider<T> withScope(Key<?> match, Scope scope) {
-    return Providers.scope(match, delegate, scope);
+    if (delegate instanceof StdProvider) {
+      return ((StdProvider<T>) delegate).withScope(match, scope);
+    } else {
+      return super.withScope(match, scope);
+    }
   }
 
   @Override

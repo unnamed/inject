@@ -30,11 +30,8 @@ class BindingBuilderImpl<T> implements
     selfBindingIfNotBound();
     binder.$unsafeBind(
         key,
-        Providers.scope(
-            key,
-            binder.getProvider(key),
-            scope
-        )
+        binder.getProvider(key)
+            .withScope(key, scope)
     );
   }
 
