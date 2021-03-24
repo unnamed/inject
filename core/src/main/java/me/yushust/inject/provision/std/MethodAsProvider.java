@@ -9,7 +9,6 @@ import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.resolve.solution.InjectableMethod;
 import me.yushust.inject.resolve.ComponentResolver;
 import me.yushust.inject.scope.Scope;

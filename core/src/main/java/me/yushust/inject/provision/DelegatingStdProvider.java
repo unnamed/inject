@@ -5,8 +5,6 @@ import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.ioc.BindListener;
-import me.yushust.inject.provision.ioc.InjectionListener;
-import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -23,7 +21,7 @@ import java.util.Objects;
  */
 public class DelegatingStdProvider<T>
     extends StdProvider<T>
-    implements InjectionListener, ScopeListener<T>, BindListener {
+    implements InjectionListener, BindListener, Provider<T> {
 
   private final Provider<T> delegate;
 

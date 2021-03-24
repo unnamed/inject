@@ -4,7 +4,6 @@ import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.InjectionListener;
 
 import javax.inject.Provider;
 import java.util.Collections;

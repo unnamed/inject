@@ -5,8 +5,6 @@ import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.Providers;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.InjectionListener;
-import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -22,7 +20,7 @@ import javax.inject.Provider;
  */
 public class ScopedProvider<T>
     extends StdProvider<T>
-    implements ScopeListener<T>, InjectionListener {
+    implements InjectionListener, Provider<T> {
 
   private final Provider<T> unscoped;
   private final Provider<T> scoped;

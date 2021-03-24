@@ -6,7 +6,6 @@ import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.resolve.solution.InjectableConstructor;
 import me.yushust.inject.key.InjectedKey;
 

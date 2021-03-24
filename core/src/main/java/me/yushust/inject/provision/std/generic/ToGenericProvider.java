@@ -7,7 +7,6 @@ import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.provision.ioc.BindListener;
-import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.util.Validate;
 
@@ -15,7 +14,7 @@ import javax.inject.Provider;
 
 public class ToGenericProvider<T>
     extends ScopedProvider<T>
-    implements BindListener, ScopeListener<T> {
+    implements BindListener, Provider<T> {
 
   private final GenericProvider<T> provider;
   private Scope scope;
@@ -79,7 +78,7 @@ public class ToGenericProvider<T>
 
   public class SyntheticGenericProvider
       extends StdProvider<T>
-      implements ScopeListener<T> {
+      implements Provider<T> {
 
     private final Scope scope;
     private final Provider<T> scoped;

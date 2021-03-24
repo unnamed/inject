@@ -3,7 +3,6 @@ package me.yushust.inject.provision.std;
 import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.TypeReference;
-import me.yushust.inject.provision.ioc.InjectionListener;
 import me.yushust.inject.provision.StdProvider;
 
 import javax.inject.Provider;

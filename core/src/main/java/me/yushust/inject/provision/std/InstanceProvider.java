@@ -1,7 +1,6 @@
 package me.yushust.inject.provision.std;
 
 import me.yushust.inject.key.Key;
-import me.yushust.inject.provision.ioc.ScopeListener;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
@@ -29,7 +28,7 @@ import javax.inject.Provider;
  */
 public class InstanceProvider<T>
     extends StdProvider<T>
-    implements ScopeListener<T> {
+    implements Provider<T> {
 
   private final T instance;
 
