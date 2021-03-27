@@ -4,7 +4,7 @@ subprojects {
   apply plugin: 'maven-publish'
 
   group 'me.yushust.inject'
-  version '0.4.0'
+  version '0.4.1-SNAPSHOT'
 
   publishing {
     repositories {
