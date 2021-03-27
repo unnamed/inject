@@ -1,15 +1,16 @@
 package me.yushust.inject.resolve.solution;
 
+import me.yushust.inject.impl.InjectionHandle;
+import me.yushust.inject.impl.InjectorImpl;
+import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.util.ElementFormatter;
-import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a Field annotated with {@link javax.inject.Inject}
@@ -22,9 +23,11 @@ public class InjectableField implements InjectableMember {
   private final InjectedKey<?> key;
   private final Field field;
 
-  public InjectableField(TypeReference<?> declaringType,
-                         InjectedKey<?> key,
-                         Field field) {
+  public InjectableField(
+      TypeReference<?> declaringType,
+      InjectedKey<?> key,
+      Field field
+  ) {
     this.declaringType = Validate.notNull(declaringType, "declaringType");
     this.key = Validate.notNull(key, "key");
     this.field = Validate.notNull(field, "field");
@@ -33,53 +36,48 @@ public class InjectableField implements InjectableMember {
     this.field.setAccessible(true); // bro...
   }
 
+  @Override
   public TypeReference<?> getDeclaringType() {
     return declaringType;
   }
 
+  @Override
   public Field getMember() {
     return field;
   }
 
-  public List<InjectedKey<?>> getKeys() {
-    return Collections.singletonList(key);
-  }
-
-  /**
-   * Injects the value ({@code values} must be an array of 1 value) to
-   * the already specified field in the provided {@code target}
-   *
-   * @throws IllegalArgumentException If the target is null and the field
-   *                                  isn't static, or if the target isn't present in the type or its supertypes,
-   *                                  or if the {@code values} length isn't 1
-   */
   @Override
-  public Object inject(ErrorAttachable errors, Object target, Object[] values) {
+  public Object inject(InjectorImpl injector, ProvisionStack stack, Object target) {
 
     Validate.argument(
         target != null
             || Modifier.isStatic(field.getModifiers()),
         "Target instance is null and the field isn't static!"
     );
-    Validate.argument(
-        target == null
-            || declaringType.getRawType().isAssignableFrom(target.getClass()),
-        "Field isn't present in the target class"
-    );
-    Validate.argument(values.length == 1, "Cannot inject multiple values to a field!");
+
+    Object value = InjectionHandle.getValue(key, injector, stack);
+
+    if (value == InjectionHandle.ERRORED_RESULT) {
+      stack.attach(
+          "Cannot inject '" + field.getName() + "' field."
+              + "\n\tAt:" + declaringType
+              + "\n\tReason: Cannot get value for required key"
+              +" \n\tRequired Key: " + key.getKey()
+      );
+      return null;
+    }
 
     try {
-      field.set(target, values[0]);
+      field.set(target, value);
     } catch (IllegalAccessException e) {
-      errors.attach("Cannot set value in field " + ElementFormatter.formatField(field, key), e);
+      stack.attach(
+          "Cannot inject field "
+              + ElementFormatter.formatField(field, key),
+          e
+      );
     }
 
     return null;
-  }
-
-  @Override
-  public String toString() {
-    return "Field '" + field.getName() + "' of type '" + key.getKey() + "'";
   }
 
   @Override
@@ -94,10 +92,7 @@ public class InjectableField implements InjectableMember {
 
   @Override
   public int hashCode() {
-    int result = 1;
-    result = 31 * result + declaringType.hashCode();
-    result = 31 * result + key.hashCode();
-    result = 31 * result + field.hashCode();
-    return result;
+    return Objects.hash(declaringType, key, field);
   }
+
 }

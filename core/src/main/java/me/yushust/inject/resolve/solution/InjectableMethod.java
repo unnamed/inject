@@ -1,7 +1,9 @@
 package me.yushust.inject.resolve.solution;
 
+import me.yushust.inject.impl.InjectionHandle;
+import me.yushust.inject.impl.InjectorImpl;
+import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.util.ElementFormatter;
-import me.yushust.inject.error.ErrorAttachable;
 import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.util.Validate;
@@ -38,43 +40,50 @@ public class InjectableMethod implements InjectableMember {
     this.method.setAccessible(true);
   }
 
+  @Override
   public TypeReference<?> getDeclaringType() {
     return declaringType;
   }
 
+  @Override
   public Method getMember() {
     return method;
   }
 
-  public List<InjectedKey<?>> getKeys() {
-    return keys;
-  }
-
-  /**
-   * Injects the values to the already specified
-   * method in the provided {@code target}
-   *
-   * @throws IllegalArgumentException If the target is null and method
-   *                                  isn't static, or if the target
-   *                                  isn't present in the type or its supertypes;
-   */
-  public Object inject(ErrorAttachable errors, Object target, Object[] values) {
+  @Override
+  public Object inject(InjectorImpl injector, ProvisionStack stack, Object target) {
 
     Validate.argument(
         target != null
             || Modifier.isStatic(method.getModifiers()),
         "Target instance is null and the method isn't static!"
     );
-    Validate.argument(
-        target == null
-            || declaringType.getRawType().isAssignableFrom(target.getClass()),
-        "Field isn't present in the target class"
-    );
+
+    Object[] values = new Object[keys.size()];
+
+    for (int i = 0; i < keys.size(); i++) {
+      InjectedKey<?> key = keys.get(i);
+      Object value = InjectionHandle.getValue(key, injector, stack);
+
+      if (value == InjectionHandle.ERRORED_RESULT) {
+        stack.attach(
+            "Cannot inject '" + method.getName() + "' method."
+                + "\n\tAt:" + declaringType
+                + "\n\tReason: Cannot get value for required parameter (index " + i + ")"
+                +" \n\tRequired Key: " + key.getKey()
+        );
+        return null;
+      }
+    }
 
     try {
       return method.invoke(target, values);
     } catch (IllegalAccessException | InvocationTargetException e) {
-      errors.attach("Error while trying to invoke " + ElementFormatter.formatMethod(method, keys), e);
+      stack.attach(
+          "Cannot inject method "
+              + ElementFormatter.formatMethod(method, keys),
+          e
+      );
       return null;
     }
   }

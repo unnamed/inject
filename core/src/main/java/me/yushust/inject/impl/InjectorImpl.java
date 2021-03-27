@@ -134,10 +134,10 @@ public class InjectorImpl implements Injector {
       stack.push(type, instance);
     }
     for (InjectableMember member : ComponentResolver.fields().get(type.getType())) {
-      injectionHandle.injectToMember(stack, instance, member);
+      member.inject(this, stack, instance);
     }
     for (InjectableMember member : ComponentResolver.methods().get(type.getType())) {
-      injectionHandle.injectToMember(stack, instance, member);
+      member.inject(this, stack, instance);
     }
     if (instance != null) {
       stack.pop();
@@ -188,13 +188,10 @@ public class InjectorImpl implements Injector {
       return null;
     }
 
-    Object instance = constructor.createInstance(
+    Object instance = constructor.inject(
+        this,
         stack,
-        injectionHandle.getValuesForKeys(
-            constructor.getKeys(),
-            constructor,
-            stack
-        )
+        null
     );
 
     @SuppressWarnings("unchecked")
