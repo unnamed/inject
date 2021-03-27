@@ -1,28 +1,22 @@
 package me.yushust.inject;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * X = Class annotated with this annotation
- * Y = value()
- * <p>
- * Similar:
- * <p>
- * Binder#bind(X.class).to(Y.class)
- * </p>
+ * Declares that the annotated must
+ * be bound to the type specified by
+ * the {@link Targetted#value()} property.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Targetted {
 
-  /**
-   * The implementation class
-   *
-   * @return The implementation class
-   */
+  /** Returns the bound target class */
   Class<?> value();
 
 }
