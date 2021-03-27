@@ -7,3 +7,5 @@ indent_size = 2
 
 # intellij idea specific
 ij_continuation_indent_size = 4
+ij_java_do_not_wrap_after_single_annotation = true
+ij_java_doc_do_not_wrap_if_one_line = true
