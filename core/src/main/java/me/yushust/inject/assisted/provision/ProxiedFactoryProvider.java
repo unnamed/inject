@@ -8,8 +8,10 @@ import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
 import me.yushust.inject.resolve.solution.InjectableConstructor;
 import me.yushust.inject.key.InjectedKey;
+import me.yushust.inject.util.ElementFormatter;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -80,9 +82,25 @@ public class ProxiedFactoryProvider<T>
     }
 
 
-    Object instance = constructor.createInstance(injector.stackForThisThread(), givenArgs);
-    injector.injectMembers((TypeReference) key.getType(), instance);
-    return instance;
+    try {
+      Object instance = constructor.getMember().newInstance(givenArgs);
+      injector.injectMembers(
+          (TypeReference) key.getType(),
+          instance
+      );
+      return instance;
+    } catch (
+        InstantiationException
+            | InvocationTargetException
+            | IllegalAccessException e
+    ) {
+      injector.stackForThisThread().attach(
+          "Errors while invoking assisted constructor "
+              + ElementFormatter.formatConstructor(constructor.getMember(), keys),
+          e
+      );
+      return null;
+    }
   }
 
   @Override

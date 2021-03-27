@@ -44,9 +44,7 @@ public class MethodAsProvider<T>
   @Override
   public T get() {
     @SuppressWarnings("unchecked")
-    T value = (T) injector.getInjectionHandle().injectToMember( // supports static provider methods
-        injector.stackForThisThread(), moduleInstance, method
-    );
+    T value = (T) method.inject(injector, injector.stackForThisThread(), moduleInstance);
     return value;
   }
 

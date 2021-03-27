@@ -53,6 +53,10 @@ public class InjectableConstructor implements InjectableMember {
     return constructor;
   }
 
+  public List<InjectedKey<?>> getKeys() {
+    return keys;
+  }
+
   @Override
   public Object inject(InjectorImpl injector, ProvisionStack stack, Object target) {
 

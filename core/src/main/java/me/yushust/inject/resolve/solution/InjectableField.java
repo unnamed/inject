@@ -49,11 +49,9 @@ public class InjectableField implements InjectableMember {
   @Override
   public Object inject(InjectorImpl injector, ProvisionStack stack, Object target) {
 
-    Validate.argument(
-        target != null
-            || Modifier.isStatic(field.getModifiers()),
-        "Target instance is null and the field isn't static!"
-    );
+    if (target == null ^ Modifier.isStatic(field.getModifiers())) {
+      return null;
+    }
 
     Object value = InjectionHandle.getValue(key, injector, stack);
 

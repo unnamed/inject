@@ -23,18 +23,12 @@ public class InjectorImpl implements Injector {
       new ThreadLocal<>();
 
   private final ProvisionHandle provisionHandle;
-  private final InjectionHandle injectionHandle;
 
   private final BinderImpl binder;
 
   public InjectorImpl(BinderImpl binder) {
     this.binder = Validate.notNull(binder);
     this.provisionHandle = new ProvisionHandle(this, binder);
-    this.injectionHandle = new InjectionHandle(this);
-  }
-
-  public InjectionHandle getInjectionHandle() {
-    return injectionHandle;
   }
 
   /**

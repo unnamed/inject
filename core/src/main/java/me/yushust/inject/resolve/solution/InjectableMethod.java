@@ -53,11 +53,9 @@ public class InjectableMethod implements InjectableMember {
   @Override
   public Object inject(InjectorImpl injector, ProvisionStack stack, Object target) {
 
-    Validate.argument(
-        target != null
-            || Modifier.isStatic(method.getModifiers()),
-        "Target instance is null and the method isn't static!"
-    );
+    if (target == null ^ Modifier.isStatic(method.getModifiers())) {
+      return null;
+    }
 
     Object[] values = new Object[keys.size()];
 
