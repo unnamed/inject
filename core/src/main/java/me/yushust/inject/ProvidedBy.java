@@ -7,22 +7,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * X = Class annotated with this annotation
- * Y = value()
- * Similar:
- * <p>
- * Binder#bind(X.class).toProvider(Y.class)
- * </p>
+ * Similar to {@link Targetted}, but the
+ * annotated type is bound to a provider
+ * type, not to a sub-class.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ProvidedBy {
 
-  /**
-   * The provider class
-   *
-   * @return The provider class
-   */
+  /** Returns the bound provider */
   Class<? extends Provider<?>> value();
 
 }
