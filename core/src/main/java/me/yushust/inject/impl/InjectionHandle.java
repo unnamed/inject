@@ -1,5 +1,6 @@
 package me.yushust.inject.impl;
 
+import me.yushust.inject.resolve.solution.InjectableConstructor;
 import me.yushust.inject.resolve.solution.InjectableMember;
 import me.yushust.inject.key.InjectedKey;
 
@@ -30,7 +31,11 @@ public class InjectionHandle {
     }
   }
 
-  public Object[] getValuesForKeys(List<InjectedKey<?>> keys, Object member, ProvisionStack stack) {
+  public Object[] getValuesForKeys(
+      List<InjectedKey<?>> keys,
+      Object member,
+      ProvisionStack stack
+  ) {
     Object[] values = new Object[keys.size()];
     for (int i = 0; i < keys.size(); i++) {
       InjectedKey<?> key = keys.get(i);
@@ -41,7 +46,13 @@ public class InjectionHandle {
       List<String> snapshot = stack.getErrorMessages();
       Object value = injector.getInstance(stack, key.getKey(), true);
       if (value == null && !key.isOptional()) {
-        stack.attach("Cannot inject " + member + ":\n"
+        String at;
+        if (member instanceof InjectableMember) {
+          at = ((InjectableMember) member).getDeclaringType().toString();
+        } else {
+          at = ((InjectableConstructor) member).getMember().getDeclaringClass().getName();
+        }
+        stack.attach("Cannot inject '" + member + "' at '" + at + "':\n"
             + "    Reason: Cannot get an instance for key, and injection isn't optional\n"
             + "    Key: " + key.getKey());
       } else if (key.isOptional()) {
