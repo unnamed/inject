@@ -74,6 +74,8 @@ public class InjectableConstructor implements InjectableMember {
                 +" \n\tRequired Key: " + key.getKey()
         );
         return null;
+      } else {
+        values[i] = value;
       }
     }
 
