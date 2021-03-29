@@ -2,12 +2,10 @@
 *.iml
 .idea
 
-/build/
-/core/build/
-/property/build/
 # gradle files
 /.gradle/
 
 # build dirs
 /build/
 /core/build/
+/property/build/
