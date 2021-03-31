@@ -1,6 +1,5 @@
 package me.yushust.inject.resolve.solution;
 
-import me.yushust.inject.impl.InjectionHandle;
 import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.util.ElementFormatter;
@@ -53,9 +52,9 @@ public class InjectableField implements InjectableMember {
       return null;
     }
 
-    Object value = InjectionHandle.getValue(key, injector, stack);
+    Object value = injector.getValue(key, stack);
 
-    if (value == InjectionHandle.ERRORED_RESULT) {
+    if (value == InjectorImpl.ABSENT_INSTANCE) {
       stack.attach(
           "Cannot inject '" + field.getName() + "' field."
               + "\n\tAt:" + declaringType
