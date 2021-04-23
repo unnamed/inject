@@ -55,3 +55,5 @@ dependencies {
   implementation 'me.yushust.inject:core:VERSION'
 }
 ```
+
+.
