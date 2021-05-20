@@ -1,5 +1,6 @@
 package me.yushust.inject;
 
+import me.yushust.inject.error.InjectionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,9 +15,8 @@ public class ProviderTest {
   public void test() {
     Injector injector = Injector.create(binder ->
       binder.bind(Abstraction.class).toProvider(TheProvider.class).singleton());
-    injector.injectMembers(this);
-
-    Assertions.assertNotNull(abstraction);
+    Assertions.assertThrows(InjectionException.class, () ->
+        injector.injectMembers(this));
   }
 
   public interface Abstraction {
@@ -54,7 +54,6 @@ public class ProviderTest {
       Assertions.assertNotNull(req2);
       Assertions.assertNotNull(req3);
       Assertions.assertNotNull(req4);
-      System.out.println(req4.obj);
       return new Implementation();
     }
   }
