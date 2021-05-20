@@ -71,6 +71,8 @@ public class InjectableMethod implements InjectableMember {
         );
         return null;
       }
+
+      values[i] = value;
     }
 
     try {
