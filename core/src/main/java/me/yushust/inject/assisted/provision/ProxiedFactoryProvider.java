@@ -75,7 +75,11 @@ public class ProxiedFactoryProvider<T>
       if (injection.isAssisted()) {
         givenArgs[i] = values.get(injection.getKey());
       } else {
-        Object val = injector.getInstance(injector.stackForThisThread(), injection.getKey(), true);
+        Object val = injector.getInstance(
+            injector.stackForThisThread(),
+            injection.getKey(),
+            true
+        );
         givenArgs[i] = val;
       }
       i++;
@@ -108,12 +112,21 @@ public class ProxiedFactoryProvider<T>
   public void inject(ProvisionStack stack, InjectorImpl injector) {
     factoryInstance = (T) Proxy.newProxyInstance(
         getClass().getClassLoader(),
-        new Class[]{factory},
+        new Class[]{ factory },
         (proxy, method, args) -> {
           if (method.equals(this.method)) {
             return createInstance(injector, args);
           } else {
-            return null;
+            switch (method.getName()) {
+              case "equals":
+                return false;
+              case "hashCode":
+                return 0;
+              case "toString":
+                return factory.getName() + " Trew-generated implementation";
+              default:
+                return null;
+            }
           }
         }
     );

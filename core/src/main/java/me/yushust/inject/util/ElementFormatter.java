@@ -36,34 +36,6 @@ public final class ElementFormatter {
         + formatParameters(constructor.getParameters(), keys) + ')';
   }
 
-  private static String formatParameters(Parameter[] parameters, List<InjectedKey<?>> keys) {
-
-    Validate.notNull(parameters, "parameters");
-    Validate.notNull(keys, "keys");
-    Validate.argument(parameters.length == keys.size(), "Parameters length " +
-        "and keys length must be the same");
-
-    StringBuilder builder = new StringBuilder();
-
-    for (int i = 0; i < parameters.length; i++) {
-      Parameter parameter = parameters[i];
-      InjectedKey<?> key = keys.get(i);
-
-      if (key.isOptional()) {
-        builder.append("@Nullable ");
-      }
-      builder.append(key.getKey().getType());
-      builder.append(' ');
-      builder.append(parameter.getName());
-
-      if (i < parameters.length - 1) {
-        builder.append(", ");
-      }
-    }
-
-    return builder.toString();
-  }
-
   /**
    * Formats a method to a human-friendly format like
    * <pre>MyClass#someMethod(@Nullable String, Object)</pre>
@@ -122,4 +94,33 @@ public final class ElementFormatter {
     builder.append(")");
     return builder.toString();
   }
+
+  private static String formatParameters(Parameter[] parameters, List<InjectedKey<?>> keys) {
+
+    Validate.notNull(parameters, "parameters");
+    Validate.notNull(keys, "keys");
+    Validate.argument(parameters.length == keys.size(), "Parameters length " +
+        "and keys length must be the same");
+
+    StringBuilder builder = new StringBuilder();
+
+    for (int i = 0; i < parameters.length; i++) {
+      Parameter parameter = parameters[i];
+      InjectedKey<?> key = keys.get(i);
+
+      if (key.isOptional()) {
+        builder.append("@Nullable ");
+      }
+      builder.append(key.getKey().getType());
+      builder.append(' ');
+      builder.append(parameter.getName());
+
+      if (i < parameters.length - 1) {
+        builder.append(", ");
+      }
+    }
+
+    return builder.toString();
+  }
+
 }

@@ -1,6 +1,5 @@
 package me.yushust.inject.provision;
 
-import me.yushust.inject.Injector;
 import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
