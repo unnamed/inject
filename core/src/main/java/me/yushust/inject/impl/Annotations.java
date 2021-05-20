@@ -21,22 +21,20 @@ public final class Annotations {
     for (Method method : annotation.annotationType().getDeclaredMethods()) {
 
       Object defaultValue = method.getDefaultValue();
+      // no default value given
       if (defaultValue == null) {
         return false;
       }
-
-      Object value;
+      // try comparing to the actual value
       try {
-        value = method.invoke(annotation);
+        Object value = method.invoke(annotation);
+        // if the actual value isn't equal to the default value
+        if (!defaultValue.equals(value)) {
+          return false;
+        }
       } catch (IllegalAccessException | InvocationTargetException ignored) {
-        continue;
-      }
-
-      if (!defaultValue.equals(value)) {
-        return false;
       }
     }
-
     return true;
   }
 

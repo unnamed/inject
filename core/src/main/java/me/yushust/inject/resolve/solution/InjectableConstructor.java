@@ -1,6 +1,5 @@
 package me.yushust.inject.resolve.solution;
 
-import me.yushust.inject.impl.InjectionHandle;
 import me.yushust.inject.impl.InjectorImpl;
 import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.TypeReference;
@@ -64,9 +63,9 @@ public class InjectableConstructor implements InjectableMember {
 
     for (int i = 0; i < keys.size(); i++) {
       InjectedKey<?> key = keys.get(i);
-      Object value = InjectionHandle.getValue(key, injector, stack);
+      Object value = InjectorImpl.getValue(key, injector, stack);
 
-      if (value == InjectionHandle.ERRORED_RESULT) {
+      if (value == InjectorImpl.ERRORED_RESULT) {
         stack.attach(
             "Cannot instantiate class"
                 + "\n\tClass: " + constructor.getName()

@@ -12,13 +12,12 @@ public final class LazySingletonScope
 
   @Override
   public <T> Provider<T> scope(Provider<T> unscoped) {
-
     // the provider is already scoped
     if (unscoped instanceof LazySingletonProvider) {
       return unscoped;
+    } else {
+      return new LazySingletonProvider<>(unscoped);
     }
-
-    return new LazySingletonProvider<>(unscoped);
   }
 
   /**
