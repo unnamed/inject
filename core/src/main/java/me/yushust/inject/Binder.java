@@ -107,7 +107,13 @@ public interface Binder extends ErrorAttachable {
     /** Links the key to a generic provider */
     R toGenericProvider(GenericProvider<? extends T> provider);
 
-    void toFactory(Class<? extends ValueFactory> factory);
+    /** Links the key to an assisted instance factory */
+    default void toFactory(Class<? extends ValueFactory> factory) {
+      toFactory(TypeReference.of(factory));
+    }
+
+    /** Links the key to an assisted instance factory */
+    void toFactory(TypeReference<? extends ValueFactory> factory);
 
     /** Links the key to a specific provider type */
     default <P extends Provider<? extends T>> R toProvider(Class<P> providerClass) {

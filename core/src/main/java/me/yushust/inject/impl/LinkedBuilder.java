@@ -23,7 +23,7 @@ public interface LinkedBuilder<R,T> extends Binder.Linked<R, T> {
   }
 
   @Override
-  default void toFactory(Class<? extends ValueFactory> factory) {
+  default void toFactory(TypeReference<? extends ValueFactory> factory) {
     Validate.notNull(factory, "factory");
     toProvider(new ToFactoryProvider<>(factory));
   }

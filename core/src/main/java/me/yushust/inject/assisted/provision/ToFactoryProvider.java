@@ -13,6 +13,7 @@ import me.yushust.inject.key.InjectedKey;
 import me.yushust.inject.util.Validate;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -26,15 +27,16 @@ import java.util.*;
 public class ToFactoryProvider<T>
     extends StdProvider<T> {
 
-  private final Class<? extends ValueFactory> factory;
+  private final TypeReference<? extends ValueFactory> factory;
 
-  public ToFactoryProvider(Class<? extends ValueFactory> factory) {
+  public ToFactoryProvider(TypeReference<? extends ValueFactory> factory) {
     this.factory = Validate.notNull(factory, "factory");
   }
 
   @Override
   public boolean onBind(BinderImpl binder, Key<?> key) {
 
+    Class<? extends ValueFactory> factoryRawType = factory.getRawType();
     TypeReference<?> required = key.getType();
     InjectableConstructor constructor = ComponentResolver
         .constructor()
@@ -50,35 +52,37 @@ public class ToFactoryProvider<T>
     }
 
     // check factory class
-    if (!factory.isInterface()) {
-      binder.attach("Factory " + factory.getName()+ " must be an interface with one single method!");
+    if (!factoryRawType.isInterface()) {
+      binder.attach("Factory " + factory
+          + " must be an interface with one single method!");
       return false;
     }
 
-    int methodCount = factory.getMethods().length;
+    int methodCount = factoryRawType.getMethods().length;
     if (methodCount != 1) {
       binder.attach(
           "Bad factory method",
-          new FactoryException("Factory " + factory.getName()
+          new FactoryException("Factory " + factory
               + " has invalid method count (expected: 1, found: " + methodCount + ")")
       );
       return false;
     }
 
-    Method method = factory.getMethods()[0];
+    Method method = factoryRawType.getMethods()[0];
+    Type methodReturnType = factory.resolve(method.getGenericReturnType());
 
     // check return type is equal to the bound key
-    if (!required.getType().equals(method.getGenericReturnType())) {
+    if (!required.equals(methodReturnType)) {
       binder.attach(
           "Bad factory method",
           new FactoryException("Method " + method.getName() + " of factory "
-              + factory.getName() + " must return " + required)
+              + factory + " must return " + required)
       );
       return false;
     }
 
     List<InjectedKey<?>> keys = ComponentResolver.keys().keysOf(
-        TypeReference.of(factory),
+        factory,
         method.getParameters()
     );
 
@@ -129,7 +133,7 @@ public class ToFactoryProvider<T>
     @SuppressWarnings("unchecked")
     Key<T> castedKey = (Key<T>) key;
     binder.$unsafeBind(Key.of(factory), new ProxiedFactoryProvider<>(
-        factory,
+        factoryRawType,
         method,
         keys,
         constructor,
