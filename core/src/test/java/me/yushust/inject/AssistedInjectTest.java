@@ -20,6 +20,7 @@ public class AssistedInjectTest {
           .toFactory(new TypeReference<GenericBazFactory<Double>>() {});
     });
 
+    // first normal assisted factory
     FooFactory factory = injector.getInstance(FooFactory.class);
     Foo foo = factory.create("hello", 123);
 
@@ -28,6 +29,13 @@ public class AssistedInjectTest {
     Assertions.assertNotNull(foo.baz);
     Assertions.assertNotNull(foo.bar);
 
+    // second normal assisted factory
+    FooFactory factory2 = injector.getInstance(FooFactory.class);
+    Foo foo2 = factory2.create("hello", 123);
+    Assertions.assertEquals("hello", foo2.name);
+    Assertions.assertNotNull(foo2.baz);
+
+    // first generic assisted factory
     GenericBazFactory<Double> doubleBazFactory
         = injector.getInstance(new TypeReference<>() {});
     Baz<Double> doubleBaz = doubleBazFactory.create("hi", 0.1D);
