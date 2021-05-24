@@ -37,7 +37,7 @@ public class AssistedInjectTest {
 
     // first generic assisted factory
     GenericBazFactory<Double> doubleBazFactory
-        = injector.getInstance(new TypeReference<>() {});
+        = injector.getInstance(new TypeReference<GenericBazFactory<Double>>() {});
     Baz<Double> doubleBaz = doubleBazFactory.create("hi", 0.1D);
 
     Assertions.assertNotNull(doubleBaz.bar);
