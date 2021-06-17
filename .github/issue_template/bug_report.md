@@ -1,9 +1,6 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: Fix EDSL bug that doesn't let you bind generic types
-labels: bug
-assignees: yusshu
+name: Bug report about: Create a report to help us improve title: Fix EDSL bug that doesn't let you bind generic types
+labels: bug assignees: yusshu
 
 ---
 
@@ -12,6 +9,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -24,8 +22,9 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Java Version**
- - Java Version: [e.g. 8, 9, 10, 11]
- - JVM: [e.g. Hotspot, Eclipse, etc]
+
+- Java Version: [e.g. 8, 9, 10, 11]
+- JVM: [e.g. Hotspot, Eclipse, etc]
 
 **Additional context**
 Add any other context about the problem here.

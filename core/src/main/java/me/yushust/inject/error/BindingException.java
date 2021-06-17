@@ -6,20 +6,20 @@ package me.yushust.inject.error;
  */
 public class BindingException extends RuntimeException {
 
-  public BindingException() {
-    super();
-  }
+	public BindingException() {
+		super();
+	}
 
-  public BindingException(String message) {
-    super(message);
-  }
+	public BindingException(String message) {
+		super(message);
+	}
 
-  public BindingException(String message, Throwable cause) {
-    super(message, cause);
-  }
+	public BindingException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-  public BindingException(Throwable cause) {
-    super(cause);
-  }
+	public BindingException(Throwable cause) {
+		super(cause);
+	}
 
 }

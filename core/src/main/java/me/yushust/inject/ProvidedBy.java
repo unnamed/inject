@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ProvidedBy {
 
-  /** Returns the bound provider */
-  Class<? extends Provider<?>> value();
+	/** Returns the bound provider */
+	Class<? extends Provider<?>> value();
 
 }

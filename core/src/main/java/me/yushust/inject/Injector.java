@@ -9,77 +9,73 @@ import java.util.Arrays;
 
 public interface Injector {
 
-  /** Returns the explicit bound provider for the specified key */
-  default <T> Provider<? extends T> getProvider(Class<T> key) {
-    return getProvider(TypeReference.of(key));
-  }
+	static Injector create(Module... modules) {
+		return create(Arrays.asList(modules));
+	}
 
-  /** Returns the explicit bound provider for the specified key */
-  <T> Provider<? extends T> getProvider(TypeReference<T> key);
+	static Injector create(Iterable<? extends Module> modules) {
+		BinderImpl binder = new BinderImpl();
+		binder.install(modules);
+		if (binder.hasErrors()) {
+			binder.reportAttachedErrors();
+		}
+		return new InjectorImpl(binder);
+	}
 
-  /**
-   * Injects the static members of the specified class,
-   * equivalent to execute the overloaded method
-   * {@link Injector#injectMembers(TypeReference, Object)}
-   * passing a null instance and the type reference
-   * created with the provided class
-   *
-   * @param clazz The class
-   */
-  void injectStaticMembers(Class<?> clazz);
+	/** Returns the explicit bound provider for the specified key */
+	default <T> Provider<? extends T> getProvider(Class<T> key) {
+		return getProvider(TypeReference.of(key));
+	}
 
-  default void injectMembers(Object object) {
-    injectMembers(TypeReference.of(object.getClass()), object);
-  }
+	/** Returns the explicit bound provider for the specified key */
+	<T> Provider<? extends T> getProvider(TypeReference<T> key);
 
-  /**
-   * Lowest Level function of {@link Injector}, resolves the specified type
-   * and to injects fields and methods in
-   * the specified instance, if the instance is null, the injector handles
-   * it like a static injection
-   *
-   * @param type     The injected types
-   * @param instance The object that will be injected,
-   *                 if it's null, the injector handles
-   *                 it like a static injection
-   * @param <T>      The type of the injected object
-   */
-  <T> void injectMembers(TypeReference<T> type, T instance);
+	/**
+	 * Injects the static members of the specified class,
+	 * equivalent to execute the overloaded method
+	 * {@link Injector#injectMembers(TypeReference, Object)}
+	 * passing a null instance and the type reference
+	 * created with the provided class
+	 * @param clazz The class
+	 */
+	void injectStaticMembers(Class<?> clazz);
 
-  /**
-   * Converts the specified class to a {@link TypeReference}
-   * and calls the overloaded method {@link Injector#getInstance(TypeReference)}
-   *
-   * @param type The instance class
-   * @param <T>  The class parameter
-   * @return The instance, or null if the specified class
-   * isn't injectable
-   */
-  default <T> T getInstance(Class<T> type) {
-    return getInstance(TypeReference.of(type));
-  }
+	default void injectMembers(Object object) {
+		injectMembers(TypeReference.of(object.getClass()), object);
+	}
 
-  /**
-   * Lowest-level method of {@link Injector} for instantiating
-   * and injecting a class.
-   *
-   * @param type The instance generic type
-   * @param <T>  The type parameter
-   * @return The instance, or null if the class isn't injectable
-   */
-  <T> T getInstance(TypeReference<T> type);
+	/**
+	 * Lowest Level function of {@link Injector}, resolves the specified type
+	 * and to injects fields and methods in
+	 * the specified instance, if the instance is null, the injector handles
+	 * it like a static injection
+	 * @param type     The injected types
+	 * @param instance The object that will be injected,
+	 *                 if it's null, the injector handles
+	 *                 it like a static injection
+	 * @param <T>      The type of the injected object
+	 */
+	<T> void injectMembers(TypeReference<T> type, T instance);
 
-  static Injector create(Module... modules) {
-    return create(Arrays.asList(modules));
-  }
+	/**
+	 * Converts the specified class to a {@link TypeReference}
+	 * and calls the overloaded method {@link Injector#getInstance(TypeReference)}
+	 * @param type The instance class
+	 * @param <T>  The class parameter
+	 * @return The instance, or null if the specified class
+	 * isn't injectable
+	 */
+	default <T> T getInstance(Class<T> type) {
+		return getInstance(TypeReference.of(type));
+	}
 
-  static Injector create(Iterable<? extends Module> modules) {
-    BinderImpl binder = new BinderImpl();
-    binder.install(modules);
-    if (binder.hasErrors()) {
-      binder.reportAttachedErrors();
-    }
-    return new InjectorImpl(binder);
-  }
+	/**
+	 * Lowest-level method of {@link Injector} for instantiating
+	 * and injecting a class.
+	 * @param type The instance generic type
+	 * @param <T>  The type parameter
+	 * @return The instance, or null if the class isn't injectable
+	 */
+	<T> T getInstance(TypeReference<T> type);
 
 }

@@ -11,20 +11,20 @@ import javax.inject.Provider;
  */
 public interface GenericProvider<T> {
 
-  /**
-   * Creates an instance of {@link T} using
-   * the provided type parameters.
-   * @param match The matched type
-   */
-  T get(Key<?> match);
+	/**
+	 * Creates an instance of {@link T} using
+	 * the provided type parameters.
+	 * @param match The matched type
+	 */
+	T get(Key<?> match);
 
-  /**
-   * Converts this {@link GenericProvider} to a
-   * constant normal {@link Provider} that always
-   * use the given {@code match} key
-   */
-  default Provider<T> asConstantProvider(Key<?> match) {
-    return () -> get(match);
-  }
+	/**
+	 * Converts this {@link GenericProvider} to a
+	 * constant normal {@link Provider} that always
+	 * use the given {@code match} key
+	 */
+	default Provider<T> asConstantProvider(Key<?> match) {
+		return () -> get(match);
+	}
 
 }

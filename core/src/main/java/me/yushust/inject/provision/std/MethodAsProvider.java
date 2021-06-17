@@ -8,8 +8,8 @@ import me.yushust.inject.impl.ProvisionStack;
 import me.yushust.inject.key.Key;
 import me.yushust.inject.key.TypeReference;
 import me.yushust.inject.provision.StdProvider;
-import me.yushust.inject.resolve.solution.InjectableMethod;
 import me.yushust.inject.resolve.ComponentResolver;
+import me.yushust.inject.resolve.solution.InjectableMethod;
 import me.yushust.inject.scope.Scope;
 import me.yushust.inject.scope.Scopes;
 
@@ -24,61 +24,61 @@ import java.util.Map;
  * the return value
  */
 public class MethodAsProvider<T>
-    extends StdProvider<T> {
+		extends StdProvider<T> {
 
-  private final Object moduleInstance;
-  private final InjectableMethod method;
-  private InjectorImpl injector;
+	private final Object moduleInstance;
+	private final InjectableMethod method;
+	private InjectorImpl injector;
 
-  public MethodAsProvider(Object moduleInstance, InjectableMethod method) {
-    this.moduleInstance = moduleInstance;
-    this.method = method;
-  }
+	public MethodAsProvider(Object moduleInstance, InjectableMethod method) {
+		this.moduleInstance = moduleInstance;
+		this.method = method;
+	}
 
-  @Override
-  public void inject(ProvisionStack stack, InjectorImpl injector) {
-    this.injector = injector;
-    this.injected = true;
-  }
+	public static <T> Map<Key<?>, Provider<?>> resolveMethodProviders(
+			ErrorAttachable errors,
+			TypeReference<T> type,
+			T instance
+	) {
 
-  @Override
-  public T get() {
-    @SuppressWarnings("unchecked")
-    T value = (T) method.inject(injector, injector.stackForThisThread(), moduleInstance);
-    return value;
-  }
+		Map<Key<?>, Provider<?>> providers = new HashMap<>();
 
-  public static <T> Map<Key<?>, Provider<?>> resolveMethodProviders(
-      ErrorAttachable errors,
-      TypeReference<T> type,
-      T instance
-  ) {
+		for (InjectableMethod injectableMethod : ComponentResolver.methods().resolve(type, Provides.class)) {
+			Method method = injectableMethod.getMember();
+			// TODO: Replace this shit
+			Key<?> key = ComponentResolver.keys().keyOf(
+					injectableMethod.getDeclaringType().resolve(method.getGenericReturnType()),
+					method.getAnnotations()
+			).getKey();
 
-    Map<Key<?>, Provider<?>> providers = new HashMap<>();
+			Scope scope = Scopes.getScanner().scan(method);
 
-    for (InjectableMethod injectableMethod : ComponentResolver.methods().resolve(type, Provides.class)) {
-      Method method = injectableMethod.getMember();
-      // TODO: Replace this shit
-      Key<?> key = ComponentResolver.keys().keyOf(
-          injectableMethod.getDeclaringType().resolve(method.getGenericReturnType()),
-          method.getAnnotations()
-      ).getKey();
+			Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod)
+					.withScope(key, scope);
 
-      Scope scope = Scopes.getScanner().scan(method);
+			if (providers.putIfAbsent(key, provider) != null) {
+				errors.attach(
+						"Method provider duplicate",
+						new BindingException("Type " + type + " has two or more method " +
+								"providers with the same return key!")
+				);
+			}
+		}
 
-      Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod)
-          .withScope(key, scope);
+		return providers;
+	}
 
-      if (providers.putIfAbsent(key, provider) != null) {
-        errors.attach(
-            "Method provider duplicate",
-            new BindingException("Type " + type + " has two or more method " +
-                "providers with the same return key!")
-        );
-      }
-    }
+	@Override
+	public void inject(ProvisionStack stack, InjectorImpl injector) {
+		this.injector = injector;
+		this.injected = true;
+	}
 
-    return providers;
-  }
+	@Override
+	public T get() {
+		@SuppressWarnings("unchecked")
+		T value = (T) method.inject(injector, injector.stackForThisThread(), moduleInstance);
+		return value;
+	}
 
 }

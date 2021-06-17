@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 public interface CollectionCreator {
 
-  /** @return A new empty collection */
-  <E> Collection<E> create();
+	/** @return A new empty collection */
+	<E> Collection<E> create();
 
 }

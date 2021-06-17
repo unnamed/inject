@@ -19,35 +19,34 @@ import java.util.List;
  */
 final class Errors {
 
-  private Errors() {
-  }
+	private Errors() {
+	}
 
-  /**
-   * Prints the stack trace of the specified {@code throwable}
-   * to a {@link StringWriter} and returns the printed stack
-   * trace.
-   *
-   * @param throwable The throwable
-   * @return The throwable stack trace
-   */
-  static String getStackTrace(Throwable throwable) {
-    Validate.notNull(throwable);
-    // The StringWriter doesn't require a flush() or close()
-    StringWriter writer = new StringWriter();
-    // The PrintWriter just flushes the delegated writer
-    throwable.printStackTrace(new PrintWriter(writer));
-    return writer.toString();
-  }
+	/**
+	 * Prints the stack trace of the specified {@code throwable}
+	 * to a {@link StringWriter} and returns the printed stack
+	 * trace.
+	 * @param throwable The throwable
+	 * @return The throwable stack trace
+	 */
+	static String getStackTrace(Throwable throwable) {
+		Validate.notNull(throwable);
+		// The StringWriter doesn't require a flush() or close()
+		StringWriter writer = new StringWriter();
+		// The PrintWriter just flushes the delegated writer
+		throwable.printStackTrace(new PrintWriter(writer));
+		return writer.toString();
+	}
 
-  static String formatErrorMessages(List<String> messages) {
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < messages.size(); i++) {
-      builder.append("\n");
-      builder.append(i + 1);
-      builder.append(") ");
-      builder.append(messages.get(i));
-    }
-    return builder.toString();
-  }
+	static String formatErrorMessages(List<String> messages) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < messages.size(); i++) {
+			builder.append("\n");
+			builder.append(i + 1);
+			builder.append(") ");
+			builder.append(messages.get(i));
+		}
+		return builder.toString();
+	}
 
 }

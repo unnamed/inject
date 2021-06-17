@@ -11,46 +11,46 @@ import javax.inject.Named;
 
 public class QualifiedAssistedInjectTest {
 
-  @Test
-  public void test() {
+	@Test
+	public void test() {
 
-    Injector injector = Injector.create(binder ->
-        binder.bind(Foo.class).toFactory(FooFactory.class));
+		Injector injector = Injector.create(binder ->
+				binder.bind(Foo.class).toFactory(FooFactory.class));
 
-    FooFactory factory = injector.getInstance(FooFactory.class);
-    Foo foo = factory.create("OcNo", "Miranda", "Mr.");
+		FooFactory factory = injector.getInstance(FooFactory.class);
+		Foo foo = factory.create("OcNo", "Miranda", "Mr.");
 
-    Assertions.assertEquals("Mr. OcNo Miranda", foo.identifier);
-    Assertions.assertNotNull(foo.bar);
-    Assertions.assertNotNull(foo.bar2);
-  }
+		Assertions.assertEquals("Mr. OcNo Miranda", foo.identifier);
+		Assertions.assertNotNull(foo.bar);
+		Assertions.assertNotNull(foo.bar2);
+	}
 
-  public static class Bar {
-  }
+	public interface FooFactory extends ValueFactory {
 
-  public static class Foo {
+		Foo create(@Named("name") String name, @Named("lastName") String lastName, String prefix);
 
-    private final String identifier;
-    private final Bar bar2;
-    @Inject private Bar bar;
+	}
 
-    @Assisted
-    public Foo(
-        @Assist @Named("name") String name,
-        @Assist @Named("lastName") String lastName,
-        @Assist String prefix,
-        Bar bar2
-    ) {
-      this.bar2 = bar2;
-      this.identifier = prefix + " " + name + " " + lastName;
-    }
+	public static class Bar {
+	}
 
-  }
+	public static class Foo {
 
-  public interface FooFactory extends ValueFactory {
+		private final String identifier;
+		private final Bar bar2;
+		@Inject private Bar bar;
 
-    Foo create(@Named("name") String name, @Named("lastName") String lastName, String prefix);
+		@Assisted
+		public Foo(
+				@Assist @Named("name") String name,
+				@Assist @Named("lastName") String lastName,
+				@Assist String prefix,
+				Bar bar2
+		) {
+			this.bar2 = bar2;
+			this.identifier = prefix + " " + name + " " + lastName;
+		}
 
-  }
+	}
 
 }

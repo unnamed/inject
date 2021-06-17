@@ -27,32 +27,32 @@ import javax.inject.Provider;
  * with {@link me.yushust.inject.Injector#injectMembers}
  */
 public class InstanceProvider<T>
-    extends StdProvider<T>
-    implements Provider<T> {
+		extends StdProvider<T>
+		implements Provider<T> {
 
-  private final T instance;
+	private final T instance;
 
-  public InstanceProvider(T instance) {
-    this.instance = instance;
-    setInjected(true);
-  }
+	public InstanceProvider(T instance) {
+		this.instance = instance;
+		setInjected(true);
+	}
 
-  @Override
-  public Provider<T> withScope(Key<?> match, Scope scope) {
-    if (scope == Scopes.SINGLETON) {
-      return this;
-    } else {
-      throw new UnsupportedOperationException("Instance providers cannot be scoped!");
-    }
-  }
+	@Override
+	public Provider<T> withScope(Key<?> match, Scope scope) {
+		if (scope == Scopes.SINGLETON) {
+			return this;
+		} else {
+			throw new UnsupportedOperationException("Instance providers cannot be scoped!");
+		}
+	}
 
-  @Override
-  public T get() {
-    return instance;
-  }
+	@Override
+	public T get() {
+		return instance;
+	}
 
-  @Override
-  public String toString() {
-    return "instance '" + instance + "'";
-  }
+	@Override
+	public String toString() {
+		return "instance '" + instance + "'";
+	}
 }

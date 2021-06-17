@@ -17,21 +17,19 @@ package me.yushust.inject;
  *
  * <p>There's an extension for users to create bindings in a pretty way
  * using {@link AbstractModule}.</p>
- *
  * @see Binder Read the EDSL specification
  */
 public interface Module {
 
-  /**
-   * Configures all bindings on the specified {@code binder}. This method
-   * is called before checking for methods annotated with {@literal @}{@link Provides}
-   * to create method-based providers.
-   *
-   * <p>Don't invoke this method to configure binders. Instead use {@link Binder#install}
-   * to check all the methods annotated with {@literal @}{@link Provides}</p>
-   *
-   * @param binder The configuring binder, attached to an specific injector
-   */
-  void configure(Binder binder);
+	/**
+	 * Configures all bindings on the specified {@code binder}. This method
+	 * is called before checking for methods annotated with {@literal @}{@link Provides}
+	 * to create method-based providers.
+	 *
+	 * <p>Don't invoke this method to configure binders. Instead use {@link Binder#install}
+	 * to check all the methods annotated with {@literal @}{@link Provides}</p>
+	 * @param binder The configuring binder, attached to an specific injector
+	 */
+	void configure(Binder binder);
 
 }

@@ -7,25 +7,25 @@ import javax.inject.Inject;
 
 public class ConstructorInjectionTest {
 
-  @Test
-  public void test() {
-    Injector injector = Injector.create(binder -> {
-      binder.bind(Bar.class).toInstance(new Bar());
-    });
+	@Test
+	public void test() {
+		Injector injector = Injector.create(binder -> {
+			binder.bind(Bar.class).toInstance(new Bar());
+		});
 
-    Foo foo = injector.getInstance(Foo.class);
-    Assertions.assertNotNull(foo);
-  }
+		Foo foo = injector.getInstance(Foo.class);
+		Assertions.assertNotNull(foo);
+	}
 
-  public static class Bar {
-  }
+	public static class Bar {
+	}
 
-  public static class Foo {
+	public static class Foo {
 
-    @Inject
-    public Foo(Bar bar) {
-      Assertions.assertNotNull(bar);
-    }
-  }
+		@Inject
+		public Foo(Bar bar) {
+			Assertions.assertNotNull(bar);
+		}
+	}
 
 }

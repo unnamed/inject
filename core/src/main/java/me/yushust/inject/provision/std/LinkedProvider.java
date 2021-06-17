@@ -24,57 +24,57 @@ import me.yushust.inject.provision.StdProvider;
  * {@code bind(Foo.class).to(Bar.class);}
  */
 public class LinkedProvider<T>
-    extends StdProvider<T> {
+		extends StdProvider<T> {
 
-  private final Key<T> key;
-  private final Key<? extends T> target;
-  private final boolean autoBound;
+	private final Key<T> key;
+	private final Key<? extends T> target;
+	private final boolean autoBound;
 
-  private InjectorImpl injector;
+	private InjectorImpl injector;
 
-  public LinkedProvider(Key<T> key, Key<? extends T> target) {
-    this.key = key;
-    this.target = target;
-    this.autoBound = key.equals(target);
-  }
+	public LinkedProvider(Key<T> key, Key<? extends T> target) {
+		this.key = key;
+		this.target = target;
+		this.autoBound = key.equals(target);
+	}
 
-  @Override
-  public void inject(ProvisionStack stack, InjectorImpl injector) {
-    // Sets the injector, used to get an instance of the target type
-    this.injector = injector;
-    this.injected = true;
-  }
+	@Override
+	public void inject(ProvisionStack stack, InjectorImpl injector) {
+		// Sets the injector, used to get an instance of the target type
+		this.injector = injector;
+		this.injected = true;
+	}
 
-  @Override
-  public T get() {
-    // the injector should not use the explicit
-    // bindings if the key is bound to the same
-    // key. Else, it will call this get() method
-    // again, and again, ending in a StackOverflowError
-    return injector.getInstance(target, !autoBound);
-  }
+	@Override
+	public T get() {
+		// the injector should not use the explicit
+		// bindings if the key is bound to the same
+		// key. Else, it will call this get() method
+		// again, and again, ending in a StackOverflowError
+		return injector.getInstance(target, !autoBound);
+	}
 
-  /**
-   * Determines if the linked provider is linked to the same key
-   */
-  public boolean isAutoBound() {
-    return autoBound;
-  }
+	/**
+	 * Determines if the linked provider is linked to the same key
+	 */
+	public boolean isAutoBound() {
+		return autoBound;
+	}
 
-  /**
-   * @return The target linked key
-   */
-  public Key<? extends T> getTarget() {
-    return target;
-  }
+	/**
+	 * @return The target linked key
+	 */
+	public Key<? extends T> getTarget() {
+		return target;
+	}
 
-  @Override
-  public String toString() {
-    if (key.equals(target)) {
-      return "same key";
-    } else {
-      return "linked key '" + target + "'";
-    }
-  }
+	@Override
+	public String toString() {
+		if (key.equals(target)) {
+			return "same key";
+		} else {
+			return "linked key '" + target + "'";
+		}
+	}
 
 }

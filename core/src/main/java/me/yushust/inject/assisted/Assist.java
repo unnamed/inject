@@ -1,8 +1,11 @@
 package me.yushust.inject.assisted;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.*;
+import static java.lang.annotation.ElementType.PARAMETER;
 
 /**
  * Declares that the annotated parameter isn't provided
@@ -18,7 +21,7 @@ import static java.lang.annotation.ElementType.*;
  *   }
  * </pre>
  * because we can't inject {@code members} here.
- *
+ * <p>
  * So we can use Assisted Inject!
  * <pre>
  *   public class Party {

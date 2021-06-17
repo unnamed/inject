@@ -8,116 +8,118 @@ import javax.inject.Provider;
 
 public class ManyProvidersInjectionTest {
 
-  @Inject private Blah blah;
-  @Inject private Baz baz;
-  @Inject private Bar bar;
-  @Inject private Foo foo;
+	@Inject private Blah blah;
+	@Inject private Baz baz;
+	@Inject private Bar bar;
+	@Inject private Foo foo;
 
-  @Test
-  public void test() {
+	@Test
+	public void test() {
 
-    Injector injector = Injector.create(binder -> {
-      binder.bind(Baz.class).toProvider(BazProvider.class);
-      binder.bind(Bar.class).toProvider(BarProvider.class);
-      binder.bind(Foo.class).toProvider(FooProvider.class);
-    });
-    injector.injectMembers(this);
+		Injector injector = Injector.create(binder -> {
+			binder.bind(Baz.class).toProvider(BazProvider.class);
+			binder.bind(Bar.class).toProvider(BarProvider.class);
+			binder.bind(Foo.class).toProvider(FooProvider.class);
+		});
+		injector.injectMembers(this);
 
-    Assertions.assertNotNull(bar);
-    Assertions.assertNotNull(baz);
-    Assertions.assertNotNull(bar);
-    Assertions.assertNotNull(foo);
+		Assertions.assertNotNull(bar);
+		Assertions.assertNotNull(baz);
+		Assertions.assertNotNull(bar);
+		Assertions.assertNotNull(foo);
 
-    blah.checkDepends();
-    baz.checkDepends();
-    bar.checkDepends();
-    foo.checkDepends();
-  }
+		blah.checkDepends();
+		baz.checkDepends();
+		bar.checkDepends();
+		foo.checkDepends();
+	}
 
-  public static class Blah {
-    @Inject private Baz baz;
-    @Inject private Bar bar;
+	public interface Baz {
+		Object[] get();
 
-    void checkDepends() {
-      Assertions.assertNotNull(baz);
-      Assertions.assertNotNull(bar);
-    }
-  }
+		default void checkDepends() {
+			Object[] vals = get();
+			Assertions.assertEquals(2, vals.length);
 
-  public interface Baz {
-    Object[] get();
+			Object blah = vals[0];
+			Object bar = vals[1];
 
-    default void checkDepends() {
-      Object[] vals = get();
-      Assertions.assertEquals(2, vals.length);
+			Assertions.assertTrue(blah instanceof Blah, "expected instance of Blah");
+			Assertions.assertTrue(bar instanceof Bar, "expected instance of Bar");
 
-      Object blah = vals[0];
-      Object bar = vals[1];
+			((Blah) blah).checkDepends();
+			((Bar) bar).checkDepends();
+		}
+	}
 
-      Assertions.assertTrue(blah instanceof Blah, "expected instance of Blah");
-      Assertions.assertTrue(bar instanceof Bar, "expected instance of Bar");
+	public interface Bar {
+		Blah get();
 
-      ((Blah) blah).checkDepends();
-      ((Bar) bar).checkDepends();
-    }
-  }
+		default void checkDepends() {
+			Assertions.assertNotNull(get());
+		}
+	}
 
-  public interface Bar {
-    Blah get();
+	public interface Foo {
+		Object[] get();
 
-    default void checkDepends() {
-      Assertions.assertNotNull(get());
-    }
-  }
+		default void checkDepends() {
+			Object[] vals = get();
+			Assertions.assertEquals(3, vals.length);
 
-  public interface Foo {
-    Object[] get();
+			Object blah = vals[0];
+			Object baz = vals[1];
+			Object bar = vals[2];
 
-    default void checkDepends() {
-      Object[] vals = get();
-      Assertions.assertEquals(3, vals.length);
+			Assertions.assertTrue(blah instanceof Blah, "expected instance of Blah");
+			Assertions.assertTrue(baz instanceof Baz, "expected instance of Baz");
+			Assertions.assertTrue(bar instanceof Bar, "expected instance of Bar");
 
-      Object blah = vals[0];
-      Object baz = vals[1];
-      Object bar = vals[2];
+			((Blah) blah).checkDepends();
+			((Baz) baz).checkDepends();
+			((Bar) bar).checkDepends();
+		}
+	}
 
-      Assertions.assertTrue(blah instanceof Blah, "expected instance of Blah");
-      Assertions.assertTrue(baz instanceof Baz, "expected instance of Baz");
-      Assertions.assertTrue(bar instanceof Bar, "expected instance of Bar");
+	public static class Blah {
+		@Inject private Baz baz;
+		@Inject private Bar bar;
 
-      ((Blah) blah).checkDepends();
-      ((Baz) baz).checkDepends();
-      ((Bar) bar).checkDepends();
-    }
-  }
+		void checkDepends() {
+			Assertions.assertNotNull(baz);
+			Assertions.assertNotNull(bar);
+		}
+	}
 
-  public static class BarProvider implements Provider<Bar> {
-    @Inject private Blah blah;
-    @Override
-    public Bar get() {
-      return () -> blah;
-    }
-  }
+	public static class BarProvider implements Provider<Bar> {
+		@Inject private Blah blah;
 
-  public static class BazProvider implements Provider<Baz> {
-    @Inject private Blah blah;
-    @Inject private Bar bar;
-    @Override
-    public Baz get() {
-      return () -> new Object[] {blah, bar};
-    }
-  }
+		@Override
+		public Bar get() {
+			return () -> blah;
+		}
+	}
 
-  public static class FooProvider implements Provider<Foo> {
+	public static class BazProvider implements Provider<Baz> {
+		@Inject private Blah blah;
+		@Inject private Bar bar;
 
-    @Inject private Blah blah;
-    @Inject private Baz baz;
-    @Inject private Bar bar;
+		@Override
+		public Baz get() {
+			return () -> new Object[]{blah, bar};
+		}
+	}
 
-    @Override
-    public Foo get() {
-      return () -> new Object[] {blah, baz, bar};
-    }
-  }
+	public static class FooProvider implements Provider<Foo> {
+
+		@Inject private Blah blah;
+		@Inject private Baz baz;
+		@Inject private Bar bar;
+
+		@Override
+		public Foo get() {
+			return () -> new Object[]{blah, baz, bar};
+		}
+	}
 
 }

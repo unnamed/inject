@@ -8,45 +8,48 @@ import java.util.List;
 
 public class GenericInjectionTest2 {
 
-  @Test
-  public void test() {
+	@Test
+	public void test() {
 
-    Injector injector = Injector.create(binder ->
-      binder.install(new DynamicModule<>(new TypeReference<String>() {})));
+		Injector injector = Injector.create(binder ->
+				binder.install(new DynamicModule<>(new TypeReference<String>() {
+				})));
 
-    TypeReference<List<String>> expected = new TypeReference<List<String>>() {};
-    TypeReference<List<String>> type = injector.getInstance(new TypeReference<TypeReference<List<String>>>() {});
+		TypeReference<List<String>> expected = new TypeReference<List<String>>() {
+		};
+		TypeReference<List<String>> type = injector.getInstance(new TypeReference<TypeReference<List<String>>>() {
+		});
 
-    Assertions.assertEquals(expected, type);
+		Assertions.assertEquals(expected, type);
 
-    Foo<String> val = injector.getInstance(TypeReference.of(Foo.class, String.class));
-    Assertions.assertNotNull(val);
-  }
+		Foo<String> val = injector.getInstance(TypeReference.of(Foo.class, String.class));
+		Assertions.assertNotNull(val);
+	}
 
-  public static class DynamicModule<T> implements Module {
+	public interface Foo<T> {
+	}
 
-    private final TypeReference<T> bound;
+	public static class DynamicModule<T> implements Module {
 
-    public DynamicModule(TypeReference<T> bound) {
-      this.bound = bound;
-    }
+		private final TypeReference<T> bound;
 
-    @Override
-    public void configure(Binder binder) {
+		public DynamicModule(TypeReference<T> bound) {
+			this.bound = bound;
+		}
 
-      binder.bind(
-          // Okay this is bad but we support this
-          TypeReference.of(Foo.class, bound)
-      ).to(
-          TypeReference.of(FooImpl.class, bound)
-      );
-    }
-  }
+		@Override
+		public void configure(Binder binder) {
 
-  public interface Foo<T> {
-  }
+			binder.bind(
+					// Okay this is bad but we support this
+					TypeReference.of(Foo.class, bound)
+			).to(
+					TypeReference.of(FooImpl.class, bound)
+			);
+		}
+	}
 
-  public static class FooImpl<T> implements Foo<T> {
-  }
+	public static class FooImpl<T> implements Foo<T> {
+	}
 
 }

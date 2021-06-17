@@ -1,12 +1,12 @@
 package me.yushust.inject;
 
 import javax.inject.Qualifier;
-import static java.lang.annotation.ElementType.*;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.*;
 
 /**
  * Indicates that the bound type is a delegate
@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  *     &#64;Inject &#64;Delegated private MyHandler delegate;
  *   }
  * </pre>
- *
+ * <p>
  * Configured as
  * <pre>
  *   // this is the delegated handler
@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  *   // this is the decorator
  *   bind(MyHandler.class).to(MyHandlerDecorator.class);
  * </pre>
- *
+ * <p>
  * The annotation isn't used in the library, but it's
  * added here because many users of syringe (old trew)
  * added this annotation to its projects and used it
