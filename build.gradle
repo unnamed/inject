@@ -1,5 +1,0 @@
-group 'me.yushust.inject'
-
-subprojects {
-	group 'me.yushust.inject'
-}
