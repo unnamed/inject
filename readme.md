@@ -13,47 +13,28 @@ Read the [Wiki on GitHub](https://github.com/yusshu/trew/wiki) to learn about th
 You can simply download the JAR from GitHub in the Releases section, use [Maven](https://maven.apache.org/)
 or [Gradle](https://gradle.org/) (recommended)
 
-## Repositories
-
-### Releases repository
-
-All versions that doesn't end with "-SNAPSHOT" will be here.
+## Repository
 
 #### Maven (pom.xml)
 
 ```xml
 <repository>
-    <id>unnamed-releases</id>
-    <url>https://repo.unnamed.team/repository/unnamed-releases/</url>
+    <id>unnamed-public</id>
+    <url>https://repo.unnamed.team/repository/unnamed-public/</url>
 </repository>
 ```
 
 #### Gradle (build.gradle)
-
+build.gradle
 ```groovy
 repositories {
-  maven { url 'https://repo.unnamed.team/repository/unnamed-releases/' }
+  maven { url 'https://repo.unnamed.team/repository/unnamed-public/' }
 }
 ```
-
-### Snapshots repository
-
-All versions ending with "-SNAPSHOT" will be here
-
-#### Maven (pom.xml)
-
-```xml
-<repository>
-    <id>unnamed-snapshots</id>
-    <url>https://repo.unnamed.team/repository/unnamed-snapshots/</url>
-</repository>
-```
-
-#### Gradle (build.gradle)
-
-```groovy
+build.gradle.kts
+```kotlin
 repositories {
-  maven { url 'https://repo.unnamed.team/repository/unnamed-snapshots/' }
+  maven { url = uri("https://repo.unnamed.team/repository/unnamed-public") }
 }
 ```
 
@@ -65,7 +46,6 @@ repositories {
   release: [![Latest Release](https://img.shields.io/nexus/r/me.yushust.inject/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-releases)
 
 #### Maven (pom.xml)
-
 ```xml
 <dependency>
     <groupId>me.yushust.inject</groupId>
@@ -74,12 +54,16 @@ repositories {
 </dependency>
 ```
 
-#### Gradle (build.gradle)
-
+#### Gradle
+**For Groovy DSL:** (build.gradle)
 ```groovy
 dependencies {
   implementation 'me.yushust.inject:core:VERSION'
 }
 ```
-
-.
+**For Kotlin DSL:** (build.gradle.kts)
+```kotlin
+dependencies {
+  implementation("me.yushust.inject:core:VERSION")
+}
+```
