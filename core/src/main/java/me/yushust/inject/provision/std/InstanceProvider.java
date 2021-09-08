@@ -23,8 +23,7 @@ import javax.inject.Provider;
  * {@code bind(Foo.class).toInstance(new Foo());}
  * should work</p>
  * <p>
- * The bound instances are also injected
- * with {@link me.yushust.inject.Injector#injectMembers}
+ * The bound instances are not injected
  */
 public class InstanceProvider<T>
 		extends StdProvider<T>
