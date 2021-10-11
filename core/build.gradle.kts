@@ -10,7 +10,7 @@ repositories {
 dependencies {
 	api("javax.inject:javax.inject:1")
 
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
 	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
