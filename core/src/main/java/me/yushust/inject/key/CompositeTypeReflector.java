@@ -1,5 +1,7 @@
 package me.yushust.inject.key;
 
+import me.yushust.inject.util.Validate;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.ParameterizedType;
@@ -15,6 +17,51 @@ final class CompositeTypeReflector {
 
 	private CompositeTypeReflector() {
 	}
+
+		private static Type getSupertype(Type type, Class<?> rawType, Class<?> resolvingType) {
+
+				Validate.notNull(type, "type");
+				Validate.notNull(rawType, "rawType");
+				Validate.notNull(resolvingType, "resolvingType");
+
+				if (resolvingType == rawType) {
+						return type;
+				}
+
+				if (resolvingType.isInterface()) {
+						Class<?>[] rawInterfaceTypes = rawType.getInterfaces();
+						Type[] genericInterfaceTypes = rawType.getGenericInterfaces();
+
+						for (int i = 0; i < rawInterfaceTypes.length; i++) {
+								Class<?> rawInterfaceType = rawInterfaceTypes[i];
+								Type interfaceType = genericInterfaceTypes[i];
+								if (rawInterfaceType == resolvingType) {
+										return interfaceType;
+								} else if (resolvingType.isAssignableFrom(rawInterfaceType)) {
+										return getSupertype(interfaceType, rawInterfaceType, resolvingType);
+								}
+						}
+				}
+
+				if (rawType.isInterface() || rawType == Object.class) {
+						return resolvingType;
+				}
+
+				for (
+						Class<?> rawSupertype = rawType.getSuperclass();
+						rawType != null && rawType != Object.class;
+						rawType = (rawSupertype = rawType.getSuperclass())
+				) {
+						if (rawSupertype == resolvingType) {
+								return rawType.getGenericSuperclass();
+						} else if (resolvingType.isAssignableFrom(rawSupertype)) {
+								return getSupertype(rawType.getGenericSuperclass(), rawSupertype, resolvingType);
+						}
+				}
+
+				return resolvingType;
+
+		}
 
 	private static Type resolveTypeVariable(
 			TypeReference<?> context,
@@ -32,57 +79,9 @@ final class CompositeTypeReflector {
 		Class<?> classDeclaration = (Class<?>) declaration;
 		TypeVariable<?>[] parameters = classDeclaration.getTypeParameters();
 
-		Type contextType = context.getType();
-		Class<?> contextRawType = context.getRawType();
-
-		Type contextSupertype;
-
-		// resolve the super-type
-		fallback:
-		while (true) {
-			if (classDeclaration == contextRawType) {
-				contextSupertype = contextType;
-				break;
-			} else if (classDeclaration.isInterface()) {
-				Class<?>[] rawInterfaceTypes = contextRawType.getInterfaces();
-				Type[] genericInterfaceTypes = contextRawType.getGenericInterfaces();
-
-				for (int i = 0; i < rawInterfaceTypes.length; i++) {
-					Class<?> rawInterfaceType = rawInterfaceTypes[i];
-					Type interfaceType = genericInterfaceTypes[i];
-					if (rawInterfaceType == classDeclaration) {
-						contextSupertype = interfaceType;
-						break fallback;
-					} else if (classDeclaration.isAssignableFrom(rawInterfaceType)) {
-						contextType = interfaceType;
-						contextRawType = rawInterfaceType;
-						continue fallback;
-					}
-				}
-			}
-
-			if (contextRawType.isInterface() || contextRawType == Object.class) {
-				contextSupertype = classDeclaration;
-				break;
-			}
-
-			for (
-					Class<?> rawSupertype = contextRawType.getSuperclass();
-					contextRawType != null && contextRawType != Object.class;
-					contextRawType = (rawSupertype = contextRawType.getSuperclass())
-			) {
-				if (rawSupertype == classDeclaration) {
-					return contextRawType.getGenericSuperclass();
-				} else if (classDeclaration.isAssignableFrom(rawSupertype)) {
-					contextType = contextRawType.getGenericSuperclass();
-					contextRawType = rawSupertype;
-					continue fallback;
-				}
-			}
-
-			contextSupertype = classDeclaration;
-			break;
-		}
+		Type contextSupertype = getSupertype(
+				context.getType(), context.getRawType(), classDeclaration
+		);
 
 		// it doesn't require a resolution
 		if (!(contextSupertype instanceof ParameterizedType)) {
