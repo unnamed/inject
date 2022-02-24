@@ -9,10 +9,12 @@ import java.lang.annotation.Target;
 /**
  * Declares that the annotated constructor
  * has assisted injections
+ *
  * @see Assist
  */
 @Target(ElementType.CONSTRUCTOR)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Assisted {
+
 }

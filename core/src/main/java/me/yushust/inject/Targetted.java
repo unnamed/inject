@@ -16,7 +16,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Targetted {
 
-	/** Returns the bound target class */
-	Class<?> value();
+    /**
+     * Returns the bound target class
+     */
+    Class<?> value();
 
 }

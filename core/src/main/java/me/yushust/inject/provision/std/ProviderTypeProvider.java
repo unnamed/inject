@@ -38,35 +38,37 @@ import javax.inject.Provider;
  * so the constructor can be injected
  */
 public class ProviderTypeProvider<T>
-		extends StdProvider<T>
-		implements Provider<T> {
+        extends StdProvider<T>
+        implements Provider<T> {
 
-	private final TypeReference<? extends Provider<? extends T>> providerClass;
-	private volatile Provider<? extends T> provider;
+    private final TypeReference<? extends Provider<? extends T>> providerClass;
+    private volatile Provider<? extends T> provider;
 
-	public ProviderTypeProvider(TypeReference<? extends Provider<? extends T>> providerClass) {
-		this.providerClass = providerClass;
-	}
+    public ProviderTypeProvider(TypeReference<? extends Provider<? extends T>> providerClass) {
+        this.providerClass = providerClass;
+    }
 
-	@Override
-	public void inject(ProvisionStack stack, InjectorImpl injector) {
-		provider = injector.getInstance(providerClass);
-		injected = true;
-	}
+    @Override
+    public void inject(ProvisionStack stack, InjectorImpl injector) {
+        provider = injector.getInstance(providerClass);
+        injected = true;
+    }
 
-	@Override
-	public T get() {
-		return provider.get();
-	}
+    @Override
+    public T get() {
+        return provider.get();
+    }
 
-	/** @return The targeted provider instance */
-	public Provider<? extends T> getProvider() {
-		return provider;
-	}
+    /**
+     * @return The targeted provider instance
+     */
+    public Provider<? extends T> getProvider() {
+        return provider;
+    }
 
-	@Override
-	public String toString() {
-		return "ClassProvider(" + providerClass + ")";
-	}
+    @Override
+    public String toString() {
+        return "ClassProvider(" + providerClass + ")";
+    }
 
 }

@@ -18,149 +18,159 @@ import java.util.Set;
  *
  * <p>The key supports generic types using {@link TypeReference}, the key
  * cannot be created using a sub-class like {@link TypeReference}.</p>
+ *
  * @param <T> The type of the key
  */
 public final class Key<T> implements CompositeType, Serializable {
 
-	private static final long serialVersionUID = 987654321L;
+    private static final long serialVersionUID = 987654321L;
 
-	// The generic or raw type reference
-	private final TypeReference<T> type;
+    // The generic or raw type reference
+    private final TypeReference<T> type;
 
-	// The qualifier type, used when
-	// classes are used as qualifiers,
-	// its value can be null
-	private final Class<? extends Annotation> qualifierType;
+    // The qualifier type, used when
+    // classes are used as qualifiers,
+    // its value can be null
+    private final Class<? extends Annotation> qualifierType;
 
-	// The qualifier instance, used
-	// when instances are used as qualifiers,
-	// its value can be null
-	private final Annotation qualifier;
+    // The qualifier instance, used
+    // when instances are used as qualifiers,
+    // its value can be null
+    private final Annotation qualifier;
 
-	// This class is an immutable class, so
-	// we can cache the hashcode and optimize
-	// a bit the hashCode() method
-	private final int hashCode;
+    // This class is an immutable class, so
+    // we can cache the hashcode and optimize
+    // a bit the hashCode() method
+    private final int hashCode;
 
-	public Key(
-			TypeReference<T> type,
-			Class<? extends Annotation> qualifierType,
-			Annotation qualifier
-	) {
-		Validate.notNull(type, "type");
-		Validate.argument(
-				!(qualifierType != null && qualifier != null),
-				"Cannot use both qualifierType and qualifier qualifiers!"
-		);
-		this.type = type.canonicalize();
-		this.qualifierType = qualifierType;
-		this.qualifier = qualifier;
-		this.hashCode = computeHashCode();
-	}
+    public Key(
+            TypeReference<T> type,
+            Class<? extends Annotation> qualifierType,
+            Annotation qualifier
+    ) {
+        Validate.notNull(type, "type");
+        Validate.argument(
+                !(qualifierType != null && qualifier != null),
+                "Cannot use both qualifierType and qualifier qualifiers!"
+        );
+        this.type = type.canonicalize();
+        this.qualifierType = qualifierType;
+        this.qualifier = qualifier;
+        this.hashCode = computeHashCode();
+    }
 
-	public static <T> Key<T> of(Class<T> type) {
-		return of(TypeReference.of(type));
-	}
+    public static <T> Key<T> of(Class<T> type) {
+        return of(TypeReference.of(type));
+    }
 
-	public static <T> Key<T> of(TypeReference<T> type) {
-		return new Key<>(type, null, null);
-	}
+    public static <T> Key<T> of(TypeReference<T> type) {
+        return new Key<>(type, null, null);
+    }
 
-	public static <T> Key<T> of(
-			TypeReference<T> type,
-			Class<? extends Annotation> qualifierType,
-			Annotation qualifier
-	) {
-		return new Key<>(type, qualifierType, qualifier);
-	}
+    public static <T> Key<T> of(
+            TypeReference<T> type,
+            Class<? extends Annotation> qualifierType,
+            Annotation qualifier
+    ) {
+        return new Key<>(type, qualifierType, qualifier);
+    }
 
-	/** Determines if the {@link Key} represented by this is a raw-type */
-	public boolean isPureRawType() {
-		return type.isPureRawType();
-	}
+    /**
+     * Determines if the {@link Key} represented by this is a raw-type
+     */
+    public boolean isPureRawType() {
+        return type.isPureRawType();
+    }
 
-	/** Checks if the wrapped type requires context or not */
-	public boolean requiresContext() {
-		// delegate functionality to TypeReference
-		return type.requiresContext();
-	}
+    /**
+     * Checks if the wrapped type requires context or not
+     */
+    public boolean requiresContext() {
+        // delegate functionality to TypeReference
+        return type.requiresContext();
+    }
 
-	/**
-	 * @return The generic or raw type of the key
-	 */
-	public TypeReference<T> getType() {
-		return type;
-	}
+    /**
+     * @return The generic or raw type of the key
+     */
+    public TypeReference<T> getType() {
+        return type;
+    }
 
-	/**
-	 * Returns the qualifier instance attached
-	 * to this type key
-	 */
-	public Annotation getQualifier() {
-		return qualifier;
-	}
+    /**
+     * Returns the qualifier instance attached
+     * to this type key
+     */
+    public Annotation getQualifier() {
+        return qualifier;
+    }
 
-	/**
-	 * Returns the qualifier type attached
-	 * to this type key
-	 */
-	public Class<? extends Annotation> getQualifierType() {
-		return qualifierType;
-	}
+    /**
+     * Returns the qualifier type attached
+     * to this type key
+     */
+    public Class<? extends Annotation> getQualifierType() {
+        return qualifierType;
+    }
 
-	/** Returns a new {@link Key} with the given {@code qualifier} */
-	public Key<T> withQualifier(Annotation qualifier) {
-		return new Key<>(type, null, qualifier);
-	}
+    /**
+     * Returns a new {@link Key} with the given {@code qualifier}
+     */
+    public Key<T> withQualifier(Annotation qualifier) {
+        return new Key<>(type, null, qualifier);
+    }
 
-	/** Returns a new {@link Key} with the given {@code qualifierType} */
-	public Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
-		return new Key<>(type, qualifierType, null);
-	}
+    /**
+     * Returns a new {@link Key} with the given {@code qualifierType}
+     */
+    public Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
+        return new Key<>(type, qualifierType, null);
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof Key)) return false;
-		Key<?> key = (Key<?>) o;
-		return hashCode == key.hashCode &&
-				type.equals(key.type) &&
-				Objects.equals(qualifier, key.qualifier) &&
-				Objects.equals(qualifierType, key.qualifierType);
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Key)) return false;
+        Key<?> key = (Key<?>) o;
+        return hashCode == key.hashCode &&
+                type.equals(key.type) &&
+                Objects.equals(qualifier, key.qualifier) &&
+                Objects.equals(qualifierType, key.qualifierType);
+    }
 
-	private int computeHashCode() {
-		return Objects.hash(type, qualifier, qualifierType);
-	}
+    private int computeHashCode() {
+        return Objects.hash(type, qualifier, qualifierType);
+    }
 
-	@Override
-	public int hashCode() {
-		return hashCode;
-	}
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
 
-	/**
-	 * This should create a string with util information
-	 * and very verbose. Like
-	 * <p>
-	 * me.yushust.inject.ExampleType
-	 * annotated with @Named("hello")
-	 * marked with @Marker
-	 * </p>
-	 * If a class name starts with {@code java} or {@code javax},
-	 * it isn't used, the used name is now {@link Class#getSimpleName()}
-	 * @return The key information as string
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder(type.toString());
-		if (qualifierType != null) {
-			builder.append(" marked with @")
-					.append(qualifierType.getSimpleName());
-		} else if (qualifier != null) {
-			builder.append(" annotated with ")
-					.append(ElementFormatter.annotationToString(qualifier));
-		}
-		return builder.toString();
-	}
+    /**
+     * This should create a string with util information
+     * and very verbose. Like
+     * <p>
+     * me.yushust.inject.ExampleType
+     * annotated with @Named("hello")
+     * marked with @Marker
+     * </p>
+     * If a class name starts with {@code java} or {@code javax},
+     * it isn't used, the used name is now {@link Class#getSimpleName()}
+     *
+     * @return The key information as string
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(type.toString());
+        if (qualifierType != null) {
+            builder.append(" marked with @")
+                    .append(qualifierType.getSimpleName());
+        } else if (qualifier != null) {
+            builder.append(" annotated with ")
+                    .append(ElementFormatter.annotationToString(qualifier));
+        }
+        return builder.toString();
+    }
 
 }

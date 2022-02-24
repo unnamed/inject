@@ -9,23 +9,23 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class TypeReferenceGenericProvider
-		implements GenericProvider<TypeReference<?>> {
+        implements GenericProvider<TypeReference<?>> {
 
-	@Override
-	public TypeReference<?> get(Key<?> match) {
-		TypeReference<?> typeMirror = match.getType();
-		Type type = typeMirror.getType();
+    @Override
+    public TypeReference<?> get(Key<?> match) {
+        TypeReference<?> typeMirror = match.getType();
+        Type type = typeMirror.getType();
 
-		Validate.state(
-				type instanceof ParameterizedType,
-				"Unsupported type '" + type + "'. The type must be "
-						+ "a parameterized type."
-		);
+        Validate.state(
+                type instanceof ParameterizedType,
+                "Unsupported type '" + type + "'. The type must be "
+                        + "a parameterized type."
+        );
 
-		return TypeReference.of(
-				((ParameterizedType) type)
-						.getActualTypeArguments()[0]
-		);
-	}
+        return TypeReference.of(
+                ((ParameterizedType) type)
+                        .getActualTypeArguments()[0]
+        );
+    }
 
 }

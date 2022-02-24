@@ -11,71 +11,86 @@ import java.lang.reflect.Type;
 
 public class ToGenericProviderTest {
 
-	@Inject private Foo<String> stringFoo;
-	@Inject private Foo<String> stringFoo2;
+    @Inject
+    private Foo<String> stringFoo;
+    @Inject
+    private Foo<String> stringFoo2;
 
-	@Inject private Foo<Integer> intFoo;
-	@Inject private Foo<Integer> intFoo2;
+    @Inject
+    private Foo<Integer> intFoo;
+    @Inject
+    private Foo<Integer> intFoo2;
 
-	@Inject private Foo<Double> doubleFoo;
-	@Inject private Foo<Double> doubleFoo2;
+    @Inject
+    private Foo<Double> doubleFoo;
+    @Inject
+    private Foo<Double> doubleFoo2;
 
-	@Test
-	public void test() {
+    @Test
+    public void test() {
 
-		Injector injector = Injector.create(binder ->
-				binder.bind(Foo.class).toGenericProvider(new FooGenericProvider()).singleton());
+        Injector injector = Injector.create(binder ->
+                binder.bind(Foo.class).toGenericProvider(new FooGenericProvider()).singleton());
 
-		injector.injectMembers(this);
+        injector.injectMembers(this);
 
-		Assertions.assertSame(stringFoo, stringFoo2);
-		Assertions.assertSame(intFoo, intFoo2);
-		Assertions.assertSame(doubleFoo, doubleFoo2);
-	}
+        Assertions.assertSame(stringFoo, stringFoo2);
+        Assertions.assertSame(intFoo, intFoo2);
+        Assertions.assertSame(doubleFoo, doubleFoo2);
+    }
 
-	public interface Foo<T> {
-		T give();
-	}
+    public interface Foo<T> {
 
-	public static class FooGenericProvider implements GenericProvider<Foo<?>> {
+        T give();
 
-		@Override
-		public Foo<?> get(Key<?> match) {
+    }
 
-			Type parameterType = ((ParameterizedType) match.getType().getType())
-					.getActualTypeArguments()[0];
-			Foo<?> foo = null;
+    public static class FooGenericProvider implements GenericProvider<Foo<?>> {
 
-			if (parameterType == String.class) {
-				foo = new StringFoo();
-			} else if (parameterType == Integer.class) {
-				foo = new IntegerFoo();
-			} else if (parameterType == Double.class) {
-				foo = new DoubleFoo();
-			}
-			return foo;
-		}
-	}
+        @Override
+        public Foo<?> get(Key<?> match) {
 
-	private static class DoubleFoo implements Foo<Double> {
-		@Override
-		public Double give() {
-			return (double) System.nanoTime();
-		}
-	}
+            Type parameterType = ((ParameterizedType) match.getType().getType())
+                    .getActualTypeArguments()[0];
+            Foo<?> foo = null;
 
-	private static class IntegerFoo implements Foo<Integer> {
-		@Override
-		public Integer give() {
-			return (int) System.nanoTime();
-		}
-	}
+            if (parameterType == String.class) {
+                foo = new StringFoo();
+            } else if (parameterType == Integer.class) {
+                foo = new IntegerFoo();
+            } else if (parameterType == Double.class) {
+                foo = new DoubleFoo();
+            }
+            return foo;
+        }
 
-	private static class StringFoo implements Foo<String> {
-		@Override
-		public String give() {
-			return System.nanoTime() + "";
-		}
-	}
+    }
+
+    private static class DoubleFoo implements Foo<Double> {
+
+        @Override
+        public Double give() {
+            return (double) System.nanoTime();
+        }
+
+    }
+
+    private static class IntegerFoo implements Foo<Integer> {
+
+        @Override
+        public Integer give() {
+            return (int) System.nanoTime();
+        }
+
+    }
+
+    private static class StringFoo implements Foo<String> {
+
+        @Override
+        public String give() {
+            return System.nanoTime() + "";
+        }
+
+    }
 
 }

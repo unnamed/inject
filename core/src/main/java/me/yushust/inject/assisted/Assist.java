@@ -59,4 +59,5 @@ import static java.lang.annotation.ElementType.PARAMETER;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Assist {
+
 }

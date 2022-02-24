@@ -9,72 +9,77 @@ import javax.inject.Inject;
 // test for issue reported by pixeldev (github.com/pixeldev)
 public class ComplexTypeVariableResolutionTest {
 
-		@Test
-		public void test() {
-				Injector injector = Injector.create(binder -> {
-						binder.bind(new TypeReference<RemoteModelService<DummyModel>>() {})
-								.toInstance(new RemoteModelService<>());
+    @Test
+    public void test() {
+        Injector injector = Injector.create(binder -> {
+            binder.bind(new TypeReference<RemoteModelService<DummyModel>>() {
+                    })
+                    .toInstance(new RemoteModelService<>());
 
-						binder.bind(DummyService.class).to(SimpleDummyService.class).singleton();
-				});
+            binder.bind(DummyService.class).to(SimpleDummyService.class).singleton();
+        });
 
-				DummyService dummyService = injector.getInstance(DummyService.class);
-				Assertions.assertNotNull(dummyService);
-				Assertions.assertNotNull(dummyService.get("test"));
-		}
+        DummyService dummyService = injector.getInstance(DummyService.class);
+        Assertions.assertNotNull(dummyService);
+        Assertions.assertNotNull(dummyService.get("test"));
+    }
 
-		interface Model {
+    interface Model {
 
-				String getId();
+        String getId();
 
-		}
+    }
 
-		public class DummyModel implements Model {
+    public interface Service<T extends Model> {
 
-				@Override
-				public String getId() {
-						return "DUMMY";
-				}
-		}
+        T get(String id);
 
-		public interface Service<T extends Model> {
+    }
 
-				T get(String id);
+    public interface DummyService
+            extends Service<DummyModel> {
 
-		}
+    }
 
-		public class RemoteModelService<T extends Model> {
+    public class DummyModel implements Model {
 
-		}
+        @Override
+        public String getId() {
+            return "DUMMY";
+        }
 
-		public abstract class AbstractService<T extends Model>
-				implements Service<T> {
+    }
 
-				@Inject protected RemoteModelService<T> modelService;
+    public class RemoteModelService<T extends Model> {
 
-		}
+    }
 
-		public interface DummyService
-				extends Service<DummyModel> {
-		}
+    public abstract class AbstractService<T extends Model>
+            implements Service<T> {
 
-		public class SimpleDummyService
-				extends AbstractService<DummyModel>
-				implements DummyService {
+        @Inject
+        protected RemoteModelService<T> modelService;
 
-				@Inject
-				public SimpleDummyService() {
+    }
 
-				}
+    public class SimpleDummyService
+            extends AbstractService<DummyModel>
+            implements DummyService {
 
-				@Override
-				public DummyModel get(String id) {
-						if (modelService == null) {
-								return null;
-						}
+        @Inject
+        public SimpleDummyService() {
 
-						return new DummyModel();
-				}
-		}
+        }
+
+        @Override
+        public DummyModel get(String id) {
+            if (modelService == null) {
+                return null;
+            }
+
+            return new DummyModel();
+        }
+
+    }
 
 }

@@ -14,30 +14,30 @@ import javax.inject.Provider;
 
 public interface LinkedBuilder<R, T> extends Binder.Linked<R, T> {
 
-	Key<T> key();
+    Key<T> key();
 
-	@Override
-	default R toGenericProvider(GenericProvider<? extends T> provider) {
-		Validate.notNull(provider, "provider");
-		return toProvider(new ToGenericProvider<>(provider));
-	}
+    @Override
+    default R toGenericProvider(GenericProvider<? extends T> provider) {
+        Validate.notNull(provider, "provider");
+        return toProvider(new ToGenericProvider<>(provider));
+    }
 
-	@Override
-	default void toFactory(TypeReference<? extends ValueFactory> factory) {
-		Validate.notNull(factory, "factory");
-		toProvider(new ToFactoryProvider<>(factory));
-	}
+    @Override
+    default void toFactory(TypeReference<? extends ValueFactory> factory) {
+        Validate.notNull(factory, "factory");
+        toProvider(new ToFactoryProvider<>(factory));
+    }
 
-	@Override
-	default R to(TypeReference<? extends T> targetType) {
-		Validate.notNull(targetType, "targetType");
-		return toProvider(Providers.link(key(), Key.of(targetType)));
-	}
+    @Override
+    default R to(TypeReference<? extends T> targetType) {
+        Validate.notNull(targetType, "targetType");
+        return toProvider(Providers.link(key(), Key.of(targetType)));
+    }
 
-	@Override
-	default <P extends Provider<? extends T>> R toProvider(TypeReference<P> providerClass) {
-		Validate.notNull(providerClass, "providerClass");
-		return toProvider(Providers.providerTypeProvider(providerClass));
-	}
+    @Override
+    default <P extends Provider<? extends T>> R toProvider(TypeReference<P> providerClass) {
+        Validate.notNull(providerClass, "providerClass");
+        return toProvider(Providers.providerTypeProvider(providerClass));
+    }
 
 }

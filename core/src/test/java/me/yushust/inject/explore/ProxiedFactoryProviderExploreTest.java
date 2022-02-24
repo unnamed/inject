@@ -13,33 +13,33 @@ import javax.inject.Provider;
 
 public class ProxiedFactoryProviderExploreTest {
 
-	@Test
-	public void test() {
+    @Test
+    public void test() {
 
-		Injector injector = Injector.create(binder -> binder.bind(Foo.class).toFactory(FooFactory.class));
-		Provider<? extends FooFactory> provider = injector.getProvider(FooFactory.class);
-		ProxiedFactoryProvider<?> proxiedProvider = (ProxiedFactoryProvider<?>) provider;
+        Injector injector = Injector.create(binder -> binder.bind(Foo.class).toFactory(FooFactory.class));
+        Provider<? extends FooFactory> provider = injector.getProvider(FooFactory.class);
+        ProxiedFactoryProvider<?> proxiedProvider = (ProxiedFactoryProvider<?>) provider;
 
-		Assertions.assertEquals(Key.of(Foo.class), proxiedProvider.getBuildType());
-		Assertions.assertEquals(FooFactory.class, proxiedProvider.getFactory());
-		Assertions.assertEquals("create", proxiedProvider.getFactoryMethod().getName());
-	}
+        Assertions.assertEquals(Key.of(Foo.class), proxiedProvider.getBuildType());
+        Assertions.assertEquals(FooFactory.class, proxiedProvider.getFactory());
+        Assertions.assertEquals("create", proxiedProvider.getFactoryMethod().getName());
+    }
 
-	public interface FooFactory extends ValueFactory {
+    public interface FooFactory extends ValueFactory {
 
-		Foo create(String name);
+        Foo create(String name);
 
-	}
+    }
 
-	public static class Foo {
+    public static class Foo {
 
-		@Assisted
-		public Foo(
-				@Assist String name,
-				Object empty
-		) {
-		}
+        @Assisted
+        public Foo(
+                @Assist String name,
+                Object empty
+        ) {
+        }
 
-	}
+    }
 
 }

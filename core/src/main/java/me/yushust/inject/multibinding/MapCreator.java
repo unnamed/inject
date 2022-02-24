@@ -8,7 +8,9 @@ import java.util.Map;
  */
 public interface MapCreator {
 
-	/** @return A new empty map */
-	<K, V> Map<K, V> create();
+    /**
+     * @return A new empty map
+     */
+    <K, V> Map<K, V> create();
 
 }

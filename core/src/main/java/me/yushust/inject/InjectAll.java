@@ -15,4 +15,5 @@ import java.lang.reflect.Field;
 @Target(ElementType.TYPE)
 @Documented
 public @interface InjectAll {
+
 }

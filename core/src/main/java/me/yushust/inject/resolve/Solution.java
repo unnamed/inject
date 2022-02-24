@@ -10,8 +10,8 @@ import java.util.List;
  */
 class Solution {
 
-	Object constructor = ConstructorResolver.CONSTRUCTOR_NOT_DEFINED;
-	List<InjectableField> fields;
-	List<InjectableMethod> methods;
+    Object constructor = ConstructorResolver.CONSTRUCTOR_NOT_DEFINED;
+    List<InjectableField> fields;
+    List<InjectableMethod> methods;
 
 }

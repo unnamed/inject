@@ -24,61 +24,61 @@ import java.util.Map;
  * the return value
  */
 public class MethodAsProvider<T>
-		extends StdProvider<T> {
+        extends StdProvider<T> {
 
-	private final Object moduleInstance;
-	private final InjectableMethod method;
-	private InjectorImpl injector;
+    private final Object moduleInstance;
+    private final InjectableMethod method;
+    private InjectorImpl injector;
 
-	public MethodAsProvider(Object moduleInstance, InjectableMethod method) {
-		this.moduleInstance = moduleInstance;
-		this.method = method;
-	}
+    public MethodAsProvider(Object moduleInstance, InjectableMethod method) {
+        this.moduleInstance = moduleInstance;
+        this.method = method;
+    }
 
-	public static <T> Map<Key<?>, Provider<?>> resolveMethodProviders(
-			ErrorAttachable errors,
-			TypeReference<T> type,
-			T instance
-	) {
+    public static <T> Map<Key<?>, Provider<?>> resolveMethodProviders(
+            ErrorAttachable errors,
+            TypeReference<T> type,
+            T instance
+    ) {
 
-		Map<Key<?>, Provider<?>> providers = new HashMap<>();
+        Map<Key<?>, Provider<?>> providers = new HashMap<>();
 
-		for (InjectableMethod injectableMethod : ComponentResolver.methods().resolve(type, Provides.class)) {
-			Method method = injectableMethod.getMember();
-			// TODO: Replace this shit
-			Key<?> key = ComponentResolver.keys().keyOf(
-					injectableMethod.getDeclaringType().resolve(method.getGenericReturnType()),
-					method.getAnnotations()
-			).getKey();
+        for (InjectableMethod injectableMethod : ComponentResolver.methods().resolve(type, Provides.class)) {
+            Method method = injectableMethod.getMember();
+            // TODO: Replace this shit
+            Key<?> key = ComponentResolver.keys().keyOf(
+                    injectableMethod.getDeclaringType().resolve(method.getGenericReturnType()),
+                    method.getAnnotations()
+            ).getKey();
 
-			Scope scope = Scopes.getScanner().scan(method);
+            Scope scope = Scopes.getScanner().scan(method);
 
-			Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod)
-					.withScope(key, scope);
+            Provider<?> provider = new MethodAsProvider<>(instance, injectableMethod)
+                    .withScope(key, scope);
 
-			if (providers.putIfAbsent(key, provider) != null) {
-				errors.attach(
-						"Method provider duplicate",
-						new BindingException("Type " + type + " has two or more method " +
-								"providers with the same return key!")
-				);
-			}
-		}
+            if (providers.putIfAbsent(key, provider) != null) {
+                errors.attach(
+                        "Method provider duplicate",
+                        new BindingException("Type " + type + " has two or more method " +
+                                "providers with the same return key!")
+                );
+            }
+        }
 
-		return providers;
-	}
+        return providers;
+    }
 
-	@Override
-	public void inject(ProvisionStack stack, InjectorImpl injector) {
-		this.injector = injector;
-		this.injected = true;
-	}
+    @Override
+    public void inject(ProvisionStack stack, InjectorImpl injector) {
+        this.injector = injector;
+        this.injected = true;
+    }
 
-	@Override
-	public T get() {
-		@SuppressWarnings("unchecked")
-		T value = (T) method.inject(injector, injector.stackForThisThread(), moduleInstance);
-		return value;
-	}
+    @Override
+    public T get() {
+        @SuppressWarnings("unchecked")
+        T value = (T) method.inject(injector, injector.stackForThisThread(), moduleInstance);
+        return value;
+    }
 
 }

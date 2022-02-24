@@ -19,122 +19,123 @@ import java.util.List;
 import java.util.Map;
 
 public class ProxiedFactoryProvider<T>
-		extends StdProvider<T> {
+        extends StdProvider<T> {
 
-	private final Class<? extends ValueFactory> factory;
-	private final Method method;
-	private final List<InjectedKey<?>> keys;
-	private final InjectableConstructor constructor;
-	private final Key<?> key;
-	private T factoryInstance;
+    private final Class<? extends ValueFactory> factory;
+    private final Method method;
+    private final List<InjectedKey<?>> keys;
+    private final InjectableConstructor constructor;
+    private final Key<?> key;
+    private T factoryInstance;
 
-	ProxiedFactoryProvider(
-			Class<? extends ValueFactory> factory,
-			Method method,
-			List<InjectedKey<?>> keys,
-			InjectableConstructor constructor,
-			Key<?> key
-	) {
-		this.factory = factory;
-		this.method = method;
-		this.keys = keys;
-		this.constructor = constructor;
-		this.key = key;
-	}
+    ProxiedFactoryProvider(
+            Class<? extends ValueFactory> factory,
+            Method method,
+            List<InjectedKey<?>> keys,
+            InjectableConstructor constructor,
+            Key<?> key
+    ) {
+        this.factory = factory;
+        this.method = method;
+        this.keys = keys;
+        this.constructor = constructor;
+        this.key = key;
+    }
 
-	public Class<? extends ValueFactory> getFactory() {
-		return factory;
-	}
+    public Class<? extends ValueFactory> getFactory() {
+        return factory;
+    }
 
-	public Method getFactoryMethod() {
-		return method;
-	}
+    public Method getFactoryMethod() {
+        return method;
+    }
 
-	public Key<?> getBuildType() {
-		return key;
-	}
+    public Key<?> getBuildType() {
+        return key;
+    }
 
-	public Constructor<?> getTargetConstructor() {
-		return constructor.getMember();
-	}
+    public Constructor<?> getTargetConstructor() {
+        return constructor.getMember();
+    }
 
-	@SuppressWarnings({"rawtypes", "unchecked"})
-	private Object createInstance(InjectorImpl injector, Object[] extras) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private Object createInstance(InjectorImpl injector, Object[] extras) {
 
-		Map<Key<?>, Object> values = new HashMap<>();
-		for (int i = 0; i < extras.length; i++) {
-			Key<?> valueKey = keys.get(i).getKey();
-			Object value = extras[i];
-			values.put(valueKey, value);
-		}
+        Map<Key<?>, Object> values = new HashMap<>();
+        for (int i = 0; i < extras.length; i++) {
+            Key<?> valueKey = keys.get(i).getKey();
+            Object value = extras[i];
+            values.put(valueKey, value);
+        }
 
-		Object[] givenArgs = new Object[constructor.getKeys().size()];
+        Object[] givenArgs = new Object[constructor.getKeys().size()];
 
-		int i = 0;
-		for (InjectedKey<?> injection : constructor.getKeys()) {
-			if (injection.isAssisted()) {
-				givenArgs[i] = values.get(injection.getKey());
-			} else {
-				Object val = injector.getInstance(
-						injector.stackForThisThread(),
-						injection.getKey(),
-						true
-				);
-				givenArgs[i] = val;
-			}
-			i++;
-		}
+        int i = 0;
+        for (InjectedKey<?> injection : constructor.getKeys()) {
+            if (injection.isAssisted()) {
+                givenArgs[i] = values.get(injection.getKey());
+            } else {
+                Object val = injector.getInstance(
+                        injector.stackForThisThread(),
+                        injection.getKey(),
+                        true
+                );
+                givenArgs[i] = val;
+            }
+            i++;
+        }
 
 
-		try {
-			Object instance = constructor.getMember().newInstance(givenArgs);
-			injector.injectMembers(
-					(TypeReference) key.getType(),
-					instance
-			);
-			return instance;
-		} catch (
-				InstantiationException
-						| InvocationTargetException
-						| IllegalAccessException e
-		) {
-			injector.stackForThisThread().attach(
-					"Errors while invoking assisted constructor "
-							+ ElementFormatter.formatConstructor(constructor.getMember(), keys),
-					e
-			);
-			return null;
-		}
-	}
+        try {
+            Object instance = constructor.getMember().newInstance(givenArgs);
+            injector.injectMembers(
+                    (TypeReference) key.getType(),
+                    instance
+            );
+            return instance;
+        } catch (
+                InstantiationException
+                        | InvocationTargetException
+                        | IllegalAccessException e
+        ) {
+            injector.stackForThisThread().attach(
+                    "Errors while invoking assisted constructor "
+                            + ElementFormatter.formatConstructor(constructor.getMember(), keys),
+                    e
+            );
+            return null;
+        }
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void inject(ProvisionStack stack, InjectorImpl injector) {
-		factoryInstance = (T) Proxy.newProxyInstance(
-				getClass().getClassLoader(),
-				new Class[]{factory},
-				(proxy, method, args) -> {
-					if (method.equals(this.method)) {
-						return createInstance(injector, args);
-					} else {
-						switch (method.getName()) {
-							case "equals":
-								return false;
-							case "hashCode":
-								return 0;
-							case "toString":
-								return factory.getName() + " Trew-generated implementation";
-							default:
-								return null;
-						}
-					}
-				}
-		);
-		injected = true;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public void inject(ProvisionStack stack, InjectorImpl injector) {
+        factoryInstance = (T) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class[]{factory},
+                (proxy, method, args) -> {
+                    if (method.equals(this.method)) {
+                        return createInstance(injector, args);
+                    } else {
+                        switch (method.getName()) {
+                            case "equals":
+                                return false;
+                            case "hashCode":
+                                return 0;
+                            case "toString":
+                                return factory.getName() + " Trew-generated implementation";
+                            default:
+                                return null;
+                        }
+                    }
+                }
+        );
+        injected = true;
+    }
 
-	@Override
-	public T get() {
-		return factoryInstance;
-	}
+    @Override
+    public T get() {
+        return factoryInstance;
+    }
+
 }

@@ -14,30 +14,30 @@ import java.lang.annotation.Annotation;
  */
 public interface KeyBuilder<R, T> extends Binder.Qualified<R> {
 
-	Key<T> key();
+    Key<T> key();
 
-	void setKey(Key<T> key);
+    void setKey(Key<T> key);
 
-	@Override
-	default R markedWith(Class<? extends Annotation> qualifierType) {
-		Validate.notNull(qualifierType, "qualifierType");
-		setKey(key().withQualifier(qualifierType));
-		return getReturnValue();
-	}
+    @Override
+    default R markedWith(Class<? extends Annotation> qualifierType) {
+        Validate.notNull(qualifierType, "qualifierType");
+        setKey(key().withQualifier(qualifierType));
+        return getReturnValue();
+    }
 
-	@Override
-	default R qualified(Annotation annotation) {
-		Validate.notNull(annotation, "annotation");
-		setKey(key().withQualifier(annotation));
-		return getReturnValue();
-	}
+    @Override
+    default R qualified(Annotation annotation) {
+        Validate.notNull(annotation, "annotation");
+        setKey(key().withQualifier(annotation));
+        return getReturnValue();
+    }
 
-	@Override
-	default R named(String name) {
-		Validate.notNull(name, "name");
-		return qualified(Annotations.createNamed(name));
-	}
+    @Override
+    default R named(String name) {
+        Validate.notNull(name, "name");
+        return qualified(Annotations.createNamed(name));
+    }
 
-	R getReturnValue();
+    R getReturnValue();
 
 }

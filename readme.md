@@ -25,13 +25,17 @@ or [Gradle](https://gradle.org/) (recommended)
 ```
 
 #### Gradle (build.gradle)
+
 build.gradle
+
 ```groovy
 repositories {
   maven { url 'https://repo.unnamed.team/repository/unnamed-public/' }
 }
 ```
+
 build.gradle.kts
+
 ```kotlin
 repositories {
   maven { url = uri("https://repo.unnamed.team/repository/unnamed-public") }
@@ -46,6 +50,7 @@ repositories {
   release: [![Latest Release](https://img.shields.io/nexus/r/me.yushust.inject/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-releases)
 
 #### Maven (pom.xml)
+
 ```xml
 <dependency>
     <groupId>me.yushust.inject</groupId>
@@ -55,13 +60,17 @@ repositories {
 ```
 
 #### Gradle
+
 **For Groovy DSL:** (build.gradle)
+
 ```groovy
 dependencies {
   implementation 'me.yushust.inject:core:VERSION'
 }
 ```
+
 **For Kotlin DSL:** (build.gradle.kts)
+
 ```kotlin
 dependencies {
   implementation("me.yushust.inject:core:VERSION")

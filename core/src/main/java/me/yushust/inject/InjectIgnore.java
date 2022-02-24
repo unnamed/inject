@@ -16,4 +16,5 @@ import java.lang.reflect.Field;
 @Target(ElementType.FIELD)
 @Documented
 public @interface InjectIgnore {
+
 }
