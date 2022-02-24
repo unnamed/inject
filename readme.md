@@ -1,8 +1,6 @@
 # Trew D.I. ![Build Status](https://img.shields.io/github/workflow/status/yusshu/trew/build/master) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](license.txt)
 
-Trew is a very lightweight and fast dependency injection library based on [Guice](https://github.com/google/guice) like
-the old [Syringe DI](https://github.com/unnamed/syringe). Trew, unlike Syringe, supports circular dependencies, this is
-an important difference between these D.I
+Trew is a very lightweight and fast dependency injection library based on [Guice](https://github.com/google/guice)
 
 ## Usage
 
