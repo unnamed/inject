@@ -66,7 +66,6 @@ public final class Types {
      * between java versions or implementations and we
      * need a consistent implementation</p>
      * <p>
-     * TODO: Don't wrap just add equals method
      *
      * @param type The original type
      */
