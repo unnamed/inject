@@ -1,76 +1,12 @@
-# Trew D.I. ![Build Status](https://img.shields.io/github/workflow/status/yusshu/trew/build/master) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](license.txt)
+# trew
+[![Build Status](https://img.shields.io/github/workflow/status/yusshu/trew/build/main)](https://github.com/yusshu/trew/actions/workflows/build.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue)](license.txt)
+[![Discord](https://img.shields.io/discord/683899335405994062)](https://discord.gg/xbba2fy)
 
-Trew is a very lightweight and fast dependency injection library based on [Guice](https://github.com/google/guice)
+`trew` is a zero-dependencies, lightweight and fast runtime dependency
+injection library based on [Google's Guice](https://github.com/google/guice),
+compatible with the JSR-330 specification. By not having to worry about manually 
+injecting dependencies, this library increases programmer productivity
 
-## Usage
-
-Read the [Wiki on GitHub](https://github.com/yusshu/trew/wiki) to learn about the usage of Trew
-
-## Download
-
-You can simply download the JAR from GitHub in the Releases section, use [Maven](https://maven.apache.org/)
-or [Gradle](https://gradle.org/) (recommended)
-
-## Repository
-
-#### Maven (pom.xml)
-
-```xml
-<repository>
-    <id>unnamed-public</id>
-    <url>https://repo.unnamed.team/repository/unnamed-public/</url>
-</repository>
-```
-
-#### Gradle (build.gradle)
-
-build.gradle
-
-```groovy
-repositories {
-  maven { url 'https://repo.unnamed.team/repository/unnamed-public/' }
-}
-```
-
-build.gradle.kts
-
-```kotlin
-repositories {
-  maven { url = uri("https://repo.unnamed.team/repository/unnamed-public") }
-}
-```
-
-### Dependency
-
-- Latest
-  snapshot: [![Latest Snapshot](https://img.shields.io/nexus/s/me.yushust.inject/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-snapshots)
-- Latest
-  release: [![Latest Release](https://img.shields.io/nexus/r/me.yushust.inject/core.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-releases)
-
-#### Maven (pom.xml)
-
-```xml
-<dependency>
-    <groupId>me.yushust.inject</groupId>
-    <artifactId>core</artifactId>
-    <version>VERSION</version> <!--Check the latest version in the repositories-->
-</dependency>
-```
-
-#### Gradle
-
-**For Groovy DSL:** (build.gradle)
-
-```groovy
-dependencies {
-  implementation 'me.yushust.inject:core:VERSION'
-}
-```
-
-**For Kotlin DSL:** (build.gradle.kts)
-
-```kotlin
-dependencies {
-  implementation("me.yushust.inject:core:VERSION")
-}
-```
+Check the [wiki on GitHub](https://github.com/yusshu/trew/wiki) for installation and usage
+information for this library
