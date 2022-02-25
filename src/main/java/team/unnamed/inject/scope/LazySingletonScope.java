@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A lazy singleton provider wrapper.
+ * A lazy singleton provider wrapper
  */
 public final class LazySingletonScope
         implements Scope {
