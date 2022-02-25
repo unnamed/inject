@@ -30,8 +30,6 @@ public final class Types {
     static {
         OMITTED_PACKAGES.add("java.lang.");
         OMITTED_PACKAGES.add("java.util.");
-        OMITTED_PACKAGES.add("me.yushust.inject.internal.");
-        OMITTED_PACKAGES.add("me.yushust.inject.");
 
         WRAPPER_TYPES.put(int.class, Integer.class);
         WRAPPER_TYPES.put(double.class, Double.class);

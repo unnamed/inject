@@ -150,11 +150,13 @@ public final class Key<T> implements CompositeType, Serializable {
     /**
      * This should create a string with util information
      * and very verbose. Like
-     * <p>
-     * me.yushust.inject.ExampleType
-     * annotated with @Named("hello")
-     * marked with @Marker
-     * </p>
+     *
+     * <pre>
+     *   team.unnamed.inject.ExampleType
+     *     annotated with @Named("hello")
+     *     marked with @Marker
+     * </pre>
+     *
      * If a class name starts with {@code java} or {@code javax},
      * it isn't used, the used name is now {@link Class#getSimpleName()}
      *
