@@ -1,3 +1,1 @@
-rootProject.name = "trew"
-
-include("core")
+rootProject.name = "inject"
