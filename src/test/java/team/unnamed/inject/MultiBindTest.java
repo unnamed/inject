@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,6 +34,11 @@ public class MultiBindTest {
                     .asMap(String.class)
                     .bind("one").toInstance(1)
                     .bind("two").toInstance(2);
+
+            binder.multibind(UUID.class)
+                    .named("1")
+                    .asMap(String.class)
+                    .bind("Yusshu").toInstance(UUID.randomUUID());
         });
 
         Baz baz = injector.getInstance(Baz.class);
@@ -46,6 +52,8 @@ public class MultiBindTest {
         Assertions.assertEquals(2, baz.numbersByName.size());
         Assertions.assertEquals(1, baz.numbersByName.get("one"));
         Assertions.assertEquals(2, baz.numbersByName.get("two"));
+
+        Assertions.assertNotNull(baz.map);
     }
 
     public static class Baz {
@@ -58,6 +66,8 @@ public class MultiBindTest {
         private List<UUID> ids1;
         @Inject
         private List<UUID> ids2;
+
+        @Inject @Named("1") private Map<String, UUID> map;
 
     }
 
