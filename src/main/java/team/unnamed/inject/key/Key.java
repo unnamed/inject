@@ -114,6 +114,18 @@ public final class Key<T> implements CompositeType, Serializable {
     }
 
     /**
+     * Returns a new {@link Key} instance with the
+     * given type, the qualifier is copied
+     *
+     * @param type The new key type
+     * @param <R> The new key type
+     * @return The new key
+     */
+    public <R> Key<R> withType(TypeReference<R> type) {
+        return new Key<>(type, qualifierType, qualifier);
+    }
+
+    /**
      * Returns a new {@link Key} with the given {@code qualifier}
      */
     public Key<T> withQualifier(Annotation qualifier) {

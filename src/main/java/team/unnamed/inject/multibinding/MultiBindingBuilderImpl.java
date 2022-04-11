@@ -26,13 +26,13 @@ public class MultiBindingBuilderImpl<T> implements
      */
     @Override
     public Binder.CollectionMultiBindingBuilder<T> asCollection(Class<?> baseType, CollectionCreator collectionCreator) {
-        Key<List<T>> listKey = Key.of(TypeReference.of(baseType, key.getType().getType()));
+        Key<List<T>> listKey = key.withType(TypeReference.of(baseType, key.getType().getType()));
         return new CollectionMultiBindingBuilderImpl<>(binder, listKey, key, collectionCreator);
     }
 
     @Override
     public <K> Binder.MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference, MapCreator mapCreator) {
-        Key<Map<K, T>> mapKey = Key.of(TypeReference.mapTypeOf(keyReference, key.getType()));
+        Key<Map<K, T>> mapKey = key.withType(TypeReference.mapTypeOf(keyReference, key.getType()));
         return new MapMultiBindingBuilderImpl<>(binder, mapCreator, mapKey, key);
     }
 
