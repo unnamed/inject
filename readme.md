@@ -10,5 +10,5 @@ compatible with the JSR-330 specification for Java 8+
 By not having to worry about manually injecting dependencies, this library
 will potentially increase your programming productivity
 
-Check the [wiki on GitHub](https://github.com/unnamed/inject/wiki) for
+Check the [wiki](https://unnamed.team/docs/inject) for
 installation and usage information for this library
