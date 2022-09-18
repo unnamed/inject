@@ -24,6 +24,11 @@ tasks {
     test {
         useJUnitPlatform()
     }
+    jar {
+        manifest {
+            attributes("Automatic-Module-Name" to "team.unnamed.inject")
+        }
+    }
 }
 
 val repositoryName: String by project
