@@ -64,4 +64,4 @@ public class UserDao {
 In this example, we just declare a dependency using the `@Inject` annotation
 instead of as an argument in a constructor. However, the `@Inject` annotation is
 not magic and this will not work using `new UserDao()` since the object is
-not processed. See [Basic Usage](basic-usage.md)
+not processed.

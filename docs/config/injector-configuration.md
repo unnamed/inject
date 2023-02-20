@@ -29,5 +29,3 @@ public class DatabaseModule implements Module {
     
 }
 ```
-
-See [Bindings](bindings.md)

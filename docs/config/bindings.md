@@ -47,5 +47,3 @@ binder.bind(Database.class).toInstance(new SQLiteDatabase("file.db"));
 
 The injector will return the given instance whenever `Database` is
 requested
-
-See [Binding Annotations](binding-annotations.md) and [Scopes](scopes.md)

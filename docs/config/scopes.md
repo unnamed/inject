@@ -27,5 +27,3 @@ public class MySQLDatabase implements Database {
 
 Note that, in this case, it would be still required to *bind* the `Database`
 interface to the `MySQLDatabase` implementation
-
-See [Advanced Keys](advanced-keys.md)
