@@ -18,7 +18,7 @@ Add the dependency
 
 ```kotlin
 dependencies {
-    implementation("team.unnamed:inject:1.0.2")
+    implementation("team.unnamed:inject:2.0.0")
 }
 ```
 
@@ -39,6 +39,6 @@ Add the dependency
 <dependency>
     <groupId>team.unnamed</groupId>
     <artifactId>inject</artifactId>
-    <version>1.0.2</version>
+    <version>2.0.0</version>
 </dependency>
 ```

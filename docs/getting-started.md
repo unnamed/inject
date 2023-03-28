@@ -3,7 +3,7 @@
 Welcome to the `inject` documentation
 
 `unnamed/inject` is a zero-dependency, lightweight and fast runtime dependency
-injection library compatible with the JSR-330 specification for Java 8+
+injection library for Java 8+
 
 
 ### Features

@@ -4,8 +4,7 @@
 [![Discord](https://img.shields.io/discord/683899335405994062)](https://discord.gg/xbba2fy)
 
 `unnamed/inject` is a zero-dependency, lightweight and fast runtime dependency
-injection library based on [Google's Guice](https://github.com/google/guice),
-compatible with the JSR-330 specification for Java 8+
+injection library based on [Google's Guice](https://github.com/google/guice) for Java 8+
 
 By not having to worry about manually injecting dependencies, this library
 will potentially increase your programming productivity
