@@ -1,10 +1,10 @@
 package team.unnamed.inject.key;
 
+import team.unnamed.inject.Qualifier;
 import team.unnamed.inject.key.Types.CompositeType;
 import team.unnamed.inject.util.ElementFormatter;
 import team.unnamed.inject.util.Validate;
 
-import javax.inject.Qualifier;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
@@ -169,7 +169,7 @@ public final class Key<T> implements CompositeType, Serializable {
      *     marked with @Marker
      * </pre>
      *
-     * If a class name starts with {@code java} or {@code javax},
+     * If a class name starts with {@code java},
      * it isn't used, the used name is now {@link Class#getSimpleName()}
      *
      * @return The key information as string

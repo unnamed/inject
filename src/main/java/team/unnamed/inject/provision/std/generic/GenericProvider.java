@@ -1,8 +1,7 @@
 package team.unnamed.inject.provision.std.generic;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.key.Key;
-
-import javax.inject.Provider;
 
 /**
  * It's (indirectly) a {@link Provider} for not-bound

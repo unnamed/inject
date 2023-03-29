@@ -4,7 +4,6 @@ import team.unnamed.inject.impl.BinderImpl;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.key.TypeReference;
 
-import javax.inject.Provider;
 import java.util.Arrays;
 
 public interface Injector {

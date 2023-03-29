@@ -1,6 +1,7 @@
 package team.unnamed.inject.impl;
 
 import team.unnamed.inject.Binder;
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.assisted.ValueFactory;
 import team.unnamed.inject.assisted.provision.ToFactoryProvider;
 import team.unnamed.inject.key.Key;
@@ -9,8 +10,6 @@ import team.unnamed.inject.provision.Providers;
 import team.unnamed.inject.provision.std.generic.GenericProvider;
 import team.unnamed.inject.provision.std.generic.ToGenericProvider;
 import team.unnamed.inject.util.Validate;
-
-import javax.inject.Provider;
 
 public interface LinkedBuilder<R, T> extends Binder.Linked<R, T> {
 

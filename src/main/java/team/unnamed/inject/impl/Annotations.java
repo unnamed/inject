@@ -1,8 +1,8 @@
 package team.unnamed.inject.impl;
 
+import team.unnamed.inject.Named;
 import team.unnamed.inject.util.Validate;
 
-import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

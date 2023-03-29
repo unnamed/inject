@@ -3,7 +3,6 @@ package team.unnamed.inject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.UUID;
 
 public class SingletonBindingTest {

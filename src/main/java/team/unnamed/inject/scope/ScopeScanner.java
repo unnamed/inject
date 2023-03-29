@@ -1,8 +1,8 @@
 package team.unnamed.inject.scope;
 
+import team.unnamed.inject.Singleton;
 import team.unnamed.inject.util.Validate;
 
-import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public final class ScopeScanner {
      *
      * <p>Note that this method doesn't require
      * the {@code annotationType} to be annotated
-     * with {@link javax.inject.Scope}</p>
+     * with {@link team.unnamed.inject.Scope}</p>
      */
     public void bind(Class<? extends Annotation> annotationType, Scope scope) {
         Validate.notNull(annotationType, "annotationType");

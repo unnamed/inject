@@ -1,6 +1,7 @@
 package team.unnamed.inject.impl;
 
 import team.unnamed.inject.Injector;
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.error.InjectionException;
 import team.unnamed.inject.key.InjectedKey;
 import team.unnamed.inject.key.Key;
@@ -11,7 +12,6 @@ import team.unnamed.inject.resolve.solution.InjectableConstructor;
 import team.unnamed.inject.resolve.solution.InjectableMember;
 import team.unnamed.inject.util.Validate;
 
-import javax.inject.Provider;
 import java.util.List;
 
 public class InjectorImpl implements Injector {

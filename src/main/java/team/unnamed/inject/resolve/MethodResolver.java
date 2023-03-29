@@ -1,9 +1,9 @@
 package team.unnamed.inject.resolve;
 
+import team.unnamed.inject.Inject;
 import team.unnamed.inject.key.TypeReference;
 import team.unnamed.inject.resolve.solution.InjectableMethod;
 
-import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public final class MethodResolver {
         ) {
             // Iterate all methods, including private methods
             // exclude methods that aren't annotated with
-            // javax.inject.Inject and add to the methods list,
+            // @Inject and add to the methods list,
             // not to the members list
             for (Method method : checking.getDeclaredMethods()) {
                 if (!method.isAnnotationPresent(annotation)) {

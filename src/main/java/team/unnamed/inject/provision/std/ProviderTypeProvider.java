@@ -1,12 +1,11 @@
 package team.unnamed.inject.provision.std;
 
 import team.unnamed.inject.Injector;
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
 import team.unnamed.inject.key.TypeReference;
 import team.unnamed.inject.provision.StdProvider;
-
-import javax.inject.Provider;
 
 /**
  * Represents a provider that gets instantiated the first

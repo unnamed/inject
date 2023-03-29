@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Represents an injectable constructor, a constructor
- * annotated with {@link javax.inject.Inject} or a
+ * annotated with {@link team.unnamed.inject.Inject} or a
  * constructor with no parameters.
  */
 public class InjectableConstructor implements InjectableMember {

@@ -1,10 +1,10 @@
 package team.unnamed.inject.resolve;
 
+import team.unnamed.inject.Inject;
 import team.unnamed.inject.error.ErrorAttachable;
 import team.unnamed.inject.key.TypeReference;
 import team.unnamed.inject.resolve.solution.InjectableConstructor;
 
-import javax.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 

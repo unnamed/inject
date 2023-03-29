@@ -6,9 +6,6 @@ import team.unnamed.inject.assisted.ValueFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 public class QualifiedAssistedInjectTest {
 
     @Test
