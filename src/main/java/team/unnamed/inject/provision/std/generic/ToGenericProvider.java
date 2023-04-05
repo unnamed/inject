@@ -1,5 +1,6 @@
 package team.unnamed.inject.provision.std.generic;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.impl.BinderImpl;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
@@ -8,8 +9,6 @@ import team.unnamed.inject.provision.StdProvider;
 import team.unnamed.inject.provision.std.ScopedProvider;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.util.Validate;
-
-import javax.inject.Provider;
 
 public class ToGenericProvider<T>
         extends ScopedProvider<T>

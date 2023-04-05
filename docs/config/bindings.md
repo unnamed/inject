@@ -12,7 +12,7 @@ provider is called
 ### Direct Binding
 
 A direct binding is a binding of a type to a provider function
-(`javax.inject.Provider<T>`)
+(`team.unnamed.inject.Provider<T>`)
 
 ```java
 binder.bind(Database.class).toProvider(() -> {

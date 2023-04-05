@@ -1,12 +1,12 @@
 package team.unnamed.inject.resolve;
 
+import team.unnamed.inject.Qualifier;
 import team.unnamed.inject.assisted.Assist;
 import team.unnamed.inject.impl.Annotations;
 import team.unnamed.inject.key.InjectedKey;
 import team.unnamed.inject.key.Key;
 import team.unnamed.inject.key.TypeReference;
 
-import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;

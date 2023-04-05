@@ -1,5 +1,6 @@
 package team.unnamed.inject.provision;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.impl.BinderImpl;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
@@ -7,7 +8,6 @@ import team.unnamed.inject.key.Key;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.util.Validate;
 
-import javax.inject.Provider;
 import java.util.Objects;
 
 /**

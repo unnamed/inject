@@ -1,5 +1,6 @@
 package team.unnamed.inject.provision;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.assisted.provision.ToFactoryProvider;
 import team.unnamed.inject.impl.BinderImpl;
 import team.unnamed.inject.impl.InjectorImpl;
@@ -7,8 +8,6 @@ import team.unnamed.inject.impl.ProvisionStack;
 import team.unnamed.inject.key.Key;
 import team.unnamed.inject.provision.std.ScopedProvider;
 import team.unnamed.inject.scope.Scope;
-
-import javax.inject.Provider;
 
 public abstract class StdProvider<T> implements Provider<T> {
 

@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
 import java.util.Objects;
 
 /**
- * Represents a Field annotated with {@link javax.inject.Inject}
+ * Represents a Field annotated with {@link team.unnamed.inject.Inject}
  * and that already has resolved a key, with its requirement level
  * defined too.
  */

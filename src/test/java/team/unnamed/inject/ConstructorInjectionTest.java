@@ -3,8 +3,6 @@ package team.unnamed.inject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
-
 public class ConstructorInjectionTest {
 
     @Test

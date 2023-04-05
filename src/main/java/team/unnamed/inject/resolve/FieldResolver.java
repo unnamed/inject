@@ -1,12 +1,12 @@
 package team.unnamed.inject.resolve;
 
+import team.unnamed.inject.Inject;
 import team.unnamed.inject.InjectAll;
 import team.unnamed.inject.InjectIgnore;
 import team.unnamed.inject.key.InjectedKey;
 import team.unnamed.inject.key.TypeReference;
 import team.unnamed.inject.resolve.solution.InjectableField;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public final class FieldResolver {
         ) {
             // iterate all fields, including private fields
             // exclude fields that aren't annotated with
-            // javax.inject.Inject
+            // team.unnamed.inject.Inject
             boolean injectAll = checking.isAnnotationPresent(InjectAll.class);
             for (Field field : checking.getDeclaredFields()) {
                 if (injectAll) {

@@ -4,9 +4,6 @@ import team.unnamed.inject.error.InjectionException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-
 public class ProviderTest {
 
     @Inject

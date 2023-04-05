@@ -10,7 +10,6 @@ import team.unnamed.inject.provision.std.generic.GenericProvider;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.scope.Scopes;
 
-import javax.inject.Provider;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -2,6 +2,7 @@ package team.unnamed.inject.impl;
 
 import team.unnamed.inject.Binder;
 import team.unnamed.inject.Module;
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.error.BindingException;
 import team.unnamed.inject.error.ErrorAttachableImpl;
 import team.unnamed.inject.key.Key;
@@ -13,7 +14,6 @@ import team.unnamed.inject.provision.std.MethodAsProvider;
 import team.unnamed.inject.provision.std.generic.impl.TypeReferenceGenericProvider;
 import team.unnamed.inject.util.Validate;
 
-import javax.inject.Provider;
 import java.util.HashMap;
 import java.util.Map;
 

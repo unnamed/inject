@@ -1,11 +1,10 @@
 package team.unnamed.inject.provision.std;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.key.Key;
 import team.unnamed.inject.provision.StdProvider;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.scope.Scopes;
-
-import javax.inject.Provider;
 
 /**
  * Represents an instance binding. The key is bound to a

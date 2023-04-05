@@ -1,6 +1,5 @@
 package team.unnamed.inject;
 
-import javax.inject.Provider;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

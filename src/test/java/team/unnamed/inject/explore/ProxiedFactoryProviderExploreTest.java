@@ -1,6 +1,7 @@
 package team.unnamed.inject.explore;
 
 import team.unnamed.inject.Injector;
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.assisted.Assist;
 import team.unnamed.inject.assisted.Assisted;
 import team.unnamed.inject.assisted.ValueFactory;
@@ -8,8 +9,6 @@ import team.unnamed.inject.assisted.provision.ProxiedFactoryProvider;
 import team.unnamed.inject.key.Key;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import javax.inject.Provider;
 
 public class ProxiedFactoryProviderExploreTest {
 

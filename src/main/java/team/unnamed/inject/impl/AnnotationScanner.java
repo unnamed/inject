@@ -1,6 +1,8 @@
 package team.unnamed.inject.impl;
 
 import team.unnamed.inject.ProvidedBy;
+import team.unnamed.inject.Provider;
+import team.unnamed.inject.Singleton;
 import team.unnamed.inject.Targetted;
 import team.unnamed.inject.key.Key;
 import team.unnamed.inject.key.TypeReference;
@@ -9,8 +11,6 @@ import team.unnamed.inject.provision.StdProvider;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.scope.Scopes;
 
-import javax.inject.Provider;
-import javax.inject.Singleton;
 import java.lang.reflect.Modifier;
 
 /**

@@ -1,5 +1,6 @@
 package team.unnamed.inject.provision.std;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.Provides;
 import team.unnamed.inject.error.BindingException;
 import team.unnamed.inject.error.ErrorAttachable;
@@ -13,7 +14,6 @@ import team.unnamed.inject.resolve.solution.InjectableMethod;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.scope.Scopes;
 
-import javax.inject.Provider;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,5 +1,6 @@
 package team.unnamed.inject.provision;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
 import team.unnamed.inject.key.Key;
@@ -9,8 +10,6 @@ import team.unnamed.inject.provision.std.LinkedProvider;
 import team.unnamed.inject.provision.std.ProviderTypeProvider;
 import team.unnamed.inject.provision.std.ScopedProvider;
 import team.unnamed.inject.util.Validate;
-
-import javax.inject.Provider;
 
 /**
  * Collection of static factory methods to create providers

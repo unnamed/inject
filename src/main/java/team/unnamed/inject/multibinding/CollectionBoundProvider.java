@@ -1,12 +1,12 @@
 package team.unnamed.inject.multibinding;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
 import team.unnamed.inject.key.Key;
 import team.unnamed.inject.key.TypeReference;
 import team.unnamed.inject.provision.StdProvider;
 
-import javax.inject.Provider;
 import java.util.Collection;
 import java.util.Collections;
 

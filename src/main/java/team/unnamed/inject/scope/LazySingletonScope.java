@@ -1,8 +1,8 @@
 package team.unnamed.inject.scope;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.provision.StdProvider;
 
-import javax.inject.Provider;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 

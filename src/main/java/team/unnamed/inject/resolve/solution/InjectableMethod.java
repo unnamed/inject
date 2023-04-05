@@ -1,5 +1,6 @@
 package team.unnamed.inject.resolve.solution;
 
+import team.unnamed.inject.Inject;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
 import team.unnamed.inject.key.InjectedKey;
@@ -14,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents a Method annotated with {@link javax.inject.Inject}
+ * Represents a Method annotated with {@link Inject}
  * and that already has resolved its parameter keys, with its
  * requirement level defined too.
  */

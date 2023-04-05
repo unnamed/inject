@@ -52,7 +52,7 @@ and re-usable
 Here is an example that uses dependency injection with `unnamed/inject`
 
 ```java
-import javax.inject.Inject;
+import team.unnamed.inject.Inject;
 
 public class UserDao {
     

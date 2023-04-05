@@ -7,8 +7,6 @@ import team.unnamed.inject.key.TypeReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
-
 public class AssistedInjectTest {
 
     @Test

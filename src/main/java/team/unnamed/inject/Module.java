@@ -5,7 +5,7 @@ package team.unnamed.inject;
  * configuration. A module is usually used to bind abstractions
  * (interfaces, abstract classes) to implementations (concrete
  * classes). To just add a scope to a class, you can use scope
- * annotations like {@link javax.inject.Singleton}.
+ * annotations like {@link Singleton}.
  * You can also use annotations to bind abstractions to implementations
  * like {@link Targetted} and {@link ProvidedBy}.
  *
@@ -13,7 +13,7 @@ package team.unnamed.inject;
  *
  * <p>You can also create provider methods (methods used as providers) and
  * annotate it with {@link Provides}. Annotate the method with
- * {@link javax.inject.Inject} if the object creation has dependencies.</p>
+ * {@link Inject} if the object creation has dependencies.</p>
  *
  * <p>There's an extension for users to create bindings in a pretty way
  * using {@link AbstractModule}.</p>

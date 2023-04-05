@@ -1,5 +1,6 @@
 package team.unnamed.inject.provision.std;
 
+import team.unnamed.inject.Provider;
 import team.unnamed.inject.impl.InjectorImpl;
 import team.unnamed.inject.impl.ProvisionStack;
 import team.unnamed.inject.key.Key;
@@ -7,8 +8,6 @@ import team.unnamed.inject.provision.Providers;
 import team.unnamed.inject.provision.StdProvider;
 import team.unnamed.inject.scope.Scope;
 import team.unnamed.inject.util.Validate;
-
-import javax.inject.Provider;
 
 /**
  * It's a provider wrapped. Maintains the

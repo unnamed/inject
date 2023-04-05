@@ -1,6 +1,6 @@
 package team.unnamed.inject.scope;
 
-import javax.inject.Provider;
+import team.unnamed.inject.Provider;
 
 /**
  * Wraps providers
