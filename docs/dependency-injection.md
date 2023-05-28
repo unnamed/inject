@@ -34,7 +34,7 @@ public class UserDao {
     
     private final Database database;
     
-    public FileReader(Database database) {
+    public UserDao(Database database) {
         this.database = database;
     }
     
