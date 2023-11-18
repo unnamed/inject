@@ -21,6 +21,12 @@ java {
     }
 }
 
+license {
+    header.set(resources.text.fromFile("header.txt"))
+    include("**/*.java")
+    newLine.set(false)
+}
+
 tasks {
     test {
         useJUnitPlatform()
