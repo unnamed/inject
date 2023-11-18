@@ -79,6 +79,8 @@ public class LinkedProvider<T>
 
     /**
      * Determines if the linked provider is linked to the same key
+     *
+     * @return If the linked provider is linked to the same key
      */
     public boolean isAutoBound() {
         return autoBound;

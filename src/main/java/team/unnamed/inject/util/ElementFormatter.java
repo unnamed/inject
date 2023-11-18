@@ -62,6 +62,10 @@ public final class ElementFormatter {
     /**
      * Formats a method to a human-friendly format like
      * <pre>MyClass#someMethod(@Nullable String, Object)</pre>
+     *
+     * @param method The method to format
+     * @param keys The keys of the method parameters
+     * @return The formatted method
      */
     public static String formatMethod(Method method, List<InjectedKey<?>> keys) {
         return method.getDeclaringClass().getName() + '#' + method.getName() + '('
@@ -78,6 +82,9 @@ public final class ElementFormatter {
      * {@literal @}Named("hello")
      * {@literal @}Example(hello = "Hello", world = "World")
      * </p>
+     *
+     * @param annotation The annotation to convert
+     * @return The annotation string
      */
     public static String annotationToString(Annotation annotation) {
         StringBuilder builder = new StringBuilder("@");

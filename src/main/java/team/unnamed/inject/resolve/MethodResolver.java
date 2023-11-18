@@ -41,6 +41,9 @@ public final class MethodResolver {
      * Cached alternative method for {@link MethodResolver#resolve}
      * that always uses  the {@link Inject} annotation to resolve the
      * methods.
+     *
+     * @param type The type to resolve
+     * @return The injectable methods
      */
     public List<InjectableMethod> get(
             TypeReference<?> type
@@ -61,6 +64,8 @@ public final class MethodResolver {
     }
 
     /**
+     * @param type The type to resolve
+     * @param annotation The annotation to resolve
      * @return Returns all the injectable methods for
      * the specified {@code type}. The resolved methods
      * can also be used to get the module provider methods

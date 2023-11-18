@@ -48,6 +48,9 @@ public interface ErrorAttachable {
     /**
      * Attaches the specified error using the specified
      * reason/title/header.
+     *
+     * @param header The error header
+     * @param error The error
      */
     void attach(String header, Throwable error);
 
@@ -69,16 +72,22 @@ public interface ErrorAttachable {
 
     /**
      * Applies a snapshot, memento design pattern
+     *
+     * @param errorMessages The error messages
      */
     void applySnapshot(List<String> errorMessages);
 
     /**
      * Formats the error messages in one message
+     *
+     * @return The formatted error messages
      */
     String formatMessages();
 
     /**
      * Returns the current error count
+     *
+     * @return The error count
      */
     int errorCount();
 

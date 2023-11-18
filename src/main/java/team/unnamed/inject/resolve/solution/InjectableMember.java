@@ -53,6 +53,11 @@ public interface InjectableMember {
     /**
      * Gets and injects the required keys in the
      * specified {@code target}
+     *
+     * @param injector The injector instance
+     * @param stack The provision stack
+     * @param target The target instance
+     * @return The injected instance
      */
     Object inject(InjectorImpl injector, ProvisionStack stack, Object target);
 

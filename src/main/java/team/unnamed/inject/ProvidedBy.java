@@ -39,6 +39,8 @@ public @interface ProvidedBy {
 
     /**
      * Returns the bound provider
+     *
+     * @return The bound provider class
      */
     Class<? extends Provider<?>> value();
 

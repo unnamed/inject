@@ -53,6 +53,9 @@ public interface Binder extends ErrorAttachable {
      * <p>The method directly puts the key with the
      * specified provider to the map, it's not checked
      * so it's unsafe.</p>
+     *
+     * @param key The key to bind
+     * @param provider The provider to bind
      */
     @Deprecated
     void $unsafeBind(Key<?> key, Provider<?> provider);
@@ -84,6 +87,8 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Scopes the binding being built
+         *
+         * @param scope The scope
          */
         void in(Scope scope);
 
@@ -108,16 +113,25 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Qualifies the key with the specified annotation type
+         *
+         * @param qualifierType The annotation type
+         * @return The return type for this builder type
          */
         R markedWith(Class<? extends Annotation> qualifierType);
 
         /**
          * Qualifies the key with the specific annotation instance
+         *
+         * @param annotation The annotation instance
+         * @return The return type for this builder type
          */
         R qualified(Annotation annotation);
 
         /**
          * Qualifies the key with the specific name
+         *
+         * @param name The name
+         * @return The return type for this builder type
          */
         R named(String name);
 
@@ -135,6 +149,9 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Links the key to a class
+         *
+         * @param targetType The target type
+         * @return The return type for this builder type
          */
         default R to(Class<? extends T> targetType) {
             return to(TypeReference.of(targetType));
@@ -142,21 +159,32 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Links the key to a (possible) generic type
+         *
+         * @param targetType The target type
+         * @return The return type for this builder type
          */
         R to(TypeReference<? extends T> targetType);
 
         /**
          * Links the key to a specific provider
+         *
+         * @param provider The provider
+         * @return The return type for this builder type
          */
         R toProvider(Provider<? extends T> provider);
 
         /**
          * Links the key to a generic provider
+         *
+         * @param provider The generic provider
+         * @return The return type for this builder type
          */
         R toGenericProvider(GenericProvider<? extends T> provider);
 
         /**
          * Links the key to an assisted instance factory
+         *
+         * @param factory The factory
          */
         default void toFactory(Class<? extends ValueFactory> factory) {
             toFactory(TypeReference.of(factory));
@@ -164,11 +192,17 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Links the key to an assisted instance factory
+         *
+         * @param factory The factory
          */
         void toFactory(TypeReference<? extends ValueFactory> factory);
 
         /**
          * Links the key to a specific provider type
+         *
+         * @param providerClass The provider class
+         * @param <P> The provider type
+         * @return The return type for this builder type
          */
         default <P extends Provider<? extends T>> R toProvider(Class<P> providerClass) {
             return toProvider(TypeReference.of(providerClass));
@@ -176,6 +210,10 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Links the key to a specific provider (possible) generic type
+         *
+         * @param providerClass The provider class
+         * @param <P> The provider type
+         * @return The return type for this builder type
          */
         <P extends Provider<? extends T>> R toProvider(TypeReference<P> providerClass);
 
@@ -192,6 +230,8 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Binds the key to a specific instance
+         *
+         * @param instance The bound instance
          */
         void toInstance(T instance);
 
@@ -207,6 +247,8 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type as a Set
+         *
+         * @return A set binding builder
          */
         default CollectionMultiBindingBuilder<T> asSet() {
             return asCollection(Set.class, HashSet::new);
@@ -214,6 +256,8 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type as a List
+         *
+         * @return A list binding builder
          */
         default CollectionMultiBindingBuilder<T> asList() {
             return asCollection(List.class, ArrayList::new);
@@ -221,6 +265,9 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type using the collection creator returned instances
+         *
+         * @param collectionCreator The collection factory
+         * @return The collection binding builder
          */
         default CollectionMultiBindingBuilder<T> asCollection(CollectionCreator collectionCreator) {
             return asCollection(Collection.class, collectionCreator);
@@ -228,11 +275,19 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type using the collection creator returned instances
+         *
+         * @param baseType The collection base type
+         * @param collectionCreator The collection factory
+         * @return The collection binding builder
          */
         CollectionMultiBindingBuilder<T> asCollection(Class<?> baseType, CollectionCreator collectionCreator);
 
         /**
          * Starts linking and scoping the element type as a Map with the specified key type
+         *
+         * @param keyClass The key class
+         * @param <K> The key type
+         * @return The map binding builder
          */
         default <K> MapMultiBindingBuilder<K, T> asMap(Class<K> keyClass) {
             return asMap(keyClass, HashMap::new);
@@ -240,6 +295,11 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type as a Map with the specified key type and map creator
+         *
+         * @param keyClass The key class
+         * @param mapCreator The map factory
+         * @param <K> The key type
+         * @return The map binding builder
          */
         default <K> MapMultiBindingBuilder<K, T> asMap(Class<K> keyClass, MapCreator mapCreator) {
             return asMap(TypeReference.of(keyClass), mapCreator);
@@ -247,6 +307,10 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type as a Map with the specified key type
+         *
+         * @param keyReference The key type reference
+         * @param <K> The key type
+         * @return The map binding builder
          */
         default <K> MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference) {
             return asMap(keyReference, HashMap::new);
@@ -254,6 +318,11 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking and scoping the element type as a Map with the specified key type and map creator
+         *
+         * @param keyReference The key type reference
+         * @param mapCreator The map factory
+         * @param <K> The key type
+         * @return The map binding builder
          */
         <K> MapMultiBindingBuilder<K, T> asMap(TypeReference<K> keyReference, MapCreator mapCreator);
 
@@ -270,6 +339,9 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Adds an instance of the specific element type to the collection
+         *
+         * @param instance The bound instance
+         * @return This builder
          */
         CollectionMultiBindingBuilder<T> toInstance(T instance);
 
@@ -287,6 +359,9 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Starts linking a key to a value
+         *
+         * @param key The key to bind
+         * @return The value binder
          */
         KeyBinder<K, V> bind(K key);
 
@@ -303,6 +378,9 @@ public interface Binder extends ErrorAttachable {
 
         /**
          * Adds an instance of the specific value type to the map
+         *
+         * @param instance The bound instance
+         * @return The map binding builder
          */
         MapMultiBindingBuilder<K, V> toInstance(V instance);
 

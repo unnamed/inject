@@ -34,7 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Represents a binding key used to store a relation of Key -> Provider.
+ * Represents a binding key used to store a relation of Key -&gt; Provider.
  * Holds a {@link TypeReference} representing the type of the key,
  * and a {@link Set} of {@link Qualifier} representing the annotations or
  * annotation types that works like qualifiers.
@@ -100,6 +100,8 @@ public final class Key<T> implements CompositeType, Serializable {
 
     /**
      * Determines if the {@link Key} represented by this is a raw-type
+     *
+     * @return {@code true} if the {@link Key} represented by this is a raw-type
      */
     public boolean isPureRawType() {
         return type.isPureRawType();
@@ -107,7 +109,10 @@ public final class Key<T> implements CompositeType, Serializable {
 
     /**
      * Checks if the wrapped type requires context or not
+     *
+     * @return {@code true} if the wrapped type requires context
      */
+    @Override
     public boolean requiresContext() {
         // delegate functionality to TypeReference
         return type.requiresContext();
@@ -123,6 +128,8 @@ public final class Key<T> implements CompositeType, Serializable {
     /**
      * Returns the qualifier instance attached
      * to this type key
+     *
+     * @return The qualifier instance
      */
     public Annotation getQualifier() {
         return qualifier;
@@ -131,6 +138,8 @@ public final class Key<T> implements CompositeType, Serializable {
     /**
      * Returns the qualifier type attached
      * to this type key
+     *
+     * @return The qualifier type
      */
     public Class<? extends Annotation> getQualifierType() {
         return qualifierType;
@@ -150,6 +159,9 @@ public final class Key<T> implements CompositeType, Serializable {
 
     /**
      * Returns a new {@link Key} with the given {@code qualifier}
+     *
+     * @param qualifier The new qualifier
+     * @return The new key
      */
     public Key<T> withQualifier(Annotation qualifier) {
         return new Key<>(type, null, qualifier);
@@ -157,6 +169,9 @@ public final class Key<T> implements CompositeType, Serializable {
 
     /**
      * Returns a new {@link Key} with the given {@code qualifierType}
+     *
+     * @param qualifierType The new qualifier type
+     * @return The new key
      */
     public Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
         return new Key<>(type, qualifierType, null);

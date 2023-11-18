@@ -69,6 +69,8 @@ public final class Types {
 
     /**
      * Adds the specified {@code packageName} to the list of omitted packages
+     *
+     * @param packageName The package name to omit
      */
     public static void omitPackage(String packageName) {
         Validate.notEmpty(packageName, "packageName");
@@ -219,6 +221,11 @@ public final class Types {
 
     /**
      * Static factory method to create {@link ParameterizedType}s
+     *
+     * @param ownerType The owner type, can be null
+     * @param rawType The raw type
+     * @param parameterTypes The parameter types
+     * @return The parameterized type
      */
     public static ParameterizedType parameterizedTypeOf(Type ownerType, Class<?> rawType, Type... parameterTypes) {
         ownerType = compose(ownerType);

@@ -41,6 +41,9 @@ public final class FieldResolver {
 
     /**
      * Cached alternative method for {@link FieldResolver#resolve}
+     *
+     * @param type The type to resolve
+     * @return The injectable fields
      */
     public List<InjectableField> get(TypeReference<?> type) {
         Solution solution = ComponentResolver.SOLUTIONS.get(type);
@@ -59,6 +62,9 @@ public final class FieldResolver {
     }
 
     /**
+     * Resolves all the injectable fields for the specified {@code type}.
+     *
+     * @param type The type to resolve
      * @return Returns all the injectable fields for
      * the specified {@code type}.
      */

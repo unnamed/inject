@@ -46,6 +46,10 @@ public interface Injector {
 
     /**
      * Returns the explicit bound provider for the specified key
+     *
+     * @param key The key class
+     * @param <T> The key type
+     * @return The provider, or null if there's no provider
      */
     default <T> Provider<? extends T> getProvider(Class<T> key) {
         return getProvider(TypeReference.of(key));
@@ -53,6 +57,10 @@ public interface Injector {
 
     /**
      * Returns the explicit bound provider for the specified key
+     *
+     * @param key The key type reference
+     * @param <T> The key type
+     * @return The provider, or null if there's no provider
      */
     <T> Provider<? extends T> getProvider(TypeReference<T> key);
 

@@ -32,6 +32,8 @@ import java.util.Map;
 public interface MapCreator {
 
     /**
+     * @param <K> The map key type
+     * @param <V> The map value type
      * @return A new empty map
      */
     <K, V> Map<K, V> create();

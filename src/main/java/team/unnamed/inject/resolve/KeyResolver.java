@@ -42,6 +42,10 @@ public final class KeyResolver {
     }
 
     /**
+     * Resolves the keys of the given parameters
+     *
+     * @param declaringType The declaring type of the field
+     * @param parameters   The parameters to resolve
      * @return Resolves the key of the given parameter set and its annotations
      */
     public List<InjectedKey<?>> keysOf(

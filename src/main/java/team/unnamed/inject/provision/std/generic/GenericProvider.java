@@ -39,6 +39,7 @@ public interface GenericProvider<T> {
      * the provided type parameters.
      *
      * @param match The matched type
+     * @return The created instance
      */
     T get(Key<?> match);
 
@@ -46,6 +47,9 @@ public interface GenericProvider<T> {
      * Converts this {@link GenericProvider} to a
      * constant normal {@link Provider} that always
      * use the given {@code match} key
+     *
+     * @param match The match key
+     * @return The constant provider
      */
     default Provider<T> asConstantProvider(Key<?> match) {
         return () -> get(match);

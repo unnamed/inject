@@ -84,6 +84,8 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
 
     /**
      * Determines if the {@link TypeReference} represented by this is a raw-type
+     *
+     * @return {@code true} if the {@link TypeReference} represented by this is a raw-type
      */
     public final boolean isPureRawType() {
         return type == rawType;
@@ -108,6 +110,9 @@ public class TypeReference<T> extends AbstractTypeWrapper implements CompositeTy
     /**
      * Unsafe method, type must be the type of a member of this type,
      * else, it throws a {@link IllegalStateException}
+     *
+     * @param type The type to resolve
+     * @return The resolved type
      */
     public final TypeReference<?> resolve(Type type) {
         Validate.notNull(type, "type");

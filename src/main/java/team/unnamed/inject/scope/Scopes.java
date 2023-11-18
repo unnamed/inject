@@ -44,6 +44,8 @@ public final class Scopes {
 
     /**
      * Returns the scope scanner instance
+     *
+     * @return The scope scanner instance
      */
     public static ScopeScanner getScanner() {
         return SCANNER;

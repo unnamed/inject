@@ -42,6 +42,8 @@ public abstract class AbstractModule implements Module {
      * The binder field isn't used directly because we need to
      * check if the binder is present, throwing the correct exception
      * instead of a simple and not descriptive null pointer exception
+     *
+     * @return The binder instance
      */
     protected final Binder binder() {
         Validate.state(binder != null, "The binder isn't specified yet!");

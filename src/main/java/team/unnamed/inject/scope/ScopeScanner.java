@@ -51,6 +51,9 @@ public final class ScopeScanner {
      * <p>Note that this method doesn't require
      * the {@code annotationType} to be annotated
      * with {@link team.unnamed.inject.Scope}</p>
+     *
+     * @param annotationType The annotation type
+     * @param scope The scope instance
      */
     public void bind(Class<? extends Annotation> annotationType, Scope scope) {
         Validate.notNull(annotationType, "annotationType");
@@ -63,6 +66,7 @@ public final class ScopeScanner {
      * for annotations present in the internal {@code scopes}
      * map
      *
+     * @param element The element to scan
      * @return The found scope, {@link Scopes#NONE} if no scopes
      * found
      */

@@ -41,6 +41,8 @@ public @interface Targetted {
 
     /**
      * Returns the bound target class
+     *
+     * @return The bound target class
      */
     Class<?> value();
 

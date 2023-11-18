@@ -29,11 +29,10 @@ import team.unnamed.inject.key.Key;
 /**
  * Collection of util methods for
  * parameter, argument, states validation.
- * <p>
- * Created for code shortening and
+ *
+ * <p>Created for code shortening and
  * for making legible code. Make fail-fast
- * methods.
- * <p>
+ * methods.</p>
  */
 public final class Validate {
 

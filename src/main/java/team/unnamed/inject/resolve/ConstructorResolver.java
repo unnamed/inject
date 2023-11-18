@@ -44,6 +44,10 @@ public final class ConstructorResolver {
     /**
      * Cached alternative method for {@link ConstructorResolver#resolve},
      * this method always uses the {@link Inject} annotation to resolve the constructors
+     *
+     * @param errors The error attachable
+     * @param type The type to resolve
+     * @return The injectable constructor
      */
     public InjectableConstructor get(
             ErrorAttachable errors,
@@ -71,6 +75,11 @@ public final class ConstructorResolver {
      * <p>If no constructor annotated with the given {@code annotation}
      * is found, the default/empty constructor is used (constructor
      * without parameters)</p>
+     *
+     * @param errors The error attachable
+     * @param type The type to resolve
+     * @param annotation The annotation to search for
+     * @return The injectable constructor
      */
     public InjectableConstructor resolve(
             ErrorAttachable errors,

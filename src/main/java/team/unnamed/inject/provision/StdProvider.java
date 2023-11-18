@@ -52,6 +52,8 @@ public abstract class StdProvider<T> implements Provider<T> {
      * <p>
      * Scopes the provider with the given {@code scope}
      *
+     * @param match The key used to match the scope
+     * @param scope The scope to apply
      * @return The scope applied to the provider, the providers
      * are externally immutable, so this shouldn't modify the
      * real provider and returns another provider or the same provider
