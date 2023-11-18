@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    signing
     id("org.cadixdev.licenser") version "0.6.1"
 }
 
@@ -55,6 +56,34 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            pom {
+                name.set("Inject")
+                description.set("Lightweight and fast runtime dependency injection library for Java 8+")
+                url.set("https://github.com/unnamed/inject")
+                packaging = "jar"
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("yusshu")
+                        name.set("Andre Roldan")
+                        email.set("andre@unnamed.team")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/unnamed/inject.git")
+                    developerConnection.set("scm:git:ssh://github.com:unnamed/inject.git")
+                    url.set("https://github.com/unnamed/inject")
+                }
+            }
         }
     }
+}
+
+signing {
+    sign(publishing.publications["maven"])
 }
