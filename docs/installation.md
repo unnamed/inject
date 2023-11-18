@@ -1,18 +1,14 @@
 ## Installation
 
 You can add `inject` to your project using [Gradle](https://gradle.org/) *(recommended)*,
-[Maven](https://maven.apache.org/) or manually downloading the JAR files
+[Maven](https://maven.apache.org/) or manually downloading the JAR files from
+[GitHub Releases](https://github.com/unnamed/inject/releases).
+
+Also note that `inject` is available from the [Maven Central Repository](https://search.maven.org/artifact/team.unnamed/inject)
+so you can use it in your project without adding any repository!
 
 
 ### Gradle
-
-Add our repository
-
-```kotlin
-repositories {
-    maven("https://repo.unnamed.team/repository/unnamed-public/")
-}
-```
 
 Add the dependency
 
@@ -23,15 +19,6 @@ dependencies {
 ```
 
 ### Maven
-
-Add our repository
-
-```xml
-<repository>
-    <id>unnamed-public</id>
-    <url>https://repo.unnamed.team/repository/unnamed-public/</url>
-</repository>
-```
 
 Add the dependency
 
